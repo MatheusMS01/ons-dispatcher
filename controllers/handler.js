@@ -6,8 +6,4 @@ module.exports = function(app) {
       response.render('index');
    });
 
-   app.get('/simulation', function(request, response) {
-      response.render('index');
-   });
-
 };

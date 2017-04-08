@@ -5,10 +5,10 @@ const handler = require('./controllers/handler');
 
 const app = express();
 
+app.use(express.static(__dirname + '/public'));
+
 // Setup Engine
 app.set('view engine', 'ejs');
-
-app.use(express.static(__dirname + '/public'));
 
 // Call handler
 handler(app);
