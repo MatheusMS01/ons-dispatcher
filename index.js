@@ -1,7 +1,7 @@
 // Copyright (c) 2017 Matheus Medeiros Sarmento
 
 const express = require('express');
-const handler = require(__dirname + '/public/javascripts/handler');
+const handler = require('./controllers/handler');
 
 const app = express();
 
