@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Optical Network Simulator</title>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css">
+    <link href="/css/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+</head>
+
+<body align="center">
+    <header>
+        <div class="nav-title">
+            <a href="#">Optical Network Simulation</a>
+        </div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Simulation</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="submitting">
+            <div class="button">
+                <label for="simulator-input" class="input-label"><i class="fa fa-upload" aria-hidden="true"></i>Submit your simulator (.jar)<hr><span id="simulator-span">No file selected</span><div hidden id="simulator-progress-bar" class="progress" role="progressbar"></div></label>
+                <input id="simulator-input" type="file" class="input-file" accept=".jar"/>
+            </div>
+            <div class="button">
+                <label for="configuration-input" class="input-label"><i class="fa fa-upload" aria-hidden="true"></i>Submit your configuration file<hr><span id="configuration-span">No file selected</span><div hidden id="configuration-progress-bar" class="progress" role="progressbar"></div></label>
+                <input id="configuration-input" type="file" class="input-file" accept=".xml"/>
+            </div>
+            <hr>
+            <a href="#"><i class="fa fa-hand-o-right" aria-hidden="true"></i>Or build your topology here</a>
+            <div class="button">
+                <label class="input-label"><i class="fa fa-line-chart" aria-hidden="true"></i>Run</label>
+            </div>
+        </div>
+    </div>
+
+    <script src="/javascripts/upload.js"></script>
+</body>
+
+<footer>
+</footer>
+</html>

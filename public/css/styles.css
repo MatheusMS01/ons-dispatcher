@@ -1,8 +1,95 @@
+@import url(https://fonts.googleapis.com/css?family=Varela+Round);
+
 body {
-  background-color: black;
+  margin: 0;
+  background: lightgray;
+  font-family: Varela Round;
+}
+
+header {
+  background: black;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-title a {
+  padding: 24px;
+  color: white;
+  display: inline-block;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+nav {
+  padding: 24px;
+  text-align: right;
+}
+
+nav a {
+  transition: 0.3s ease;
+  color: #ffffff;
+  font-size: 20px;
+  text-decoration: none;
+  border-top: 4px solid black;
+  border-bottom: 4px solid black;
+  padding: 20px 0;
+  margin: 0 20px;
+}
+
+nav a:hover {
+  border-top: 4px solid #ffffff;
+  border-bottom: 4px solid #ffffff;
+  padding: 6px 0;
+}
+
+.submitting {
+  margin: 0 auto;
+  width: 400px;
+}
+
+.submitting a {
+  text-decoration: none;
+  color: black;
+}
+
+.button {
+  margin-top: 150px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.button span {
+  font-size: 10px;
   margin: 0;
 }
 
-#top {
-  color: green;
+.progress {
+  background: white;
+  color: black;
+}
+
+.input-label {
+  background: black;
+  color: white;
+  display: block;
+  width: auto;
+  padding: 30px;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.input-label:hover {
+  background: #444444;
+}
+
+.fa {
+  margin-right: 10px;
+}
+
+#simulator-input {
+  display: none;
+}
+
+#configuration-input {
+  display: none;
 }
