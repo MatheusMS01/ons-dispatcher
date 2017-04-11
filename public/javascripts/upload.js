@@ -1,14 +1,13 @@
 $(document).ready(function () {
-
    // TODO: reform this code in an smarter way
    $("#simulator-input").on("change", function () {
       var file = $(this)[0].files[0];
 
-      $("#simulator-span").hide();
-      $("#simulator-progress-bar").show();
+      // TODO: validate .jar file
 
-      $("#simulator-progress-bar").text('0%');
-      $("#simulator-progress-bar").width('0%');
+      $("#simulator-span").hide();
+
+      $("#simulator-progress-bar").show().text('0%').width('0%');
 
       var formData = new FormData();
 
@@ -16,14 +15,11 @@ $(document).ready(function () {
       formData.append('uploads[]', file, file.name);
 
       $.ajax({
-         url: '/simulation',
+         url: '/upload',
          type: 'POST',
          data: formData,
          processData: false,
          contentType: false,
-         success: function(data){
-            console.log('upload successful!\n' + data);
-         },
          xhr: function() {
             // create an XMLHttpRequest
             var xhr = new XMLHttpRequest();
@@ -37,14 +33,12 @@ $(document).ready(function () {
                   percentComplete = parseInt(percentComplete * 100);
 
                   // update the Bootstrap progress bar with the new percentage
-                  $("#simulator-progress-bar").text(percentComplete + '%');
-                  $("#simulator-progress-bar").width(percentComplete + '%');
+                  $("#simulator-progress-bar").text(percentComplete + '%').width(percentComplete + '%');
 
                   // once the upload reaches 100%, set the progress bar text to done
                   if (percentComplete === 100) {
                      $("#simulator-progress-bar").hide();
-                     $("#simulator-span").show();
-                     $("#simulator-span").text(file.name);
+                     $("#simulator-span").show().text(file.name);
                   }
                }
             }, false);
@@ -56,11 +50,13 @@ $(document).ready(function () {
    $("#configuration-input").on("change", function () {
       var file = $(this)[0].files[0];
 
-      $("#configuration-span").hide();
-      $("#configuration-progress-bar").show();
+      if(file.type !== 'text/xml') {
+         alert("Invalid file.");
+         return;
+      }
 
-      $("#configuration-progress-bar").text('0%');
-      $("#configuration-progress-bar").width('0%');
+      $("#configuration-span").hide();
+      $("#configuration-progress-bar").show().text('0%').width('0%');
 
       var formData = new FormData();
 
@@ -68,14 +64,11 @@ $(document).ready(function () {
       formData.append('uploads[]', file, file.name);
 
       $.ajax({
-         url: '/simulation',
+         url: '/upload',
          type: 'POST',
          data: formData,
          processData: false,
          contentType: false,
-         success: function(data){
-            console.log('upload successful!\n' + data);
-         },
          xhr: function() {
             // create an XMLHttpRequest
             var xhr = new XMLHttpRequest();
@@ -89,14 +82,12 @@ $(document).ready(function () {
                   percentComplete = parseInt(percentComplete * 100);
 
                   // update the Bootstrap progress bar with the new percentage
-                  $("#configuration-progress-bar").text(percentComplete + '%');
-                  $("#configuration-progress-bar").width(percentComplete + '%');
+                  $("#configuration-progress-bar").text(percentComplete + '%').width(percentComplete + '%');
 
                   // once the upload reaches 100%, set the progress bar text to done
                   if (percentComplete === 100) {
                      $("#configuration-progress-bar").hide();
-                     $("#configuration-span").show();
-                     $("#configuration-span").text(file.name);
+                     $("#configuration-span").show().text(file.name);
                   }
                }
             }, false);
@@ -104,6 +95,10 @@ $(document).ready(function () {
             return xhr;
          }
       });
+   });
+
+   $("#run").on("click", function () {
+      alert("Clicked");
    });
 
 });
