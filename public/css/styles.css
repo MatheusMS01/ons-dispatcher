@@ -93,3 +93,9 @@ nav a:hover {
 #configuration-input {
   display: none;
 }
+
+#topology-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}

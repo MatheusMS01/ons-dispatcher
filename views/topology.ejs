@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Optical Network Simulator</title>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <header>
+        <div class="nav-title">
+            <a href="#">Optical Network Simulation</a>
+        </div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Simulation</a>
+            <a href="#">Downloads</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+    <div id="main-container">
+        <div id="topology-container"></div>
+    </div>
+
+    <script src="/javascripts/sigma.min.js"></script>
+    <script>
+    sigmaInstance = new sigma({
+        renderer: {
+            container: document.getElementById('topology-container'),
+            type: 'canvas'
+        },
+        settings: {
+            doubleClickEnabled: false,
+            minEdgeSize: 0.5,
+            maxEdgeSize: 4,
+            enableEdgeHovering: true,
+            edgeHoverColor: 'edge',
+            defaultEdgeHoverColor: '#000',
+            edgeHoverSizeRatio: 1,
+            edgeHoverExtremities: true,
+        }
+    });
+
+    // Initialize variables
+    var nodeId = 0,
+        edgeId = 0,
+        nodeIdList = [];
+
+       sigmaInstance.bind('clickNode', function(e) {
+          if(nodeIdList.length >= 2) {
+             nodeIdList = [];
+          }
+
+          // If user clicks the node, and it's the first one
+          // push it to the list in order to create the edge
+          // between two nodes
+          nodeIdList.push(e.data.node.id);
+
+          // If it is the second one already, create the edge
+          if(nodeIdList.length === 2) {
+             // Do not create self link
+             if(nodeIdList[0] === nodeIdList[1]) {
+                nodeIdList = [];
+                return;
+             }
+             ++edgeId;
+             // TODO: Edges should have Delay and Weight properties
+             sigmaInstance.graph.addEdge({
+                id: edgeId,
+                source: nodeIdList[0],
+                target: nodeIdList[1]
+             });
+             sigmaInstance.refresh();
+          }
+       })
+
+       // New Node
+       sigmaInstance.bind('clickStage', function(e) {
+          if(nodeIdList.length === 1) {
+             nodeIdList = [];
+             return;
+          }
+          nodeIdList = [];
+          var x, y;
+
+          x = sigma.utils.getX(e.data.captor);
+          y = sigma.utils.getY(e.data.captor);
+
+
+
+          ++nodeId;
+          sigmaInstance.graph.addNode({
+             id: nodeId,
+             size: 20,
+             label: nodeId + '',
+             x: x,
+             y: y,
+             dX: 0,
+             dY: 0
+          });
+
+          sigmaInstance.refresh();
+       });
+    </script>
+</body>
+
+<footer>
+</footer>
+</html>

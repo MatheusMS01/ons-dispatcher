@@ -1,9 +1,13 @@
 $(document).ready(function () {
+
    // TODO: reform this code in an smarter way
    $("#simulator-input").on("change", function () {
       var file = $(this)[0].files[0];
 
-      // TODO: validate .jar file
+      if(file.name.substr(file.name.length - 4, file.name.length) !== ".jar") {
+         alert("Invalid file.");
+         return;
+      }
 
       $("#simulator-span").hide();
 
@@ -98,7 +102,7 @@ $(document).ready(function () {
    });
 
    $("#run").on("click", function () {
-      alert("Clicked");
+      render()
    });
 
 });

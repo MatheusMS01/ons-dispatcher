@@ -15,6 +15,10 @@ module.exports = function(app) {
       response.render('simulation');
    });
 
+   app.get('/topology', function(request, response) {
+      response.render('topology');
+   });
+
    app.post('/upload', function(req, res){
 
       // create an incoming form object
