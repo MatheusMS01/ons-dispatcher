@@ -102,7 +102,7 @@ $(document).ready(function () {
    });
 
    $("#run").on("click", function () {
-      render()
+      $.post("topology");
    });
 
 });

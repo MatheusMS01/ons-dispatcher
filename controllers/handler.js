@@ -1,9 +1,12 @@
 // Copyright (c) 2017 Matheus Medeiros Sarmento
 
+var bodyParser = require('body-parser')
 var express = require('express');
-var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
+var path = require('path');
+
+var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 module.exports = function(app) {
 
@@ -15,7 +18,7 @@ module.exports = function(app) {
       response.render('simulation');
    });
 
-   app.get('/topology', function(request, response) {
+   app.post('/topology', function(request, response) {
       response.render('topology');
    });
 
@@ -47,6 +50,10 @@ module.exports = function(app) {
       // parse the incoming request containing the form data
       form.parse(req);
 
+   });
+
+   app.post('/configuration', urlencodedParser, function(req, res) {
+      console.log(req.body);
    });
 
 };

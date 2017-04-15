@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Optical Network Simulator</title>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <header>
+        <div class="nav-title">
+            <a href="#">Optical Network Simulation</a>
+        </div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Simulation</a>
+            <a href="#">Downloads</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+    <div id="main-container">
+        <div id="tools-container"></div>
+        <div id="topology-container"></div>
+    </div>
+
+    <script src="/javascripts/utils/sigma.min.js"></script>
+    <script src="/javascripts/utils/XMLWriter.js"></script>
+    <script>
+       var xw = new XMLWriter('UTF-8');
+       xw.formatting = 'indented';//add indentation and newlines
+       xw.indentChar = ' ';//indent with spaces
+       xw.indentation = 2;//add 2 spaces per level
+
+       xw.writeStartDocument();
+       /* TODO: get simulator name; Start on simulation.ejs and pass as an argument?
+          If so, find a way of passing through stream */
+       xw.writeStartElement( 'eonsim' );
+       xw.writeStartElement( 'physical-topology' );
+       xw.writeAttributeString( 'name', 'NSFNet22');
+       xw.writeStartElement( 'nodes' );
+       xw.writeAttributeString( 'modulation', '8QAM, BPSK, QPSK, 16QAM');
+       xw.writeAttributeString( 'capacity', '20');
+
+       sigmaInstance = new sigma({
+        renderer: {
+            container: document.getElementById('topology-container'),
+            type: 'canvas'
+        },
+        settings: {
+            doubleClickEnabled: false,
+            minEdgeSize: 0.5,
+            maxEdgeSize: 4,
+            enableEdgeHovering: true,
+            edgeHoverColor: '#F00',
+            defaultEdgeHoverColor: '#F00',
+            edgeHoverSizeRatio: 1,
+            edgeHoverExtremities: true,
+        }
+    });
+
+    // Initialize variables
+    var nodeId = 0,
+        edgeId = 0,
+        nodeIdList = [];
+
+       sigmaInstance.bind('clickNode', function(e) {
+          if(nodeIdList.length >= 2) {
+             nodeIdList = [];
+          }
+
+          // If user clicks the node, and it's the first one
+          // push it to the list in order to create the edge
+          // between two nodes
+          nodeIdList.push(e.data.node.id);
+          e.data.node.color = "#aaa";
+
+          // If it is the second one already, create the edge
+          if(nodeIdList.length === 2) {
+             // Do not create self links
+             if(nodeIdList[0] === nodeIdList[1]) {
+                nodeIdList = [];
+                return;
+             }
+             ++edgeId;
+             // TODO: Edges should have Delay and Weight properties
+             sigmaInstance.graph.addEdge({
+                id: edgeId,
+                source: nodeIdList[0],
+                target: nodeIdList[1],
+                delay: 3
+             });
+          }
+          sigmaInstance.refresh();
+       })
+
+       // New Node
+       sigmaInstance.bind('doubleClickStage', function(e) {
+          if(nodeIdList.length === 1) {
+             nodeIdList = [];
+             return;
+          }
+          nodeIdList = [];
+          var x, y;
+
+          x = sigma.utils.getX(e.data.captor);
+          y = sigma.utils.getY(e.data.captor);
+
+          ++nodeId;
+          sigmaInstance.graph.addNode({
+             id: nodeId,
+             size: 50,
+             label: nodeId + '',
+             x: x,
+             y: y,
+             dX: 0,
+             dY: 0
+          });
+
+          xw.writeStartElement( 'node' );
+          xw.writeAttributeString( 'id', nodeId + '');
+
+          sigmaInstance.refresh();
+       });
+
+    sigmaInstance.bind('clickStage', function (e) {
+       if(nodeIdList.length === 1) {
+          nodeIdList = [];
+       }
+    });
+
+       sigmaInstance.bind('clickEdge', function (e) {
+          alert(e.data.edge.delay);
+       });
+    </script>
+</body>
+
+<footer>
+</footer>
+</html>
