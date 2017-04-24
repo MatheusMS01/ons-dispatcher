@@ -1,0 +1,1 @@
+Serializar lista de nós e arestas para o servidor, e dele, montar o arquivo XML

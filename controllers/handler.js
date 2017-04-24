@@ -5,10 +5,19 @@ var express = require('express');
 var formidable = require('formidable');
 var fs = require('fs');
 var path = require('path');
+const dispatcher = require('./dispatcher');
 
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 module.exports = function(app) {
+
+   // var builder = require('xmlbuilder');
+   // var xml = builder.create('root')
+   //       .ele('xmlbuilder')
+   //       .ele('repo', {'type': 'git'}, 'git://github.com/oozcitak/xmlbuilder-js.git')
+   //       .end({ pretty: true});
+   //
+   // console.log(xml);
 
    app.get('/', function(request, response) {
       response.render('index');
@@ -18,22 +27,27 @@ module.exports = function(app) {
       response.render('simulation');
    });
 
-   app.post('/topology', function(request, response) {
+   app.get('/topology', function(request, response) {
       response.render('topology');
    });
 
-   app.post('/upload', function(req, res){
+   app.post('/upload', function(request, response){
 
       // create an incoming form object
       var form = new formidable.IncomingForm();
 
-      // store all uploads in the /uploads directory
-      form.uploadDir = path.join(__dirname, '/../cache');
+      // Create the Scratch directory, where every data from this user will be stored
+      // Since remoteAddress uses IPv6, and has invalid characters for folder name, replace it
+      var dir = __dirname + '/../cache/' + request.connection.remoteAddress.replace(/:/g, '');
 
-      // every time a file has been uploaded successfully,
-      // rename it to it's orignal name
+      if (!fs.existsSync(dir)){
+         fs.mkdirSync(dir);
+      }
+
+      form.uploadDir = path.join(dir);
+
+      // every time a file has been uploaded successfully, rename it to it's original name
       form.on('file', function(field, file) {
-         console.log(file.type);
          fs.rename(file.path, path.join(form.uploadDir, file.name));
       });
 
@@ -44,16 +58,16 @@ module.exports = function(app) {
 
       // once all the files have been uploaded, send a response to the client
       form.on('end', function() {
-         res.end('success');
+         response.end('success');
       });
 
       // parse the incoming request containing the form data
-      form.parse(req);
+      form.parse(request);
 
    });
 
    app.post('/configuration', urlencodedParser, function(req, res) {
-      console.log(req.body);
+      dispatcher(app);
    });
 
 };

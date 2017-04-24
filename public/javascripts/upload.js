@@ -102,7 +102,10 @@ $(document).ready(function () {
    });
 
    $("#run").on("click", function () {
-      $.post("topology");
+      $.ajax({
+         type: "POST",
+         url: "/configuration"
+      });
    });
 
 });

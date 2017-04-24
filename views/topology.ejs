@@ -11,73 +11,72 @@
             <a class="nav-title"href="#">Optical Network Simulation</a>
         </div>
         <nav>
-            <a href="/">Home</a>
-            <a href="simulation">Simulation</a>
-            <a href="http://comnet.unb.br/br/grupos/get/ons">Downloads</a>
+            <a href="#">Home</a>
+            <a href="#">Simulation</a>
+            <a href="#">Downloads</a>
             <a href="#">About Us</a>
             <a href="#">Contact</a>
         </nav>
     </header>
     <div id="main-container">
         <div id="tools-container">
-            <form id="finish" method="post" action="/configuration">
-
-                <input type="submit" value="submit"/>
-            </form>
+            <button onclick="finish()">Finish</button>
         </div>
         <div id="topology-container"></div>
     </div>
 
     <script src="/javascripts/utils/sigma.min.js"></script>
+    <script src="/javascripts/utils/plugins/sigma.plugins.dragNodes/sigma.plugins.dragNodes.js"></script>
     <script src="/javascripts/utils/XMLWriter.js"></script>
     <script>
-       var xw = new XMLWriter('UTF-8', '1.0');
-       xw.formatting = 'indented';//add indentation and newlines
-       xw.indentChar = ' ';//indent with spaces
-       xw.indentation = 2;//add 2 spaces per level
+       // Initialize variables
+       var nodeId = 0,
+           edgeId = 0,
+           nodeIdList = [],
+           xmlWriter = new XMLWriter('UTF-8', '1.0');
 
-       xw.writeStartDocument();
-       /* TODO: get simulator name; Start on simulation.ejs and pass as an argument?
-          If so, find a way of passing through stream */
-       xw.writeStartElement( 'eonsim' );
-       xw.writeStartElement( 'physical-topology' );
-       xw.writeAttributeString( 'name', 'NSFNet22');
-       xw.writeStartElement( 'nodes' );
-       xw.writeAttributeString( 'modulation', '8QAM, BPSK, QPSK, 16QAM');
-       xw.writeAttributeString( 'capacity', '20');
+       // These are information that will be necessary to generate the xml file
+       var nodeList = [],
+           edgeList = [];
 
        sigmaInstance = new sigma({
-        renderer: {
-            container: document.getElementById('topology-container'),
-            type: 'canvas'
-        },
-        settings: {
-            doubleClickEnabled: false,
-            minEdgeSize: 0.5,
-            maxEdgeSize: 4,
-            enableEdgeHovering: true,
-            edgeHoverColor: '#F00',
-            defaultEdgeHoverColor: '#F00',
-            edgeHoverSizeRatio: 1,
-            edgeHoverExtremities: true,
-        }
-    });
+            renderer: {
+                container: document.getElementById('topology-container'),
+                type: 'canvas'
+            },
+            settings: {
+                doubleClickEnabled: false,
+                minEdgeSize: 0.5,
+                maxEdgeSize: 4,
+                enableEdgeHovering: true,
+                edgeHoverSizeRatio: 1,
+                edgeHoverExtremities: true,
+            }
+        });
 
-    // Initialize variables
-    var nodeId = 0,
-        edgeId = 0,
-        nodeIdList = [];
+       var dragListener = sigma.plugins.dragNodes(sigmaInstance, sigmaInstance.renderers[0]);
+
+       dragListener.bind('startdrag', function(event) {
+          console.log(event);
+       });
+       dragListener.bind('drag', function(event) {
+          console.log(event);
+       });
+       dragListener.bind('drop', function(event) {
+          console.log(event);
+       });
+       dragListener.bind('dragend', function(event) {
+          console.log(event);
+       });
 
        sigmaInstance.bind('clickNode', function(e) {
           if(nodeIdList.length >= 2) {
              nodeIdList = [];
           }
 
-          // If user clicks the node, and it's the first one
-          // push it to the list in order to create the edge
-          // between two nodes
+          /* If user clicks the node, and it's the first one push it to the list in order to create the edge between
+            two nodes */
           nodeIdList.push(e.data.node.id);
-          e.data.node.color = "#aaa";
 
           // If it is the second one already, create the edge
           if(nodeIdList.length === 2) {
@@ -86,13 +85,12 @@
                 nodeIdList = [];
                 return;
              }
+             // TODO: if the link already exists, do not create it either
              ++edgeId;
-             // TODO: Edges should have Delay and Weight properties
              sigmaInstance.graph.addEdge({
                 id: edgeId,
                 source: nodeIdList[0],
-                target: nodeIdList[1],
-                delay: 3
+                target: nodeIdList[1]
              });
           }
           sigmaInstance.refresh();
@@ -100,11 +98,8 @@
 
        // New Node
        sigmaInstance.bind('doubleClickStage', function(e) {
-          if(nodeIdList.length === 1) {
-             nodeIdList = [];
-             return;
-          }
           nodeIdList = [];
+
           var x, y;
 
           x = sigma.utils.getX(e.data.captor);
@@ -121,9 +116,8 @@
              dY: 0
           });
 
-          xw.writeStartElement( 'node' );
-          xw.writeAttributeString( 'id', nodeId + '');
-
+          nodeList.push({id: nodeId, groomingInPorts: 15, groomingOutPorts: 15});
+          
           sigmaInstance.refresh();
        });
 
@@ -133,9 +127,18 @@
        }
     });
 
-    sigmaInstance.bind('clickEdge', function (e) {
-      alert(e.data.edge.delay);
+    sigmaInstance.bind('rightClickStage', function (e) {
+
     });
+
+    function finish() {
+       var parser = new DOMParser();
+       var dom = parser.parseFromString(xmlWriter.flush(), "text/xml");
+
+       alert(dom);
+
+    }
+
     </script>
 </body>
 
