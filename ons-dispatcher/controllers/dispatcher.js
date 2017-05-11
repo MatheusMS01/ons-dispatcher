@@ -1,36 +1,54 @@
-// var exec = require('child_process').exec;
-//
-// module.exports = function(app) {
-//    var commandLine = 'java -jar ' + __dirname + '\\..\\cache\\1\\eonsim.jar ' + __dirname + '\\..\\cache\\1\\simulation.xml $1 50 290 30';
-//
-//    console.log(commandLine);
-//    exec(commandLine, function(error, stdout, stderr) {
-//    });
-// }
-
 const net = require("net");
 var log4js = require('log4js');
 
-var server;
+log4js.configure({
+   appenders: [
+      { type: 'console' },
+      { type: 'file', filename: 'logs/dispatcher.log', category: 'dispatcher' }
+   ]
+});
 
-function createServer() {
-   server = net.createServer();
+const logger = log4js.getLogger('dispatcher'); 
 
-   server.on("connection", function() {
+var m_server;
+var m_socketList = [];
 
+function createServer () {
+   m_server = net.createServer();
+
+   m_server.on("connection", function (socket) {
+
+      m_socketList.push(socket);
+
+      logger.debug(socket.remoteAddress + ":" + socket.remotePort + " connected");
+
+      socket.once("close", function () {
+         var index = m_socketList.indexOf(socket);
+
+         if (index > -1) {
+            m_socketList.splice(index, 1);
+         }
+
+         logger.debug(socket.remoteAddress + ":" + socket.remotePort + " closed connection")
+      });
+
+      socket.on("error", function (error) {
+         logger.error("Socket " + socket.remoteAddress + ":" + socket.remotePort + " error: " + error.message)
+      });
    });
 
    // Listen for connections
-   server.listen(61337, "localhost", function () {
-      console.log("Server: Listening");
+   m_server.listen(61337, "localhost", function () {
+      logger.debug("Listening on port " + m_server.address().port);
    });
 }
 
 function dispatch(remoteAddress) {
-   // Let's response with a hello message
-   conn.write(
-      JSON.stringify({ response: "Hey there client!" })
-   );
+
+   // Dispatch to all workers
+   m_socketList.forEach(function (socket) {
+      socket.write("Dispatching " + remoteAddress);
+   });
 }
 
-module.exports = { createServer }
+module.exports = { createServer, dispatch }
