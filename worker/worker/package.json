@@ -1,0 +1,12 @@
+{
+  "name": "worker",
+  "version": "0.0.0",
+  "description": "worker",
+  "main": "app.js",
+  "author": {
+    "name": "Matheus Medeiros"
+  },
+  "dependencies": {
+    "xml2js": "^0.4.17"
+  }
+}

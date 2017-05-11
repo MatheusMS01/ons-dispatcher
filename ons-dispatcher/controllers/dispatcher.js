@@ -1,4 +1,4 @@
-const net = require("net");
+const net = require('net');
 var log4js = require('log4js');
 
 log4js.configure({
@@ -23,9 +23,10 @@ function createServer () {
       logger.debug(socket.remoteAddress + ":" + socket.remotePort + " connected");
 
       socket.once("close", function () {
-         var index = m_socketList.indexOf(socket);
+         const index = m_socketList.indexOf(socket);
 
          if (index > -1) {
+            // Remove socket from list
             m_socketList.splice(index, 1);
          }
 
@@ -51,4 +52,4 @@ function dispatch(remoteAddress) {
    });
 }
 
-module.exports = { createServer, dispatch }
+module.exports = { createServer, dispatch };

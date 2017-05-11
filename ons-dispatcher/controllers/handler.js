@@ -68,5 +68,7 @@ module.exports = function(app) {
 
    app.post('/run', urlencodedParser, function (request, response) {
       dispatcher.dispatch(request.connection.remoteAddress);
+
+      response.redirect(307, '/');
    });
 };

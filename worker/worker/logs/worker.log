@@ -1,0 +1,31 @@
+[2017-05-11 09:31:31.561] [DEBUG] worker - Hello
+[2017-05-11 10:05:27.365] [DEBUG] worker - hey
+[2017-05-11 10:09:17.977] [DEBUG] worker - 127.0.0.1
+[2017-05-11 10:09:42.008] [DEBUG] worker - 176.18.19.22
+[2017-05-11 10:11:24.567] [DEBUG] worker - [ '127.0.0.1' ]
+[2017-05-11 10:11:24.570] [DEBUG] worker - [ '61337' ]
+[2017-05-11 10:11:36.753] [DEBUG] worker - [ '127.0.0.1' ]
+[2017-05-11 10:11:36.755] [WARN] worker - [ '61337' ]
+[2017-05-11 10:15:46.379] [FATAL] worker - 127.0.0.1:number
+[2017-05-11 10:16:11.679] [FATAL] worker - 127.0.0.1:61337
+[2017-05-11 10:16:26.462] [FATAL] worker - [ '127.0.0.1' ]
+[2017-05-11 10:21:13.465] [DEBUG] worker - 61337
+[2017-05-11 10:21:37.908] [DEBUG] worker - 61337
+[2017-05-11 10:21:53.038] [DEBUG] worker - 127.0.0.1
+[2017-05-11 10:21:53.038] [DEBUG] worker - 61337
+[2017-05-11 10:22:58.777] [DEBUG] worker - 127.0.0.1
+[2017-05-11 10:22:58.777] [DEBUG] worker - 61337
+[2017-05-11 10:25:06.346] [DEBUG] worker - number
+[2017-05-11 10:25:06.346] [DEBUG] worker - number
+[2017-05-11 10:25:38.005] [DEBUG] worker - number
+[2017-05-11 10:25:38.005] [DEBUG] worker - number
+[2017-05-11 10:25:59.458] [DEBUG] worker - number
+[2017-05-11 10:25:59.458] [DEBUG] worker - number
+[2017-05-11 10:25:59.458] [DEBUG] worker - true
+[2017-05-11 10:26:07.695] [DEBUG] worker - number
+[2017-05-11 10:27:30.581] [DEBUG] worker - number
+[2017-05-11 10:27:39.811] [DEBUG] worker - number
+[2017-05-11 10:45:06.406] [DEBUG] worker - Dispatching ::1
+[2017-05-11 10:46:34.290] [DEBUG] worker - Dispatching ::1
+[2017-05-11 10:46:39.742] [DEBUG] worker - Dispatching ::1
+[2017-05-11 10:55:21.933] [DEBUG] worker - Dispatching ::ffff:192.168.25.3
