@@ -1,0 +1,2 @@
+C:\Projetos\ONS\obj\Debug\ONS.njsprojResolveAssemblyReference.cache
+C:\Projetos\ONS\bin\Microsoft.NodejsTools.WebRole.dll

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <SchemaVersion>2.0</SchemaVersion>
+        <ProjectGuid>{799b3b1d-7397-401e-b2af-652ab8fe493e}</ProjectGuid>
+        <ProjectHome>ons-dispatcher\</ProjectHome>
+        <ProjectView>ShowAllFiles</ProjectView>
+        <StartupFile>index.js</StartupFile>
+        <WorkingDirectory>.</WorkingDirectory>
+        <OutputPath>.</OutputPath>
+        <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+        <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+        <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+    <ItemGroup>
+        <Content Include="TODO.txt" />
+        <Content Include="package.json" />
+        <Compile Include="index.js" />
+        <Compile Include="controllers\dispatcher.js" />
+        <Compile Include="controllers\handler.js" />
+        <Content Include="examples\simulation.xml" />
+        <Content Include="views\test.html" />
+        <Content Include="views\execution.ejs" />
+        <Content Include="views\home.ejs" />
+        <Content Include="views\index.ejs" />
+        <Content Include="views\simulation.ejs" />
+        <Content Include="views\topology.ejs" />
+        <Compile Include="worker\worker.js" />
+        <Content Include="cache\1\simulation2.xml" />
+        <Content Include="public\css\styles.css" />
+        <Compile Include="public\javascripts\upload.js" />
+        <Content Include="public\css\css\font-awesome.css" />
+        <Content Include="public\css\css\font-awesome.min.css" />
+        <Content Include="public\css\fonts\fontawesome-webfont.svg" />
+        <Compile Include="public\javascripts\utils\sigma.min.js" />
+        <Compile Include="public\javascripts\utils\sigma.require.js" />
+        <Compile Include="public\javascripts\utils\XMLWriter.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.exporters.svg\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.exporters.svg\sigma.exporters.svg.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\Gruntfile.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\supervisor.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\worker.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.layout.noverlap\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.layout.noverlap\sigma.layout.noverlap.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.neo4j.cypher\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.neo4j.cypher\sigma.neo4j.cypher.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.parsers.gexf\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.parsers.gexf\gexf-parser.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.parsers.gexf\sigma.parsers.gexf.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.parsers.json\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.parsers.json\sigma.parsers.json.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.pathfinding.astar\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.pathfinding.astar\sigma.pathfinding.astar.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.plugins.animate\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.plugins.animate\sigma.plugins.animate.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.plugins.dragNodes\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.plugins.dragNodes\sigma.plugins.dragNodes.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.plugins.filter\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.plugins.filter\sigma.plugins.filter.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.plugins.neighborhoods\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.plugins.neighborhoods\sigma.plugins.neighborhoods.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.plugins.relativeSize\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.plugins.relativeSize\sigma.plugins.relativeSize.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edgehovers.dashed.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edgehovers.dotted.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edgehovers.parallel.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edgehovers.tapered.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edges.dashed.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edges.dotted.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edges.parallel.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes\sigma.canvas.edges.tapered.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.renderers.customShapes\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customShapes\shape-library.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.customShapes\sigma.renderers.customShapes.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.renderers.edgeDots\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.edgeDots\sigma.canvas.edges.dotCurve.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.edgeDots\sigma.canvas.edges.dotCurvedArrow.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.renderers.edgeLabels\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.edgeLabels\settings.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.edgeLabels\sigma.canvas.edges.labels.curve.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.edgeLabels\sigma.canvas.edges.labels.curvedArrow.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.edgeLabels\sigma.canvas.edges.labels.def.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\sigma.canvas.edgehovers.curve.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\sigma.canvas.edgehovers.curvedArrow.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\sigma.canvas.edges.curve.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\sigma.canvas.edges.curvedArrow.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\sigma.canvas.edges.labels.curve.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges\utils.js" />
+        <Content Include="public\javascripts\utils\plugins\sigma.renderers.snapshot\README.md" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.renderers.snapshot\sigma.renderers.snapshot.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.statistics.HITS\sigma.statistics.HITS.js" />
+        <Compile Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\tasks\forceAtlas2.js" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="cache" />
+        <Folder Include="cache\1" />
+        <Folder Include="controllers" />
+        <Folder Include="examples" />
+        <Folder Include="public" />
+        <Folder Include="public\css" />
+        <Folder Include="public\css\css" />
+        <Folder Include="public\css\fonts" />
+        <Folder Include="public\css\less" />
+        <Folder Include="public\css\scss" />
+        <Folder Include="public\javascripts" />
+        <Folder Include="public\javascripts\utils" />
+        <Folder Include="public\javascripts\utils\plugins" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.exporters.svg" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\tasks" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.layout.noverlap" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.neo4j.cypher" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.parsers.gexf" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.parsers.json" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.pathfinding.astar" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.plugins.animate" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.plugins.dragNodes" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.plugins.filter" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.plugins.neighborhoods" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.plugins.relativeSize" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.renderers.customEdgeShapes" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.renderers.customShapes" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.renderers.edgeDots" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.renderers.edgeLabels" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.renderers.snapshot" />
+        <Folder Include="public\javascripts\utils\plugins\sigma.statistics.HITS" />
+        <Folder Include="test" />
+        <Folder Include="views" />
+        <Folder Include="worker" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
+    <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+    <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+    <ProjectExtensions>
+        <VisualStudio>
+          <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+            <WebProjectProperties>
+              <UseIIS>False</UseIIS>
+              <AutoAssignPort>True</AutoAssignPort>
+              <DevelopmentServerPort>0</DevelopmentServerPort>
+              <DevelopmentServerVPath>/</DevelopmentServerVPath>
+              <IISUrl>http://localhost:48022/</IISUrl>
+              <NTLMAuthentication>False</NTLMAuthentication>
+              <UseCustomServer>True</UseCustomServer>
+              <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+              <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+            </WebProjectProperties>
+          </FlavorProperties>
+          <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+            <WebProjectProperties>
+              <StartPageUrl>
+              </StartPageUrl>
+              <StartAction>CurrentPage</StartAction>
+              <AspNetDebugging>True</AspNetDebugging>
+              <SilverlightDebugging>False</SilverlightDebugging>
+              <NativeDebugging>False</NativeDebugging>
+              <SQLDebugging>False</SQLDebugging>
+              <ExternalProgram>
+              </ExternalProgram>
+              <StartExternalURL>
+              </StartExternalURL>
+              <StartCmdLineArguments>
+              </StartCmdLineArguments>
+              <StartWorkingDirectory>
+              </StartWorkingDirectory>
+              <EnableENC>False</EnableENC>
+              <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+            </WebProjectProperties>
+          </FlavorProperties>
+        </VisualStudio>
+    </ProjectExtensions>
+</Project>
