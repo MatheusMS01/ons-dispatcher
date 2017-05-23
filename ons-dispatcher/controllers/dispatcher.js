@@ -1,4 +1,5 @@
 const net = require('net');
+const fs = require('fs');
 var log4js = require('log4js');
 
 log4js.configure({
@@ -45,10 +46,20 @@ function createServer () {
 }
 
 function dispatch(remoteAddress) {
-
    // Dispatch to all workers
+   // @TODO: Create threads for each socket to send it faster
    m_socketList.forEach(function (socket) {
-      socket.write("Dispatching " + remoteAddress);
+      socket.write('Simulation: simulation.xml\n');
+      var xml = fs.readFileSync('cache/' + remoteAddress.replace(/:/g, '') + '/simulation.xml', 'utf8');
+      //var simulator = fs.readFileSync('cache/' + remoteAddress.replace(/:/g, '') + '/eonsim.jar', 'utf8');
+      socket.write(xml, function () {
+         //socket.write('/\r\nEND\r\n/');
+         socket.write('...END...');
+      });
+
+      socket.on('drain', function () {
+         logger.debug('Drain');
+      });
    });
 }
 

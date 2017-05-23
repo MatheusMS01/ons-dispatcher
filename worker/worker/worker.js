@@ -13,26 +13,48 @@ log4js.configure({
 
 const logger = log4js.getLogger('worker');
 
-var m_socket;
-var m_dispatcherAddress;
-var m_dispatcherPort;
+this.socket;
+this.dispatcherAddress;
+this.dispatcherPort;
 
 module.exports = function () {
 
-   var parser = new xml2js.Parser();
+   this.parser = new xml2js.Parser();
 
    fs.readFile('./Config/Config.xml', function (error, data) {
       parser.parseString(data, function (error, result) {
-         m_dispatcherAddress = String(result.Dispatcher.Address);
-         m_dispatcherPort = Number(result.Dispatcher.Port);
+         this.dispatcherAddress = String(result.Dispatcher.Address);
+         this.dispatcherPort = Number(result.Dispatcher.Port);
       });
    });
 
-   // @TODO: verify why m_dispatcherPort is not acceptable here
-   m_socket = net.connect(61337, m_dispatcherAddress);
+   // @TODO: verify why this.dispatcherPort(61337) is not acceptable here
+   this.socket = net.connect(61337, this.dispatcherAddress);
 
-   m_socket.on('data', (data) => {
-      logger.debug(data.toString());
+   this.socket.on('data', (data) => {
+
+      logger.warn(data);
+
+      this.buffer += data;
+
+      if (buffer.match('...END...')) {
+
+         var lines = this.buffer.split("\n");
+
+         this.buffer = this.buffer.replace(/undefined/, '');
+         this.buffer = this.buffer.replace(lines[lines.length - 1], '');
+         this.buffer = this.buffer.replace(lines[0], '');
+
+
+         fs.writeFile(__dirname + "/tmp/simulation.xml", this.buffer, function (err) {
+            if (err) {
+               return logger.error(err);
+            }
+
+            logger.debug("Successfully saved!");
+         });
+      }
    });
 
 }
+

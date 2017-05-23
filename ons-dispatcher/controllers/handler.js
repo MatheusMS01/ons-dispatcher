@@ -31,38 +31,31 @@ module.exports = function(app) {
       response.render('topology');
    });
 
-   app.post('/upload', function(request, response){
+   app.post('/upload', function(request, response) {
 
-      // create an incoming form object
       var form = new formidable.IncomingForm();
 
-      // Create the Scratch directory, where every data from this user will be stored
-      // Since remoteAddress uses IPv6, and has invalid characters for folder name, replace it
-      var dir = __dirname + '/../cache/' + request.connection.remoteAddress.replace(/:/g, '');
+      form.parse(request, function (err, fields, files) {
 
-      if (!fs.existsSync(dir)){
-         fs.mkdirSync(dir);
-      }
+         if (err) {
+            return err;
+         }
 
-      form.uploadDir = path.join(dir);
+         // Create the Scratch directory, where every data from this user will be temporarily stored
+         this.dir = __dirname + '/../cache/' + request.connection.remoteAddress.replace(/:/g, '') + "/" + fields.type;
 
-      // every time a file has been uploaded successfully, rename it to it's original name
-      form.on('file', function(field, file) {
-         fs.rename(file.path, path.join(form.uploadDir, file.name));
+         // Create directories recursively
+         this.dir.split('/').forEach((dir, index, splits) => {
+            const parent = splits.slice(0, index).join('/');
+            const dirPath = path.resolve(parent, dir);
+            if (!fs.existsSync(dirPath)) {
+               fs.mkdirSync(dirPath);
+            }
+         });
+
+         // Rename cached file (persist it) to scratch directory
+         fs.rename(files.upload.path, path.join(this.dir, files.upload.name));
       });
-
-      // log any errors that occur
-      form.on('error', function(err) {
-         console.log('An error has occured: \n' + err);
-      });
-
-      // once all the files have been uploaded, send a response to the client
-      form.on('end', function() {
-         response.end('success');
-      });
-
-      // parse the incoming request containing the form data
-      form.parse(request);
 
    });
 
@@ -70,5 +63,7 @@ module.exports = function(app) {
       dispatcher.dispatch(request.connection.remoteAddress);
 
       response.redirect(307, '/');
+
+      // Delete from cache
    });
 };

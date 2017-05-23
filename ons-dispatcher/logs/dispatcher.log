@@ -191,3 +191,346 @@
 [2017-05-11 10:46:32.342] [DEBUG] dispatcher - 127.0.0.1:54001 connected
 [2017-05-11 10:54:21.874] [DEBUG] dispatcher - Listening on port 61337
 [2017-05-11 10:54:26.155] [DEBUG] dispatcher - 127.0.0.1:54046 connected
+[2017-05-15 20:23:16.651] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:25:05.496] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:25:45.008] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:26:11.030] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:26:31.115] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:27:20.718] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:27:48.909] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:28:29.227] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:30:27.697] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:30:37.184] [DEBUG] dispatcher - 127.0.0.1:50552 connected
+[2017-05-15 20:34:56.123] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-15 20:36:07.792] [DEBUG] dispatcher - 127.0.0.1:50679 connected
+[2017-05-15 20:36:11.240] [ERROR] dispatcher - Socket 127.0.0.1:50679 error: read ECONNRESET
+[2017-05-15 20:36:11.240] [DEBUG] dispatcher - 127.0.0.1:50679 closed connection
+[2017-05-15 20:36:18.730] [DEBUG] dispatcher - 127.0.0.1:50684 connected
+[2017-05-15 20:36:22.645] [ERROR] dispatcher - Socket 127.0.0.1:50684 error: read ECONNRESET
+[2017-05-15 20:36:22.645] [DEBUG] dispatcher - 127.0.0.1:50684 closed connection
+[2017-05-15 20:36:27.809] [DEBUG] dispatcher - 127.0.0.1:50689 connected
+[2017-05-15 20:36:29.441] [ERROR] dispatcher - Socket 127.0.0.1:50689 error: read ECONNRESET
+[2017-05-15 20:36:29.442] [DEBUG] dispatcher - 127.0.0.1:50689 closed connection
+[2017-05-15 20:36:33.507] [DEBUG] dispatcher - 127.0.0.1:50695 connected
+[2017-05-15 20:36:40.915] [ERROR] dispatcher - Socket 127.0.0.1:50695 error: read ECONNRESET
+[2017-05-15 20:36:40.915] [DEBUG] dispatcher - 127.0.0.1:50695 closed connection
+[2017-05-16 00:38:26.273] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-16 00:38:33.428] [DEBUG] dispatcher - 127.0.0.1:51354 connected
+[2017-05-16 00:38:43.871] [ERROR] dispatcher - Socket 127.0.0.1:51354 error: read ECONNRESET
+[2017-05-16 00:38:43.873] [DEBUG] dispatcher - 127.0.0.1:51354 closed connection
+[2017-05-18 10:08:14.645] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-18 10:08:20.425] [DEBUG] dispatcher - 127.0.0.1:51083 connected
+[2017-05-18 10:15:48.670] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-18 10:15:53.300] [DEBUG] dispatcher - 127.0.0.1:51420 connected
+[2017-05-18 10:17:17.871] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-18 10:17:23.479] [DEBUG] dispatcher - 127.0.0.1:51434 connected
+[2017-05-18 10:18:10.406] [ERROR] dispatcher - Socket 127.0.0.1:51434 error: read ECONNRESET
+[2017-05-18 10:18:10.406] [DEBUG] dispatcher - 127.0.0.1:51434 closed connection
+[2017-05-18 10:19:25.534] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-18 10:19:29.272] [DEBUG] dispatcher - 127.0.0.1:51525 connected
+[2017-05-18 10:20:33.414] [ERROR] dispatcher - Socket 127.0.0.1:51525 error: read ECONNRESET
+[2017-05-18 10:20:33.414] [DEBUG] dispatcher - 127.0.0.1:51525 closed connection
+[2017-05-19 22:52:20.840] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-19 22:52:28.338] [DEBUG] dispatcher - 127.0.0.1:52538 connected
+[2017-05-19 22:52:59.439] [ERROR] dispatcher - Socket 127.0.0.1:52538 error: read ECONNRESET
+[2017-05-19 22:52:59.440] [DEBUG] dispatcher - 127.0.0.1:52538 closed connection
+[2017-05-19 22:53:21.280] [DEBUG] dispatcher - 127.0.0.1:52548 connected
+[2017-05-19 22:55:48.113] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-19 22:55:51.668] [DEBUG] dispatcher - 127.0.0.1:52603 connected
+[2017-05-19 22:56:54.536] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-19 22:56:58.269] [DEBUG] dispatcher - 127.0.0.1:52624 connected
+[2017-05-19 23:06:38.342] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-19 23:06:42.957] [DEBUG] dispatcher - 127.0.0.1:52749 connected
+[2017-05-19 23:06:45.576] [DEBUG] dispatcher - Drain
+[2017-05-19 23:08:33.163] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-19 23:08:36.027] [DEBUG] dispatcher - 127.0.0.1:52769 connected
+[2017-05-19 23:08:37.994] [DEBUG] dispatcher - Drain
+[2017-05-19 23:08:37.995] [DEBUG] dispatcher - Finished!
+[2017-05-19 23:57:17.777] [ERROR] dispatcher - Socket 127.0.0.1:52769 error: read ECONNRESET
+[2017-05-19 23:57:17.778] [DEBUG] dispatcher - 127.0.0.1:52769 closed connection
+[2017-05-20 13:09:25.391] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:09:27.295] [DEBUG] dispatcher - 127.0.0.1:51491 connected
+[2017-05-20 13:09:32.330] [DEBUG] dispatcher - Drain
+[2017-05-20 13:09:32.331] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:09:59.549] [ERROR] dispatcher - Socket 127.0.0.1:51491 error: read ECONNRESET
+[2017-05-20 13:09:59.550] [DEBUG] dispatcher - 127.0.0.1:51491 closed connection
+[2017-05-20 13:10:29.334] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:10:31.368] [DEBUG] dispatcher - 127.0.0.1:51512 connected
+[2017-05-20 13:10:34.833] [DEBUG] dispatcher - Drain
+[2017-05-20 13:10:34.834] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:11:01.205] [ERROR] dispatcher - Socket 127.0.0.1:51512 error: read ECONNRESET
+[2017-05-20 13:11:01.207] [DEBUG] dispatcher - 127.0.0.1:51512 closed connection
+[2017-05-20 13:11:06.371] [DEBUG] dispatcher - 127.0.0.1:51522 connected
+[2017-05-20 13:11:08.317] [DEBUG] dispatcher - Drain
+[2017-05-20 13:11:08.318] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:11:45.724] [ERROR] dispatcher - Socket 127.0.0.1:51522 error: read ECONNRESET
+[2017-05-20 13:11:45.725] [DEBUG] dispatcher - 127.0.0.1:51522 closed connection
+[2017-05-20 13:23:13.255] [DEBUG] dispatcher - 127.0.0.1:51594 connected
+[2017-05-20 13:23:23.400] [DEBUG] dispatcher - Drain
+[2017-05-20 13:23:23.400] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:25:36.299] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:25:38.368] [DEBUG] dispatcher - 127.0.0.1:51616 connected
+[2017-05-20 13:25:42.352] [DEBUG] dispatcher - Drain
+[2017-05-20 13:25:42.353] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:25:58.783] [ERROR] dispatcher - Socket 127.0.0.1:51616 error: read ECONNRESET
+[2017-05-20 13:25:58.784] [DEBUG] dispatcher - 127.0.0.1:51616 closed connection
+[2017-05-20 13:26:24.106] [DEBUG] dispatcher - 127.0.0.1:51623 connected
+[2017-05-20 13:26:27.414] [DEBUG] dispatcher - Drain
+[2017-05-20 13:26:27.414] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:26:35.851] [ERROR] dispatcher - Socket 127.0.0.1:51623 error: read ECONNRESET
+[2017-05-20 13:26:35.852] [DEBUG] dispatcher - 127.0.0.1:51623 closed connection
+[2017-05-20 13:27:33.563] [DEBUG] dispatcher - 127.0.0.1:51632 connected
+[2017-05-20 13:27:35.152] [DEBUG] dispatcher - Drain
+[2017-05-20 13:27:35.152] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:31:13.528] [ERROR] dispatcher - Socket 127.0.0.1:51632 error: read ECONNRESET
+[2017-05-20 13:31:13.529] [DEBUG] dispatcher - 127.0.0.1:51632 closed connection
+[2017-05-20 13:31:17.811] [DEBUG] dispatcher - 127.0.0.1:51660 connected
+[2017-05-20 13:31:28.146] [DEBUG] dispatcher - Drain
+[2017-05-20 13:31:28.147] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:31:33.650] [ERROR] dispatcher - Socket 127.0.0.1:51660 error: read ECONNRESET
+[2017-05-20 13:31:33.653] [DEBUG] dispatcher - 127.0.0.1:51660 closed connection
+[2017-05-20 13:32:30.046] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:32:34.645] [DEBUG] dispatcher - 127.0.0.1:51671 connected
+[2017-05-20 13:32:39.542] [DEBUG] dispatcher - Drain
+[2017-05-20 13:32:39.542] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:32:39.548] [DEBUG] dispatcher - 127.0.0.1:51671 closed connection
+[2017-05-20 13:34:03.760] [DEBUG] dispatcher - 127.0.0.1:51681 connected
+[2017-05-20 13:34:06.563] [DEBUG] dispatcher - Drain
+[2017-05-20 13:34:06.564] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:34:06.565] [DEBUG] dispatcher - 127.0.0.1:51681 closed connection
+[2017-05-20 13:35:05.582] [DEBUG] dispatcher - 127.0.0.1:51690 connected
+[2017-05-20 13:35:09.218] [ERROR] dispatcher - Socket 127.0.0.1:51690 error: read ECONNRESET
+[2017-05-20 13:35:09.219] [DEBUG] dispatcher - 127.0.0.1:51690 closed connection
+[2017-05-20 13:35:13.915] [DEBUG] dispatcher - 127.0.0.1:51694 connected
+[2017-05-20 13:35:16.172] [DEBUG] dispatcher - Drain
+[2017-05-20 13:35:16.172] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:35:16.173] [DEBUG] dispatcher - 127.0.0.1:51694 closed connection
+[2017-05-20 13:35:16.182] [DEBUG] dispatcher - 127.0.0.1:51696 connected
+[2017-05-20 13:39:16.372] [ERROR] dispatcher - Socket 127.0.0.1:51696 error: read ECONNRESET
+[2017-05-20 13:39:16.373] [DEBUG] dispatcher - 127.0.0.1:51696 closed connection
+[2017-05-20 13:42:20.534] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:42:22.245] [DEBUG] dispatcher - 127.0.0.1:51755 connected
+[2017-05-20 13:42:25.815] [DEBUG] dispatcher - Drain
+[2017-05-20 13:42:25.816] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:42:35.182] [ERROR] dispatcher - Socket 127.0.0.1:51755 error: read ECONNRESET
+[2017-05-20 13:42:35.182] [DEBUG] dispatcher - 127.0.0.1:51755 closed connection
+[2017-05-20 13:43:06.957] [DEBUG] dispatcher - 127.0.0.1:51761 connected
+[2017-05-20 13:43:10.902] [DEBUG] dispatcher - Drain
+[2017-05-20 13:43:10.903] [DEBUG] dispatcher - Finished!
+[2017-05-20 13:43:31.142] [ERROR] dispatcher - Socket 127.0.0.1:51761 error: read ECONNRESET
+[2017-05-20 13:43:31.198] [DEBUG] dispatcher - 127.0.0.1:51761 closed connection
+[2017-05-20 13:45:25.221] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:45:29.676] [DEBUG] dispatcher - 127.0.0.1:51781 connected
+[2017-05-20 13:45:32.823] [DEBUG] dispatcher - Drain
+[2017-05-20 13:47:21.653] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 13:47:25.562] [DEBUG] dispatcher - 127.0.0.1:51805 connected
+[2017-05-20 13:47:29.213] [DEBUG] dispatcher - Drain
+[2017-05-20 13:47:29.215] [ERROR] dispatcher - Socket 127.0.0.1:51805 error: write ECONNRESET
+[2017-05-20 13:47:29.218] [DEBUG] dispatcher - 127.0.0.1:51805 closed connection
+[2017-05-20 13:47:49.970] [DEBUG] dispatcher - 127.0.0.1:51811 connected
+[2017-05-20 13:47:57.858] [DEBUG] dispatcher - Drain
+[2017-05-20 13:48:09.954] [ERROR] dispatcher - Socket 127.0.0.1:51811 error: read ECONNRESET
+[2017-05-20 13:48:09.955] [DEBUG] dispatcher - 127.0.0.1:51811 closed connection
+[2017-05-20 13:48:13.427] [DEBUG] dispatcher - 127.0.0.1:51817 connected
+[2017-05-20 13:48:16.307] [DEBUG] dispatcher - Drain
+[2017-05-20 13:49:35.046] [ERROR] dispatcher - Socket 127.0.0.1:51817 error: read ECONNRESET
+[2017-05-20 13:49:35.047] [DEBUG] dispatcher - 127.0.0.1:51817 closed connection
+[2017-05-20 13:50:42.470] [DEBUG] dispatcher - 127.0.0.1:51868 connected
+[2017-05-20 13:50:48.191] [DEBUG] dispatcher - Drain
+[2017-05-20 13:51:05.273] [ERROR] dispatcher - Socket 127.0.0.1:51868 error: read ECONNRESET
+[2017-05-20 13:51:05.276] [DEBUG] dispatcher - 127.0.0.1:51868 closed connection
+[2017-05-20 13:54:01.841] [DEBUG] dispatcher - 127.0.0.1:51888 connected
+[2017-05-20 13:54:08.456] [DEBUG] dispatcher - Drain
+[2017-05-20 14:07:53.224] [ERROR] dispatcher - Socket 127.0.0.1:51888 error: read ECONNRESET
+[2017-05-20 14:07:53.224] [DEBUG] dispatcher - 127.0.0.1:51888 closed connection
+[2017-05-20 14:08:48.626] [DEBUG] dispatcher - 127.0.0.1:52298 connected
+[2017-05-20 14:08:56.410] [DEBUG] dispatcher - Drain
+[2017-05-20 14:09:44.586] [ERROR] dispatcher - Socket 127.0.0.1:52298 error: read ECONNRESET
+[2017-05-20 14:09:44.591] [DEBUG] dispatcher - 127.0.0.1:52298 closed connection
+[2017-05-20 14:09:49.544] [DEBUG] dispatcher - 127.0.0.1:52304 connected
+[2017-05-20 14:09:52.902] [DEBUG] dispatcher - Drain
+[2017-05-20 14:10:43.418] [ERROR] dispatcher - Socket 127.0.0.1:52304 error: read ECONNRESET
+[2017-05-20 14:10:43.419] [DEBUG] dispatcher - 127.0.0.1:52304 closed connection
+[2017-05-20 14:10:45.922] [DEBUG] dispatcher - 127.0.0.1:52310 connected
+[2017-05-20 14:10:47.579] [DEBUG] dispatcher - Drain
+[2017-05-20 14:10:51.842] [DEBUG] dispatcher - Drain
+[2017-05-20 14:10:51.842] [DEBUG] dispatcher - Drain
+[2017-05-20 14:10:58.010] [ERROR] dispatcher - Socket 127.0.0.1:52310 error: read ECONNRESET
+[2017-05-20 14:10:58.010] [DEBUG] dispatcher - 127.0.0.1:52310 closed connection
+[2017-05-20 14:12:23.437] [DEBUG] dispatcher - 127.0.0.1:52323 connected
+[2017-05-20 14:12:25.062] [DEBUG] dispatcher - Drain
+[2017-05-20 14:12:25.110] [ERROR] dispatcher - Socket 127.0.0.1:52323 error: read ECONNRESET
+[2017-05-20 14:12:25.112] [DEBUG] dispatcher - 127.0.0.1:52323 closed connection
+[2017-05-20 14:12:38.130] [DEBUG] dispatcher - 127.0.0.1:52329 connected
+[2017-05-20 14:12:38.615] [DEBUG] dispatcher - Drain
+[2017-05-20 14:13:03.341] [ERROR] dispatcher - Socket 127.0.0.1:52329 error: read ECONNRESET
+[2017-05-20 14:13:03.343] [DEBUG] dispatcher - 127.0.0.1:52329 closed connection
+[2017-05-20 14:13:23.401] [DEBUG] dispatcher - 127.0.0.1:52335 connected
+[2017-05-20 14:13:26.846] [DEBUG] dispatcher - Drain
+[2017-05-20 14:13:33.396] [ERROR] dispatcher - Socket 127.0.0.1:52335 error: read ECONNRESET
+[2017-05-20 14:13:33.396] [DEBUG] dispatcher - 127.0.0.1:52335 closed connection
+[2017-05-20 14:14:02.683] [DEBUG] dispatcher - 127.0.0.1:52345 connected
+[2017-05-20 14:14:25.749] [ERROR] dispatcher - Socket 127.0.0.1:52345 error: read ECONNRESET
+[2017-05-20 14:14:25.749] [DEBUG] dispatcher - 127.0.0.1:52345 closed connection
+[2017-05-20 14:14:54.655] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 14:14:59.654] [DEBUG] dispatcher - 127.0.0.1:52364 connected
+[2017-05-20 14:15:10.039] [ERROR] dispatcher - Socket 127.0.0.1:52364 error: read ECONNRESET
+[2017-05-20 14:15:10.040] [DEBUG] dispatcher - 127.0.0.1:52364 closed connection
+[2017-05-20 14:15:21.354] [DEBUG] dispatcher - 127.0.0.1:52373 connected
+[2017-05-20 14:15:47.006] [ERROR] dispatcher - Socket 127.0.0.1:52373 error: read ECONNRESET
+[2017-05-20 14:15:47.006] [DEBUG] dispatcher - 127.0.0.1:52373 closed connection
+[2017-05-20 14:17:25.634] [DEBUG] dispatcher - 127.0.0.1:52401 connected
+[2017-05-20 14:17:35.540] [ERROR] dispatcher - Socket 127.0.0.1:52401 error: read ECONNRESET
+[2017-05-20 14:17:35.540] [DEBUG] dispatcher - 127.0.0.1:52401 closed connection
+[2017-05-20 14:19:15.864] [DEBUG] dispatcher - 127.0.0.1:52417 connected
+[2017-05-20 14:31:00.010] [ERROR] dispatcher - Socket 127.0.0.1:52417 error: read ECONNRESET
+[2017-05-20 14:31:00.010] [DEBUG] dispatcher - 127.0.0.1:52417 closed connection
+[2017-05-20 14:31:02.234] [DEBUG] dispatcher - 127.0.0.1:52466 connected
+[2017-05-20 14:49:25.220] [ERROR] dispatcher - Socket 127.0.0.1:52466 error: read ECONNRESET
+[2017-05-20 14:49:25.221] [DEBUG] dispatcher - 127.0.0.1:52466 closed connection
+[2017-05-20 15:03:38.977] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 15:03:42.187] [DEBUG] dispatcher - 127.0.0.1:52630 connected
+[2017-05-20 15:03:44.151] [ERROR] dispatcher - Socket 127.0.0.1:52630 error: read ECONNRESET
+[2017-05-20 15:03:44.152] [DEBUG] dispatcher - 127.0.0.1:52630 closed connection
+[2017-05-20 15:04:03.776] [DEBUG] dispatcher - 127.0.0.1:52636 connected
+[2017-05-20 15:04:06.140] [ERROR] dispatcher - Socket 127.0.0.1:52636 error: read ECONNRESET
+[2017-05-20 15:04:06.140] [DEBUG] dispatcher - 127.0.0.1:52636 closed connection
+[2017-05-20 15:05:19.647] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 15:05:27.271] [DEBUG] dispatcher - 127.0.0.1:52649 connected
+[2017-05-20 15:05:38.260] [ERROR] dispatcher - Socket 127.0.0.1:52649 error: read ECONNRESET
+[2017-05-20 15:05:38.260] [DEBUG] dispatcher - 127.0.0.1:52649 closed connection
+[2017-05-20 15:05:52.943] [DEBUG] dispatcher - 127.0.0.1:52655 connected
+[2017-05-20 16:59:47.913] [ERROR] dispatcher - Socket 127.0.0.1:52655 error: read ECONNRESET
+[2017-05-20 16:59:47.914] [DEBUG] dispatcher - 127.0.0.1:52655 closed connection
+[2017-05-20 17:00:22.511] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 17:00:25.799] [DEBUG] dispatcher - 127.0.0.1:53107 connected
+[2017-05-20 17:01:05.840] [ERROR] dispatcher - Socket 127.0.0.1:53107 error: read ECONNRESET
+[2017-05-20 17:01:05.841] [DEBUG] dispatcher - 127.0.0.1:53107 closed connection
+[2017-05-20 17:02:18.097] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 17:02:42.527] [DEBUG] dispatcher - 127.0.0.1:53130 connected
+[2017-05-20 17:02:50.231] [ERROR] dispatcher - Socket 127.0.0.1:53130 error: read ECONNRESET
+[2017-05-20 17:02:50.232] [DEBUG] dispatcher - 127.0.0.1:53130 closed connection
+[2017-05-20 17:03:48.559] [DEBUG] dispatcher - 127.0.0.1:53140 connected
+[2017-05-20 17:04:29.775] [ERROR] dispatcher - Socket 127.0.0.1:53140 error: read ECONNRESET
+[2017-05-20 17:04:29.775] [DEBUG] dispatcher - 127.0.0.1:53140 closed connection
+[2017-05-20 17:04:36.706] [DEBUG] dispatcher - 127.0.0.1:53144 connected
+[2017-05-20 17:04:54.154] [ERROR] dispatcher - Socket 127.0.0.1:53144 error: read ECONNRESET
+[2017-05-20 17:04:54.155] [DEBUG] dispatcher - 127.0.0.1:53144 closed connection
+[2017-05-20 17:05:05.686] [DEBUG] dispatcher - 127.0.0.1:53152 connected
+[2017-05-20 17:05:56.667] [ERROR] dispatcher - Socket 127.0.0.1:53152 error: read ECONNRESET
+[2017-05-20 17:05:56.667] [DEBUG] dispatcher - 127.0.0.1:53152 closed connection
+[2017-05-20 17:06:57.728] [DEBUG] dispatcher - 127.0.0.1:53161 connected
+[2017-05-20 17:07:17.777] [ERROR] dispatcher - Socket 127.0.0.1:53161 error: read ECONNRESET
+[2017-05-20 17:07:17.780] [DEBUG] dispatcher - 127.0.0.1:53161 closed connection
+[2017-05-20 17:08:55.863] [DEBUG] dispatcher - 127.0.0.1:53180 connected
+[2017-05-20 17:08:57.030] [ERROR] dispatcher - Socket 127.0.0.1:53180 error: read ECONNRESET
+[2017-05-20 17:08:57.030] [DEBUG] dispatcher - 127.0.0.1:53180 closed connection
+[2017-05-20 17:08:59.966] [DEBUG] dispatcher - 127.0.0.1:53184 connected
+[2017-05-20 17:09:06.321] [ERROR] dispatcher - Socket 127.0.0.1:53184 error: read ECONNRESET
+[2017-05-20 17:09:06.321] [DEBUG] dispatcher - 127.0.0.1:53184 closed connection
+[2017-05-20 17:10:29.504] [DEBUG] dispatcher - 127.0.0.1:53193 connected
+[2017-05-20 17:10:34.731] [ERROR] dispatcher - Socket 127.0.0.1:53193 error: read ECONNRESET
+[2017-05-20 17:10:34.731] [DEBUG] dispatcher - 127.0.0.1:53193 closed connection
+[2017-05-20 17:11:07.439] [DEBUG] dispatcher - 127.0.0.1:53198 connected
+[2017-05-20 17:11:08.700] [ERROR] dispatcher - Socket 127.0.0.1:53198 error: read ECONNRESET
+[2017-05-20 17:11:08.700] [DEBUG] dispatcher - 127.0.0.1:53198 closed connection
+[2017-05-20 17:11:17.044] [DEBUG] dispatcher - 127.0.0.1:53203 connected
+[2017-05-20 17:16:59.094] [ERROR] dispatcher - Socket 127.0.0.1:53203 error: read ECONNRESET
+[2017-05-20 17:16:59.095] [DEBUG] dispatcher - 127.0.0.1:53203 closed connection
+[2017-05-20 17:17:01.371] [DEBUG] dispatcher - 127.0.0.1:53286 connected
+[2017-05-20 17:20:09.560] [ERROR] dispatcher - Socket 127.0.0.1:53286 error: read ECONNRESET
+[2017-05-20 17:20:09.561] [DEBUG] dispatcher - 127.0.0.1:53286 closed connection
+[2017-05-20 17:20:12.104] [DEBUG] dispatcher - 127.0.0.1:53308 connected
+[2017-05-20 17:20:52.101] [ERROR] dispatcher - Socket 127.0.0.1:53308 error: read ECONNRESET
+[2017-05-20 17:20:52.101] [DEBUG] dispatcher - 127.0.0.1:53308 closed connection
+[2017-05-20 17:25:21.953] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 17:25:24.446] [DEBUG] dispatcher - 127.0.0.1:53339 connected
+[2017-05-20 17:25:49.992] [ERROR] dispatcher - Socket 127.0.0.1:53339 error: read ECONNRESET
+[2017-05-20 17:25:49.993] [DEBUG] dispatcher - 127.0.0.1:53339 closed connection
+[2017-05-20 17:27:55.089] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 17:27:58.214] [DEBUG] dispatcher - 127.0.0.1:53354 connected
+[2017-05-20 17:28:30.994] [ERROR] dispatcher - Socket 127.0.0.1:53354 error: read ECONNRESET
+[2017-05-20 17:28:30.996] [DEBUG] dispatcher - 127.0.0.1:53354 closed connection
+[2017-05-20 17:31:17.900] [DEBUG] dispatcher - 127.0.0.1:53391 connected
+[2017-05-20 17:32:22.132] [ERROR] dispatcher - Socket 127.0.0.1:53391 error: read ECONNRESET
+[2017-05-20 17:32:22.133] [DEBUG] dispatcher - 127.0.0.1:53391 closed connection
+[2017-05-20 17:33:40.442] [DEBUG] dispatcher - 127.0.0.1:53418 connected
+[2017-05-20 17:34:04.452] [ERROR] dispatcher - Socket 127.0.0.1:53418 error: read ECONNRESET
+[2017-05-20 17:34:04.452] [DEBUG] dispatcher - 127.0.0.1:53418 closed connection
+[2017-05-20 17:34:45.175] [DEBUG] dispatcher - 127.0.0.1:53430 connected
+[2017-05-20 17:35:18.591] [ERROR] dispatcher - Socket 127.0.0.1:53430 error: read ECONNRESET
+[2017-05-20 17:35:18.592] [DEBUG] dispatcher - 127.0.0.1:53430 closed connection
+[2017-05-20 17:35:22.345] [DEBUG] dispatcher - 127.0.0.1:53446 connected
+[2017-05-20 17:35:24.810] [ERROR] dispatcher - Socket 127.0.0.1:53446 error: read ECONNRESET
+[2017-05-20 17:35:24.811] [DEBUG] dispatcher - 127.0.0.1:53446 closed connection
+[2017-05-20 17:35:31.582] [DEBUG] dispatcher - 127.0.0.1:53450 connected
+[2017-05-20 17:35:51.660] [ERROR] dispatcher - Socket 127.0.0.1:53450 error: read ECONNRESET
+[2017-05-20 17:35:51.660] [DEBUG] dispatcher - 127.0.0.1:53450 closed connection
+[2017-05-20 18:03:10.504] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-20 18:03:12.016] [DEBUG] dispatcher - 127.0.0.1:53783 connected
+[2017-05-20 18:03:41.835] [ERROR] dispatcher - Socket 127.0.0.1:53783 error: read ECONNRESET
+[2017-05-20 18:03:41.836] [DEBUG] dispatcher - 127.0.0.1:53783 closed connection
+[2017-05-20 18:03:58.751] [DEBUG] dispatcher - 127.0.0.1:53792 connected
+[2017-05-20 18:04:04.564] [ERROR] dispatcher - Socket 127.0.0.1:53792 error: read ECONNRESET
+[2017-05-20 18:04:04.565] [DEBUG] dispatcher - 127.0.0.1:53792 closed connection
+[2017-05-20 18:04:14.858] [DEBUG] dispatcher - 127.0.0.1:53796 connected
+[2017-05-20 18:04:33.842] [ERROR] dispatcher - Socket 127.0.0.1:53796 error: read ECONNRESET
+[2017-05-20 18:04:33.843] [DEBUG] dispatcher - 127.0.0.1:53796 closed connection
+[2017-05-20 18:04:42.961] [DEBUG] dispatcher - 127.0.0.1:53804 connected
+[2017-05-20 18:04:57.027] [ERROR] dispatcher - Socket 127.0.0.1:53804 error: read ECONNRESET
+[2017-05-20 18:04:57.028] [DEBUG] dispatcher - 127.0.0.1:53804 closed connection
+[2017-05-20 18:04:59.099] [DEBUG] dispatcher - 127.0.0.1:53810 connected
+[2017-05-20 18:06:03.266] [ERROR] dispatcher - Socket 127.0.0.1:53810 error: read ECONNRESET
+[2017-05-20 18:06:03.268] [DEBUG] dispatcher - 127.0.0.1:53810 closed connection
+[2017-05-21 16:53:46.639] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:00:56.856] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:01:37.440] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:04:39.317] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:05:49.101] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:06:15.456] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:07:56.356] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:08:29.955] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:09:44.942] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:10:14.410] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:11:15.160] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:11:53.508] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:12:54.339] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:13:25.688] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:14:02.452] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:14:59.913] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:15:44.475] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:17:38.137] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:18:23.409] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:19:27.309] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:30:01.940] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:31:02.825] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:31:55.154] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-21 17:41:01.718] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:23:22.044] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:24:41.806] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:25:59.540] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:26:28.058] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:29:03.704] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:32:24.865] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:33:05.855] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:39:00.885] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:39:54.167] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:42:05.080] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:42:25.262] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 21:42:28.917] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:01:55.804] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:05:48.214] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:06:37.459] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:10:22.778] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:11:18.807] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:16:15.413] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:17:18.244] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:25:04.609] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:26:52.861] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:30:16.678] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:30:43.059] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:31:41.671] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:33:03.550] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:33:53.837] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:37:33.307] [DEBUG] dispatcher - Listening on port 61337
+[2017-05-22 22:38:06.554] [DEBUG] dispatcher - Listening on port 61337
