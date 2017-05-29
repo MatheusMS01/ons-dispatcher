@@ -1,5 +1,7 @@
 'use strict';
 
+const simulator = require('./simulator');
 const worker = require('./worker');
 
-worker();
+simulator();
+//worker();

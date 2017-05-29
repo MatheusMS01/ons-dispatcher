@@ -46,20 +46,40 @@ function createServer () {
 }
 
 function dispatch(remoteAddress) {
-   // Dispatch to all workers
-   // @TODO: Create threads for each socket to send it faster
-   m_socketList.forEach(function (socket) {
-      socket.write('Simulation: simulation.xml\n');
-      var xml = fs.readFileSync('cache/' + remoteAddress.replace(/:/g, '') + '/simulation.xml', 'utf8');
-      //var simulator = fs.readFileSync('cache/' + remoteAddress.replace(/:/g, '') + '/eonsim.jar', 'utf8');
-      socket.write(xml, function () {
-         //socket.write('/\r\nEND\r\n/');
-         socket.write('...END...');
-      });
 
-      socket.on('drain', function () {
-         logger.debug('Drain');
-      });
+   var scratchDirectory = 'cache/' + remoteAddress.replace(/:/g, '');
+   var simulatorDirectory = scratchDirectory + '/simulator';
+   var configurationDirectory = scratchDirectory + '/configuration';
+
+   var simulatorName;
+   var configurationName;
+
+   fs.readdirSync(simulatorDirectory).forEach(file => {
+      simulatorName = file;
+   });
+
+   fs.readdirSync(configurationDirectory).forEach(file => {
+      configurationName = file;
+   });
+
+   // Send configuration:
+   m_socketList.forEach(function (socket) {
+      sendFile(socket, configurationDirectory + '/' + configurationName, configurationName)
+   });
+
+   // Send simulator:
+   //m_socketList.forEach(function (socket) {
+   //   sendFile(socket, simulatorDirectory + '/' + simulatorName, simulatorName)
+   //});
+}
+
+function sendFile(socket, filePath, fileName) {
+
+   var file = fs.readFileSync(filePath, 'utf8');
+
+   socket.write(file, function () {
+      // Send end string in order to worker know file end
+      socket.write('...END(' + fileName + ')...');
    });
 }
 

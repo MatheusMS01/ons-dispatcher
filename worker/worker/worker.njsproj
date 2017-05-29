@@ -29,6 +29,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="simulator.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="worker.js">
       <SubType>Code</SubType>
     </Compile>
