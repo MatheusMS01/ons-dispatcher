@@ -2,6 +2,8 @@
 
 const simulator = require('./simulator');
 const worker = require('./worker');
+const ddp = require('./ddp');
 
-simulator();
+//simulator();
 //worker();
+ddp();
