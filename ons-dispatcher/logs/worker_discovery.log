@@ -1,0 +1,86 @@
+[2017-07-01 19:31:10.736] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 19:41:34.387] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 19:42:12.744] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56711
+[2017-07-01 19:42:18.133] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:42:18.413] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:42:18.585] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:42:18.760] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:42:18.942] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:44:11.791] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 19:44:30.338] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 19:44:31.267] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:44:31.268] [DEBUG] worker_discovery - [ '127.0.0.1' ]
+[2017-07-01 19:44:32.043] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:44:32.044] [DEBUG] worker_discovery - [ '127.0.0.1', '127.0.0.1' ]
+[2017-07-01 19:44:32.441] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:56713
+[2017-07-01 19:44:32.441] [DEBUG] worker_discovery - [ '127.0.0.1', '127.0.0.1', '127.0.0.1' ]
+[2017-07-01 20:59:05.803] [DEBUG] worker_discovery - server listening :::16180
+[2017-07-01 20:59:11.395] [DEBUG] worker_discovery - [34234] from: ::ffff:127.0.0.1:56713
+[2017-07-01 20:59:11.395] [DEBUG] worker_discovery - [ '::ffff:127.0.0.1' ]
+[2017-07-01 20:59:22.196] [DEBUG] worker_discovery - [34234] from: ::ffff:127.0.0.1:49304
+[2017-07-01 20:59:22.197] [DEBUG] worker_discovery - [ '::ffff:127.0.0.1', '::ffff:127.0.0.1' ]
+[2017-07-01 21:01:26.169] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:01:27.997] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:01:27.998] [DEBUG] worker_discovery - [ '127.0.0.1' ]
+[2017-07-01 21:01:31.014] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:01:31.014] [DEBUG] worker_discovery - [ '127.0.0.1', '127.0.0.1' ]
+[2017-07-01 21:05:23.426] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:05:26.640] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:05:26.641] [DEBUG] worker_discovery - [ { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 } ]
+[2017-07-01 21:05:46.596] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:05:46.597] [DEBUG] worker_discovery - [ { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 },
+  { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 } ]
+[2017-07-01 21:06:05.270] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:06:05.271] [DEBUG] worker_discovery - [ { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 },
+  { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 },
+  { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 } ]
+[2017-07-01 21:07:10.962] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:07:10.963] [DEBUG] worker_discovery - [ { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 },
+  { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 },
+  { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 },
+  { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 } ]
+[2017-07-01 21:07:44.855] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:07:48.754] [DEBUG] worker_discovery - [34234] from: 127.0.0.1:55356
+[2017-07-01 21:18:49.183] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:18:53.540] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:18:53.541] [DEBUG] worker_discovery - [ { address: '127.0.0.1', family: 'IPv4', port: 55356, size: 5 } ]
+[2017-07-01 21:22:35.997] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:22:44.133] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:47.154] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:49.573] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:49.934] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:50.113] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:50.285] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:50.604] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:22:50.775] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:29.198] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:23:31.966] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:52.745] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:23:55.358] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:55.933] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:56.126] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:56.296] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:56.460] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:56.618] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:56.771] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:23:56.935] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:24:00.288] [DEBUG] worker_discovery - server listening 0.0.0.0:16180
+[2017-07-01 21:34:27.460] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-01 21:34:29.097] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:34:42.220] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-01 21:34:46.257] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:34:46.257] [DEBUG] worker_discovery - Not in the array
+[2017-07-01 21:34:46.259] [DEBUG] worker_discovery - [ '127.0.0.1' ]
+[2017-07-01 21:34:48.083] [DEBUG] worker_discovery - New worker request: 127.0.0.1:55356
+[2017-07-01 21:34:48.083] [DEBUG] worker_discovery - In the array
+[2017-07-01 21:37:45.155] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-01 21:37:48.285] [DEBUG] worker_discovery - [ '127.0.0.1' ]
+[2017-07-02 20:50:02.014] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-02 20:50:02.985] [DEBUG] worker_discovery - [ '127.0.0.1' ]
+[2017-07-02 20:53:25.643] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-02 20:53:28.865] [DEBUG] worker_discovery - [ '127.0.0.1' ]
+[2017-07-02 20:54:01.674] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-02 20:54:16.088] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-02 20:54:45.432] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-02 20:55:01.637] [DEBUG] worker_discovery - Server listening 0.0.0.0:16180
+[2017-07-02 20:56:21.434] [DEBUG] worker_discovery - UDP server listening 127.0.0.1:16180

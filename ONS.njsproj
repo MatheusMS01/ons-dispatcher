@@ -16,12 +16,22 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <Compile Include="servers\dispatcher\dispatcher.js" />
+    <Compile Include="servers\dispatcher\dwp_handler.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servers\dispatcher\test.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servers\dispatcher\worker_discovery.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servers\web\web.js" />
     <Content Include="TODO.txt" />
     <Content Include="package.json" />
     <Compile Include="index.js" />
     <Compile Include="controllers\dispatcher.js" />
     <Compile Include="controllers\handler.js" />
-    <Content Include="examples\simulation.xml" />
     <Content Include="views\test.html" />
     <Content Include="views\execution.ejs" />
     <Content Include="views\home.ejs" />
@@ -100,7 +110,6 @@
     <Folder Include="cache" />
     <Folder Include="cache\1" />
     <Folder Include="controllers" />
-    <Folder Include="examples" />
     <Folder Include="public" />
     <Folder Include="public\css" />
     <Folder Include="public\css\css" />
@@ -130,6 +139,9 @@
     <Folder Include="public\javascripts\utils\plugins\sigma.renderers.parallelEdges" />
     <Folder Include="public\javascripts\utils\plugins\sigma.renderers.snapshot" />
     <Folder Include="public\javascripts\utils\plugins\sigma.statistics.HITS" />
+    <Folder Include="servers\" />
+    <Folder Include="servers\dispatcher\" />
+    <Folder Include="servers\web\" />
     <Folder Include="test" />
     <Folder Include="views" />
   </ItemGroup>

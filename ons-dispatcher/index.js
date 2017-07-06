@@ -2,7 +2,7 @@
 
 const express = require('express');
 const handler = require('./controllers/handler');
-const dispatcher = require('./controllers/dispatcher');
+const dispatcher = require('./servers/dispatcher/dispatcher');
 
 const app = express();
 
@@ -11,7 +11,7 @@ app.use(express.static(__dirname + '/public'));
 // Setup Engine
 app.set('view engine', 'ejs');
 
-dispatcher.createServer();
+dispatcher();
 
 // Call handler
 handler(app);

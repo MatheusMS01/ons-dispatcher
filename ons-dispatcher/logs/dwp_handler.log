@@ -1,0 +1,52 @@
+[2017-07-02 21:49:58.171] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 21:50:19.118] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 21:51:03.890] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 21:51:10.557] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:03:02.102] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:05:00.431] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:12:48.239] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:15:46.034] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:15:59.849] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:16:31.775] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:16:47.168] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:25:34.561] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:25:49.290] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:36:49.215] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:37:32.196] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:38:47.835] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:38:59.521] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:41:13.867] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:41:39.408] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:42:32.949] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:42:35.355] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:42:52.754] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:43:01.243] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:43:27.325] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:43:29.966] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:45:03.930] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:45:05.815] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:46:33.892] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:46:36.694] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:46:38.572] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:46:40.175] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:46:56.067] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:47:25.578] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:47:28.984] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:47:35.273] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:48:34.711] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:49:04.639] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:49:40.801] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:49:54.676] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:50:22.069] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:50:38.749] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:61337
+[2017-07-02 22:51:24.334] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:52:20.918] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:16180
+[2017-07-02 22:52:30.030] [DEBUG] dwp_handler - New worker connected
+[2017-07-02 22:52:38.807] [DEBUG] dwp_handler - New worker connected
+[2017-07-05 22:29:14.990] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:16180
+[2017-07-05 22:29:56.910] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:16180
+[2017-07-05 22:30:26.221] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:16180
+[2017-07-05 22:31:04.165] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:16180
+[2017-07-05 22:31:53.245] [DEBUG] dwp_handler - TCP server listening 127.0.0.1:16180
+[2017-07-05 22:32:54.758] [DEBUG] dwp_handler - New worker connected
+[2017-07-05 22:33:45.529] [DEBUG] dwp_handler - New worker connected
