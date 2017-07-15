@@ -1,9 +1,15 @@
+////////////////////////////////////////////////
+//
 // Copyright (c) 2017 Matheus Medeiros Sarmento
+//
+////////////////////////////////////////////////
 
-var dwp_handler = require("./dwp_handler");
-const worker_discovery = require("./worker_discovery")
+const communication = require('./communication');
+const worker_discovery = require('./worker_discovery')
+const simulation_handler = require('./simulation_handler')
 
 module.exports = function () {
-   dwp_handler.execute();
+   communication.execute();
    worker_discovery();
+   simulation_handler.execute();
 }

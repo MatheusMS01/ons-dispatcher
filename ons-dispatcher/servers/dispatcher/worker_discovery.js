@@ -1,8 +1,13 @@
-﻿// Copyright (c) 2017 Matheus Medeiros Sarmento
+﻿////////////////////////////////////////////////
+//
+// Copyright (c) 2017 Matheus Medeiros Sarmento
+//
+////////////////////////////////////////////////
+
 const dgram = require('dgram');
-var log4js = require('log4js');
+const log4js = require('log4js');
 const EventEmitter = require('events');
-var dwp_handler = require('./dwp_handler');
+const communication = require('./communication');
 
 log4js.configure({
    appenders: [
@@ -15,7 +20,7 @@ log4js.configure({
 const logger = log4js.getLogger('worker_discovery');
 
 // UDP socket which will receive workers requests
-const server = dgram.createSocket('udp4');
+const socket = dgram.createSocket('udp4');
 
 // List which is necessary for UDP lack of error treatment
 var pendingList = [];
@@ -25,8 +30,10 @@ const responder = new Responder();
 
 responder.on('event', (workerInfo) => {
 
+   logger.debug("Sending response to " + workerInfo.address + ":" + workerInfo.port)
+
    // Send response to worker
-   server.send(server.address().address, workerInfo.port, workerInfo.address);
+   socket.send(socket.address().address, workerInfo.port, workerInfo.address);
 
    pendingList.push(workerInfo.address);
 });
@@ -34,7 +41,7 @@ responder.on('event', (workerInfo) => {
 module.exports = function () {
 
    // Remove from local cache
-   dwp_handler.event.on('new_worker', function (workerAddress) {
+   communication.event.on('new_worker', function (workerAddress) {
 
       var index = pendingList.indexOf(workerAddress);
 
@@ -43,12 +50,19 @@ module.exports = function () {
       }
    });
 
-   server.on('error', (err) => {
+   socket.on('error', (err) => {
       logger.error(err.stack);
-      server.close();
+      socket.close();
    });
 
-   server.on('message', (message, rinfo) => {
+   socket.on('message', (message, rinfo) => {
+
+      if (message.indexOf("NewWorker") <= -1) {
+         // Discard this message
+         return;
+      }
+
+      logger.debug(message.toString() + " from: " + rinfo.address);
 
       if (pendingList.indexOf(rinfo.address) === -1) {
          // New worker identified
@@ -56,9 +70,11 @@ module.exports = function () {
       }
    });
 
-   server.on('listening', () => {
-      logger.debug("UDP server listening " + server.address().address + ":" + server.address().port);
+   socket.on('listening', () => {
+      logger.debug("UDP socket listening " + socket.address().address + ":" + socket.address().port);
    });
 
-   server.bind(16180, 'localhost');
+   require('dns').lookup(require('os').hostname(), function (err, add, fam) {
+      socket.bind(16180, add);
+   });
 }

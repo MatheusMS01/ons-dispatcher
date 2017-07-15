@@ -2,14 +2,14 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>worker</Name>
-    <RootNamespace>worker</RootNamespace>
+    <Name>inject</Name>
+    <RootNamespace>inject</RootNamespace>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>24c343a9-63dd-4ee5-9e3a-b8663bc9afdf</ProjectGuid>
+    <ProjectGuid>fbecea76-1be8-47d2-8ecb-d83e104d0c80</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>app.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
@@ -29,19 +29,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
-    <Compile Include="ddp.js">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="communication.js">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="resource.js">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="simulator.js">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="worker.js">
+    <Compile Include="binary.js">
       <SubType>Code</SubType>
     </Compile>
     <Content Include="package.json" />

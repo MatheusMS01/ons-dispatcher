@@ -1,6 +1,6 @@
 const net = require('net');
 const fs = require('fs');
-var log4js = require('log4js');
+const log4js = require('log4js');
 
 log4js.configure({
    appenders: [

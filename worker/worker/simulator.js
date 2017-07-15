@@ -1,4 +1,10 @@
-﻿const spawn = require('child_process').spawn;
+﻿////////////////////////////////////////////////
+//
+// Copyright (c) 2017 Matheus Medeiros Sarmento
+//
+////////////////////////////////////////////////
+
+const spawn = require('child_process').spawn;
 
 var log4js = require('log4js');
 

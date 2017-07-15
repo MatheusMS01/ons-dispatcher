@@ -16,11 +16,20 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
-    <Compile Include="servers\dispatcher\dispatcher.js" />
-    <Compile Include="servers\dispatcher\dwp_handler.js">
+    <Compile Include="database\db_driver.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="servers\dispatcher\test.js">
+    <Compile Include="database\models\binary.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="database\models\user.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servers\dispatcher\dispatcher.js" />
+    <Compile Include="servers\dispatcher\communication.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servers\dispatcher\simulation_handler.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="servers\dispatcher\worker_discovery.js">
@@ -38,7 +47,6 @@
     <Content Include="views\index.ejs" />
     <Content Include="views\simulation.ejs" />
     <Content Include="views\topology.ejs" />
-    <Content Include="cache\1\simulation2.xml" />
     <Content Include="public\css\styles.css" />
     <Compile Include="public\javascripts\upload.js" />
     <Content Include="public\css\css\font-awesome.css" />
@@ -107,9 +115,9 @@
     <Compile Include="public\javascripts\utils\plugins\sigma.layout.forceAtlas2\tasks\forceAtlas2.js" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="cache" />
-    <Folder Include="cache\1" />
     <Folder Include="controllers" />
+    <Folder Include="database\" />
+    <Folder Include="database\models\" />
     <Folder Include="public" />
     <Folder Include="public\css" />
     <Folder Include="public\css\css" />
