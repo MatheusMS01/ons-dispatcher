@@ -22,6 +22,9 @@
     <Compile Include="database\models\binary.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="database\models\simulation.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="database\models\user.js">
       <SubType>Code</SubType>
     </Compile>
@@ -150,7 +153,6 @@
     <Folder Include="servers\" />
     <Folder Include="servers\dispatcher\" />
     <Folder Include="servers\web\" />
-    <Folder Include="test" />
     <Folder Include="views" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

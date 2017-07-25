@@ -13,9 +13,9 @@ var validate = function validate(object) {
 
    var err = { 'Result': false, 'Message': "" };
 
-   if (object.Memory === undefined) {
+   if (object.SimulationId === undefined) {
       err.Result = true;
-      err.Message += "Memory ";
+      err.Message += "SimulationId ";
    }
 
    if (err.Result) throw err.Message + "undefined";
@@ -25,7 +25,7 @@ var format = function format(data) {
 
    validate(data);
 
-   var object = extend({}, { Id: factory.Id.ResourceResponse });
+   var object = extend({}, { Id: factory.Id.SimulationTerminateRequest });
    object = extend(object, data);
 
    var packet = JSON.stringify(object);

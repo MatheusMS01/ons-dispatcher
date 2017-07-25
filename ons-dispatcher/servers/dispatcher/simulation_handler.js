@@ -7,6 +7,7 @@
 const communication = require('./communication');
 const EventEmitter = require('events');
 const User = require('../../database/models/user')
+const Binary = require('../../database/models/binary')
 
 var event = new EventEmitter();
 module.exports.event = event;

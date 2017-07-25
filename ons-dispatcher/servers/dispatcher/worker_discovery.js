@@ -16,7 +16,7 @@ log4js.configure({
    ]
 });
 
-// Responsible for loggin into console and log file
+// Responsible for logging into console and log file
 const logger = log4js.getLogger('worker_discovery');
 
 // UDP socket which will receive workers requests
@@ -25,10 +25,9 @@ const socket = dgram.createSocket('udp4');
 // List which is necessary for UDP lack of error treatment
 var pendingList = [];
 
-class Responder extends EventEmitter { }
-const responder = new Responder();
+const event = new EventEmitter();
 
-responder.on('event', (workerInfo) => {
+event.on('event', (workerInfo) => {
 
    logger.debug("Sending response to " + workerInfo.address + ":" + workerInfo.port)
 
@@ -38,7 +37,7 @@ responder.on('event', (workerInfo) => {
    pendingList.push(workerInfo.address);
 });
 
-module.exports = function () {
+module.exports.execute = function () {
 
    // Remove from local cache
    communication.event.on('new_worker', function (workerAddress) {
@@ -59,6 +58,7 @@ module.exports = function () {
 
       if (message.indexOf("NewWorker") <= -1) {
          // Discard this message
+         logger.error("Invalid message!");
          return;
       }
 
@@ -66,7 +66,7 @@ module.exports = function () {
 
       if (pendingList.indexOf(rinfo.address) === -1) {
          // New worker identified
-         responder.emit('event', rinfo);
+         event.emit('event', rinfo);
       }
    });
 

@@ -1,8 +1,18 @@
+////////////////////////////////////////////////
+//
+// Copyright (c) 2017 Matheus Medeiros Sarmento
+//
+////////////////////////////////////////////////
 
 const factory = require('../factory')
 var extend = require('util')._extend
 
-module.exports.format = function (data) {
+var validate = function (object) {
+}
+
+var format = function (data) {
+
+   validate(data);
 
    var object = extend({}, { Id: factory.Id.ResourceRequest });
 
@@ -10,5 +20,13 @@ module.exports.format = function (data) {
       object = extend(object, data);
    }
 
-   return JSON.stringify(object);
+   var packet = JSON.stringify(object);
+
+   return factory.encapsulate(packet);
+}
+
+
+module.exports = {
+   validate: validate,
+   format: format
 }

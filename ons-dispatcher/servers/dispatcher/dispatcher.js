@@ -10,6 +10,6 @@ const simulation_handler = require('./simulation_handler')
 
 module.exports = function () {
    communication.execute();
-   worker_discovery();
+   worker_discovery.execute();
    simulation_handler.execute();
 }

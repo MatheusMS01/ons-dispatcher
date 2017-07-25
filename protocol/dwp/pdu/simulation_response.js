@@ -7,15 +7,25 @@
 const factory = require('../factory')
 const extend = require('util')._extend
 
-var validate = function validate(object) {
+const Result = {
+   Success: 0,
+   Failure: 1,
+};
 
-   if (object === undefined) throw "Object is undefined";
+var validate = function validate(data) {
+
+   if (data === undefined) throw "Object is undefined";
 
    var err = { 'Result': false, 'Message': "" };
 
-   if (object.Memory === undefined) {
+   if (data.Result === undefined) {
       err.Result = true;
-      err.Message += "Memory ";
+      err.Message += "Result ";
+   }
+
+   if (data.SimulationId === undefined) {
+      err.Result = true;
+      err.Message += "SimulationId ";
    }
 
    if (err.Result) throw err.Message + "undefined";
@@ -25,7 +35,7 @@ var format = function format(data) {
 
    validate(data);
 
-   var object = extend({}, { Id: factory.Id.ResourceResponse });
+   var object = extend({}, { Id: factory.Id.SimulationResponse });
    object = extend(object, data);
 
    var packet = JSON.stringify(object);
@@ -35,5 +45,6 @@ var format = function format(data) {
 
 module.exports = {
    validate: validate,
-   format: format
+   format: format,
+   Result: Result,
 }

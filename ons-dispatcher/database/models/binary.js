@@ -5,23 +5,18 @@
 ////////////////////////////////////////////////
 
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const binarySchema = mongoose.Schema({
+const binarySchema = Schema({
    name: {
       type: String,
-      required: true
+      required: true,
+      unique: true
    },
-   userId: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-   }
-   ],
    binary: {
       type: Buffer,
       required: true
    }
 })
-
-binarySchema.index({ name: 1, username: 1 }, { unique: true });
 
 module.exports = mongoose.model('Binary', binarySchema);

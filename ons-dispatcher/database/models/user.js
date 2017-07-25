@@ -5,8 +5,9 @@
 ////////////////////////////////////////////////
 
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const userSchema = mongoose.Schema({
+const userSchema = Schema({
    email: {
       type: String,
       required: true,

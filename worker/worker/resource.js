@@ -6,7 +6,7 @@
 
 const os = require('os');
 
-module.exports.getMemoryAvailability = function () {
+module.exports.getMemoryAvailable = function () {
    return os.freemem() / os.totalmem();
 }
 
