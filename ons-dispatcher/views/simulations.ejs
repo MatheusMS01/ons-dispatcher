@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+   <% include template/head.ejs %>
+</head>
+
+<body>
+   <header>
+      <% include template/header.ejs %>
+   </header>
+
+   <div class="mt-3 p-3">
+
+      <h1 class="display-3"> Executing </h1>
+      <hr />
+
+      <table class="table table-striped table-bordered">
+         <thead>
+            <tr>
+               <th>Simulation Name</th>
+               <th>Seed Amount</th>
+               <th>Priority</th>
+            </tr>
+         </thead>
+         <tbody>
+            <% for(var index in simulationProperties) { %>
+            <% if(simulationProperties[index].state === 0) { %>
+            <tr>
+               <td>
+                  <form method="post" action="/simulation/<%= simulationProperties[index].id %>">
+                     <input type="submit" class="btn btn-link p-0" value="<%= simulationProperties[index].name %>" />
+                  </form>
+               </td>
+               <td><%= simulationProperties[index].seedAmount %></td>
+               <td><%= simulationProperties[index].priority %></td>
+            </tr>
+            <% } %>
+            <% } %>
+         </tbody>
+      </table>
+
+      <h1 class="display-3"> Finished </h1>
+      <hr />
+
+      <table class="table table-striped table-bordered">
+         <thead>
+            <tr>
+               <th>Simulation Name</th>
+               <th>Seed Amount</th>
+               <th>Priority</th>
+            </tr>
+         </thead>
+         <tbody>
+            <% for(var index in simulationProperties) { %>
+            <% if(simulationProperties[index].state === 1) { %>
+            <tr>
+               <td>
+                  <form method="post" action="/simulation/<%= simulationProperties[index].id %>">
+                     <input type="submit" class="btn btn-link p-0" value="<%= simulationProperties[index].name %>" />
+                  </form>
+               </td>
+               <td><%= simulationProperties[index].seedAmount %></td>
+               <td><%= simulationProperties[index].priority %></td>
+            </tr>
+            <% } %>
+            <% } %>
+         </tbody>
+      </table>
+
+      <div class="my-5">
+         <a href="/new_simulation" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">New simulation</a>
+      </div>
+
+      <div class="container">
+         <% include template/footer.ejs %>
+      </div>
+   </div>
+</body>
+
+</html>

@@ -10,27 +10,17 @@ const Schema = mongoose.Schema;
 const State = {
    Pending:    0,
    Executing:  1,
-   Finished:   2
+   Finished:   2,
+   Canceled:   3
 }
 
-module.exports.State = State;
-
 const simulationSchema = Schema({
-   userId: {
+
+   _simulationProperty: {
       type: Schema.ObjectId,
-      ref: 'User',
+      ref: 'SimulationProperty',
       required: true
    },
-   binaryId: {
-      type: Schema.ObjectId,
-      ref: 'Binary',
-      required: true
-   },
-   //configurationId: {
-   //   type: Schema.ObjectId,
-   //   ref: 'Configuration',
-   //   required: true
-   //},
    state: {
       type: Number,
       default: State.Pending
@@ -39,21 +29,21 @@ const simulationSchema = Schema({
       type: Number,
       required: true,
    },
-   priority: {
-      type: Number,
-      default: 0
-   },
    load: {
-      min: Number,
-      max: Number,
-      step: Number,
-      current: Number
+      type: Number,
+      required: true,
    },
    worker: {
       type: String
+   },
+   result: {
+      type: String
    }
-})
 
-simulationSchema.index({ userId: 1, binaryId: 1/*, configurationId: 1*/ }, { unique: true });
+});
 
-module.exports.Schema = mongoose.model('Simulation', simulationSchema);
+simulationSchema.statics.State = State;
+
+simulationSchema.index({ _simulationProperty: 1, seed: 1, load: 1 }, { unique: true });
+
+module.exports = mongoose.model('Simulation', simulationSchema);

@@ -22,7 +22,13 @@
     <Compile Include="database\models\binary.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="database\models\document.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="database\models\simulation.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="database\models\simulation_property.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="database\models\user.js">
@@ -38,23 +44,42 @@
     <Compile Include="servers\dispatcher\worker_discovery.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="servers\web\web.js" />
+    <Compile Include="servers\web\router.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="views\simulation.ejs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="views\template\header.ejs">
+      <SubType>Code</SubType>
+    </Compile>
     <Content Include="TODO.txt" />
     <Content Include="package.json" />
     <Compile Include="index.js" />
     <Compile Include="controllers\dispatcher.js" />
     <Compile Include="controllers\handler.js" />
-    <Content Include="views\test.html" />
-    <Content Include="views\execution.ejs" />
+    <Content Include="views\login.ejs">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\new_simulation.ejs">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\profile.ejs">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\registration.ejs">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\template\footer.ejs">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\template\head.ejs">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\home.ejs" />
-    <Content Include="views\index.ejs" />
-    <Content Include="views\simulation.ejs" />
+    <Content Include="views\simulations.ejs" />
     <Content Include="views\topology.ejs" />
-    <Content Include="public\css\styles.css" />
     <Compile Include="public\javascripts\upload.js" />
-    <Content Include="public\css\css\font-awesome.css" />
-    <Content Include="public\css\css\font-awesome.min.css" />
-    <Content Include="public\css\fonts\fontawesome-webfont.svg" />
     <Compile Include="public\javascripts\utils\sigma.min.js" />
     <Compile Include="public\javascripts\utils\sigma.require.js" />
     <Compile Include="public\javascripts\utils\XMLWriter.js" />
@@ -123,10 +148,6 @@
     <Folder Include="database\models\" />
     <Folder Include="public" />
     <Folder Include="public\css" />
-    <Folder Include="public\css\css" />
-    <Folder Include="public\css\fonts" />
-    <Folder Include="public\css\less" />
-    <Folder Include="public\css\scss" />
     <Folder Include="public\javascripts" />
     <Folder Include="public\javascripts\utils" />
     <Folder Include="public\javascripts\utils\plugins" />
@@ -152,8 +173,10 @@
     <Folder Include="public\javascripts\utils\plugins\sigma.statistics.HITS" />
     <Folder Include="servers\" />
     <Folder Include="servers\dispatcher\" />
+    <Folder Include="servers\dispatcher\dwp_treatment\" />
     <Folder Include="servers\web\" />
     <Folder Include="views" />
+    <Folder Include="views\template\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

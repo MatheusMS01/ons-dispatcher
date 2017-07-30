@@ -12,7 +12,10 @@ const resource = require('./resource')
 const resource_response = require('../../protocol/dwp/pdu/resource_response')
 const simulation_response = require('../../protocol/dwp/pdu/simulation_response')
 const fs = require('fs');
+const mkdirp = require('mkdirp');
+const dirname = require('path').dirname;
 const exec = require('child_process').exec;
+const rimraf = require('rimraf');
 
 log4js.configure({
    appenders: [
@@ -37,22 +40,23 @@ module.exports = function () {
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
-      socket.connect(16180, dispatcherAddress, () => {
-
-      });
+      socket.connect(16180, dispatcherAddress);
 
       socket.on('data', (data) => {
          // Treat chunk data
          buffer += data;
 
+         var packet;
          try {
             do {
-               treat(factory.expose(buffer), socket);
+               packet = factory.expose(buffer);
                buffer = factory.remove(buffer);
             } while (buffer.length !== 0)
          } catch (err) {
             return;
          }
+
+         treat(packet, socket);
       });
 
       socket.on('error', (err) => {
@@ -64,9 +68,10 @@ module.exports = function () {
 
 function treat(data, socket) {
 
-   var object = JSON.parse(data);
+   var object;
 
    try {
+      object = JSON.parse(data)
       factory.validate(object);
    } catch (err) {
       return logger.error(err);
@@ -77,71 +82,89 @@ function treat(data, socket) {
    switch (id) {
 
       case factory.Id.ResourceRequest:
-         var data = { Memory: resource.getMemoryAvailable() };
 
-         // Respond dispatcher
-         socket.write(resource_response.format(data));
+         resource.getCPUAvailable((cpu) => {
+            var data = {
+               CPU: (1 - cpu),
+               Memory: resource.getMemoryAvailable()
+            };
+
+            logger.debug(data.CPU)
+            // Respond dispatcher
+            socket.write(resource_response.format(data));
+         });
+
+
          break;
 
       case factory.Id.SimulationRequest:
 
          logger.debug("New simulation received!");
 
-         var compileit = 'java -jar ONS_Default.jar simulation-myrmlsa.xml 5 10 10 1';
+         var path = __dirname + "/" + object.Data._id + "/";
+         var binaryContent = Buffer(object.Data._simulationProperty._binary.content);
+         var documentContent = object.Data._simulationProperty._document.content;
 
-         var commandLine = "java -jar ";
-         commandLine += object.Data.binaryId.name + " ";
-         //commandLine += object['Data']['configurationId']['name'] + " ";
-         commandLine += object.Data.seed + " ";
-         commandLine += object.Data.load.current + " ";
-         commandLine += object.Data.load.current + " 0";
+         writeFile(path + object.Data._simulationProperty._binary.name, binaryContent, (err) => {
+             if (err) throw err;
 
-         var child = exec(compileit, (err, stdout, stderr) => {
+             writeFile(path + object.Data._simulationProperty._document.name, documentContent, (err) => {
+                 if (err) throw err;
 
-            var simulationId;
+                  var command = "java -jar ";
+                  command += path + object.Data._simulationProperty._binary.name + " ";
+                  command += path + object.Data._simulationProperty._document.name + " ";
+                  command += object.Data.seed + " ";
+                  command += object.Data.load + " ";
+                  command += object.Data.load + " 1";
 
-            for (var index = 0; index < simulationPID.length; ++index) {
-               if (simulationPID[index].PID == child.pid) {
-                  simulationId = simulationPID[index].SimulationId;
-                  simulationPID.splice(index, 1);
-                  break;
-               }
-            }
+                  command = command.replace(/\\/g, "/");
 
-            var data = {};
+                  var child = exec(command, (err, stdout, stderr) => {
 
-            data.SimulationId = simulationId;
+                      var simulationId;
 
-            if (err) {
-               data.Result = simulation_response.Result.Failure;
-               data.ErrorMessage = err;
-            }
+                      for (var index = 0; index < simulationPID.length; ++index) {
+                          if (simulationPID[index].PID == child.pid) {
+                              simulationId = simulationPID[index].SimulationId;
+                              simulationPID.splice(index, 1);
+                              break;
+                          }
+                      }
 
-            if (stderr) {
-               data.Result = simulation_response.Result.Failure;
-               data.ErrorMessage = stderr;
-            }
+                      var data = {};
 
-            if (stdout) {
-               data.Result = simulation_response.Result.Success;
-               data.Output = stdout;
-               // Treat simulator output
-            }
+                      data.SimulationId = simulationId;
 
-            socket.write(simulation_response.format(data));
+                      if (err) {
+                          data.Result = simulation_response.Result.Failure;
+                          data.ErrorMessage = err;
+                      }
+
+                      if (stderr) {
+                          data.Result = simulation_response.Result.Failure;
+                          data.ErrorMessage = stderr;
+                      }
+
+                      if (stdout) {
+                          data.Result = simulation_response.Result.Success;
+                          data.Output = stdout;
+                          // Treat simulator output
+                      }
+
+                      socket.write(simulation_response.format(data));
+
+                      rimraf(path, (err) => {
+                         if (err) return logger.error(err);
+                      });
+                  });
+
+                  simulationPID.push({
+                      'SimulationId': object.Data._id,
+                      'PID': child.pid,
+                  });
+             });
          });
-
-         simulationPID.push({
-            'SimulationId': object.Data._id,
-            'PID': child.pid,
-         });
-
-         // @FIXME: Apperantly, binary register is not saving properly. Size is bigger and file comes corrupted
-         //var binary = new Buffer(object['Data']['binaryId']['binary']['data']);
-
-         //fs.writeFile(object['Data']['binaryId']['name'], binary, (err) => {
-         //   if (err) return logger.error(err);
-         //});
 
          break;
 
@@ -163,4 +186,12 @@ function treat(data, socket) {
       default:
          return logger.error("Invalid Id!");
    }
+}
+
+function writeFile(path, contents, callback) {
+    mkdirp(dirname(path), (err) => {
+        if (err) return callback(err);
+
+        fs.writeFile(path, contents, callback);
+    });
 }

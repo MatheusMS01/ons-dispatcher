@@ -1,58 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Basic sigma.js example</title>
-  <style type="text/css">
-    body {
-      margin: 0;
-    }
-    #container {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+   <% include template/head.ejs %>
 </head>
+
 <body>
-  <div id="container"></div>
-  <script src="../public/javascripts/sigma.min.js"></script>
-  <script>
-    var s = new sigma({
-      renderer: {
-        container: document.getElementById('container'),
-        type: 'canvas'
-      },
-      settings: {
-        autoRescale: false,
-        mouseEnabled: false,
-        touchEnabled: false,
-        nodesPowRatio: 1,
-        edgesPowRatio: 1,
-        defaultEdgeColor: '#333',
-        defaultNodeColor: '#333',
-        edgeColor: 'default'
-      }
-    });
+   <header>
+      <% include template/header.ejs %>
+   </header>
 
-    dom = document.querySelector('#container canvas:last-child');
-    dom.addEventListener('click', function(e) {
-      var x,
-          y;
+   <div class="jumbotron">
+      <div class="container">
+         <h1 class="display-3">Hello, world!</h1>
+         <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+         <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+      </div>
+   </div>
 
-      x = sigma.utils.getX(e) - dom.offsetWidth / 2;
-      y = sigma.utils.getY(e) - dom.offsetHeight / 2;
+   <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+         <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+         </div>
+         <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+         </div>
+         <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+         </div>
+      </div>
 
-      s.graph.addNode({
-        id: 1,
-        size: 1,
-        x: x,
-        y: y,
-        dX: 0,
-        dY: 0,
-        type: 'goo'
-      });
-  }, false);
+      <% include template/footer.ejs %>
+   </div> <!-- /container -->
 
-  </script>
+   <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+   <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+   <script src="../../dist/js/bootstrap.min.js"></script>
+   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+   <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
+
 </html>

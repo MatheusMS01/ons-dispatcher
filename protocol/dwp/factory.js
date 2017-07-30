@@ -10,9 +10,6 @@ const simulation_request = require('./pdu/simulation_request');
 const simulation_response = require('./pdu/simulation_response');
 const simulation_terminate_request = require('./pdu/simulation_terminate_request');
 
-const beginTag = "/BEGIN/";
-const endTag = "/END/";
-
 const Id = {
    ResourceRequest:              0,
    ResourceResponse:             1,
@@ -57,6 +54,9 @@ module.exports.validate = function (object) {
 
 }
 
+const beginTag = "/BEGIN/";
+const endTag = "/END/";
+
 module.exports.encapsulate = function (packet) {
 
    return beginTag + packet + endTag;
@@ -78,7 +78,6 @@ module.exports.expose = function (packet) {
 
    return packet.substring(beginIndex + beginTag.length, endIndex);
 }
-
 
 /*
    Removes first occurrence of DWP packet

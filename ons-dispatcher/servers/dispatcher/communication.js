@@ -10,6 +10,7 @@ const factory = require('../../../protocol/dwp/factory')
 const worker_discovery = require('./worker_discovery')
 const EventEmitter = require('events');
 
+const SimulationProperty = require('../../database/models/simulation_property');
 const Simulation = require('../../database/models/simulation');
 
 const resource_request = require('../../../protocol/dwp/pdu/resource_request')
@@ -43,9 +44,13 @@ module.exports.execute = function () {
 
    server.on('connection', (socket) => {
 
+      // Insert new worker to the pool
       workerPool.push(socket);
 
+      // Emit to UDP discovery
       event.emit('new_worker', socket.remoteAddress);
+
+      // Since new worker is online, check if there are simulations pending
       event.emit('request_resources');
 
       logger.debug(socket.remoteAddress + ":" + socket.remotePort + " connected");
@@ -54,29 +59,54 @@ module.exports.execute = function () {
 
          removeWorker(socket);
 
+         // All simulations from that worker were not completed
+         // Set state to pending again
+         Simulation.find(
+            {
+               'worker': socket.remoteAddress
+            }).
+            exec((err, res) => {
+               for (var index = 0; index < res.length; ++index) {
+                  res[index].worker = undefined;
+                  res[index].state = Simulation.State.Pending;
+
+                  res[index].save((err) => {
+                     if (err) return logger.error(err);
+
+                     // Simulation is pending again
+                     event.emit('request_resources');
+                  });
+               }
+            });
+
          logger.debug("Worker " + socket.remoteAddress + " left the pool");
 
          if (workerPool.length === 0) {
             logger.warn("There are no workers left");
+            return;
          }
+
+         computeMostIdleWorker();
       });
 
       socket.on('data', (data) => {
          // Treat chunk data
          buffer += data;
 
+         var packet;
          try {
             do {
-               treat(factory.expose(buffer), socket);
+               packet = factory.expose(buffer);
                buffer = factory.remove(buffer);
             } while (buffer.length !== 0)
          } catch (err) {
             return;
          }
+
+         treat(packet, socket);
       });
 
-      socket.on('error', () => {
-      });
+      socket.on('error', () => { });
    });
 
    // Open Socket
@@ -90,8 +120,8 @@ module.exports.execute = function () {
 event.on('request_resources', () => {
 
    // Request resource information from all workers
-   for (var itr = 0; itr < workerPool.length; ++itr) {
-      workerPool[itr].write(resource_request.format());
+   for (var index = 0; index < workerPool.length; ++index) {
+      workerPool[index].write(resource_request.format());
    }
 
 });
@@ -99,49 +129,40 @@ event.on('request_resources', () => {
 event.on('run_simulation', (worker) => {
 
    // Find simulation with highest priority which is still pending
-   Simulation.Schema.findOne({
-      'state': Simulation.State.Pending
-   }).populate('binaryId').
-      sort('-priority').
+   Simulation.findOne({ 'state': Simulation.State.Pending }).
+      populate({
+         path: '_simulationProperty',
+         select: '_binary _document priority',
+         populate: {
+            path: '_binary _document',
+         },
+         options: {
+            sort: { 'priority': -1 }
+         }
+      }).
       exec((err, simulation) => {
          if (err) return logger.error(err);
 
          if (simulation === null) {
             // No simulations are pending
-            return;
-         }
-
-         if (simulation.load.current === undefined) {
-            // First execution
-            simulation.load.current = simulation.load.min;
-            simulation.save();
-         }
-
-         const pdu = simulation_request.format({ Data: simulation });
-         worker.write(pdu);
-
-         //simulation.state = Simulation.State.Executing;
-         //simulation.worker = worker.remoteAddress;
-      });
-
-   // Find simulation with highest priority which is executing, but no worker is executing
-   Simulation.Schema.findOne({
-      'state': Simulation.State.Executing,
-   }).exists('worker', false).
-      populate('binaryId').
-      sort('-priority').
-      exec((err, simulation) => {
-         if (err) return logger.error(err);
-
-         if (simulation === null) {
+            logger.debug("No simulations are pending");
             return;
          }
 
          const pdu = simulation_request.format({ Data: simulation });
-         worker.write(pdu);
-      });
+         worker.write(pdu, () => {
 
-})
+            simulation.state = Simulation.State.Executing;
+            simulation.worker = worker.remoteAddress;
+
+            simulation.save((err) => {
+               if (err) return logger.error(err);
+
+               //event.emit('request_resources');
+            });
+         });
+      });
+});
 
 function removeWorker(worker) {
 
@@ -155,11 +176,9 @@ function removeWorker(worker) {
 
    // Worker leaves network while computing most idle machine
    // This might be a rare scenario, but must be prevented since may cause locking
-   {
-      for (var index = 0; index < availabilityList.length; ++index) {
-         if (availabilityList[index].Worker === worker) {
-            availabilityList.splice(index, 1);
-         }
+   for (var index = 0; index < availabilityList.length; ++index) {
+      if (availabilityList[index].Worker === worker) {
+         availabilityList.splice(index, 1);
       }
    }
 
@@ -178,40 +197,79 @@ function treat(data, socket) {
 
       case factory.Id.ResourceResponse:
 
-         availabilityList.push({ Worker: socket, Memory: object.Memory });
+         availabilityList.push({ Worker: socket, Memory: object.Memory, CPU: object.CPU });
 
-         if (availabilityList.length !== workerPool.length) {
-            // Not all resources were received
-            return;
-         }
-
-         // Temporary map to store most idle worker
-         var mostIdle = { Memory: 0 };
-
-         for (var itr = 0; itr < availabilityList.length; ++itr) {
-            if (availabilityList[itr].Memory > mostIdle.Memory) {
-               mostIdle.Worker = availabilityList[itr].Worker;
-               mostIdle.Memory = availabilityList[itr].Memory;
-            }
-         }
-
-         // Clean list
-         availabilityList = [];
-
-         // 10% of free memory. This parameter was chosen in order to avoid lag
-         if (mostIdle.Memory >= 0.10) {
-            // Emit event announcing that every worker sent its resources and this is the most idle
-            event.emit('run_simulation', mostIdle.Worker);
-         }
+         computeMostIdleWorker();
 
          break;
 
       case factory.Id.SimulationResponse:
 
+         // treat_simulation_response
          if (object.Result === simulation_response.Result.Success) {
-            logger.debug(object.SimulationId + " executed with Success " + object.Output);
+
+            // @TODO: Remove this workaround then simulator is adjusted
+            var output = object.Output;
+            output = output.replace(/,([^,]*)$/, '$1');
+
+            try {
+               output = JSON.parse(output);
+               object.Output = JSON.stringify(output);
+            } catch (err) {
+               return logger.error(err);
+            }
+
+            //const keys = Object.keys(output);
+
+            //for (var index = 0; index < keys.length; ++index) {
+            //   console.log(keys[index] + ":" + output[keys[index]]);
+            //}
+
+            Simulation.findByIdAndUpdate(object.SimulationId,
+               {
+                  result: object.Output,
+                  state: Simulation.State.Finished,
+                  $unset: { worker: 1 }
+               },
+               (err, simulation) => {
+                  if (err) return logger.error(err);
+                  // Count if there are simulations that are not finished yet
+                  Simulation.count(
+                     {
+                        _simulationProperty: simulation._simulationProperty,
+                        $or: [{ state: Simulation.State.Pending }, { state: Simulation.State.Executing }]
+                     },
+                     (err, count) => {
+                        if (err) return logger.error(err);
+
+                        if (count === 0) {
+                           // Update simulation property to finished
+                           SimulationProperty.findByIdAndUpdate(simulation._simulationProperty,
+                              {
+                                 state: SimulationProperty.State.Finished
+                              },
+                              (err) => {
+                                 if (err) return logger.error(err);
+                              });
+                        }
+
+                        event.emit('request_resources');
+                     });
+               });
+
          } else {
-            logger.error(object.SimulationId + " executed with Failure " + object.ErrorMessage );
+            logger.error(object.SimulationId + " executed with Failure " + object.ErrorMessage);
+
+            Simulation.findByIdAndUpdate(object.SimulationId,
+               {
+                  state: Simulation.State.Pending,
+                  $unset: worker,
+               },
+               (err) => {
+                  if (err) return logger.error(err);
+
+                  event.emit('request_resources');
+               });
          }
 
          break;
@@ -222,14 +280,30 @@ function treat(data, socket) {
    }
 }
 
-// Query to obtain simulation with user + binary
+function computeMostIdleWorker() {
 
-//Simulation.
-//   findById({ _id: simulationId }).
-//   populate('userId').
-//   populate('binaryId').
-//   exec(function (err, simulation) {
-//      if (err) return handleError(err);
-//      console.log(simulation.state);
+   if (availabilityList.length !== workerPool.length) {
+      // Not all resources were received
+      return;
+   }
 
-//   });
+   // Temporary map to store most idle worker
+   var mostIdle = { Memory: 0, CPU: 0 };
+
+   for (var index = 0; index < availabilityList.length; ++index) {
+      if (availabilityList[index].CPU > mostIdle.CPU) {
+         mostIdle.Worker = availabilityList[index].Worker;
+         mostIdle.CPU = availabilityList[index].CPU;
+      }
+   }
+
+   // Clean list
+   availabilityList = [];
+
+   // 30% of free CPU. This parameter was chosen in order to avoid lag
+   if (mostIdle.CPU >= 0.30) {
+      // Emit event announcing that every worker sent its resources and this is the most idle
+      event.emit('run_simulation', mostIdle.Worker);
+   }
+
+}

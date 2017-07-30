@@ -5,11 +5,12 @@
 ////////////////////////////////////////////////
 
 const os = require('os');
+const os_utils = require('os-utils')
 
 module.exports.getMemoryAvailable = function () {
    return os.freemem() / os.totalmem();
 }
 
-module.exports.getArchitecture = function () {
-   return os.arch();
+module.exports.getCPUAvailable = function (callback) {
+   os_utils.cpuUsage(callback);
 }

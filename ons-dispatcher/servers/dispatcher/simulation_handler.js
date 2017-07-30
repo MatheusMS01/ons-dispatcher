@@ -4,22 +4,30 @@
 //
 ////////////////////////////////////////////////
 
-const communication = require('./communication');
+const SimulationProperty = require('../../database/models/simulation_property')
+const Simulation = require('../../database/models/simulation')
 const EventEmitter = require('events');
-const User = require('../../database/models/user')
-const Binary = require('../../database/models/binary')
+const communication = require('./communication')
 
-var event = new EventEmitter();
+const event = new EventEmitter();
+
 module.exports.event = event;
 
-module.exports.execute = function () {
+event.on('new_simulation', (id) => {
+   SimulationProperty.findById(id, (err, simulationProperty) => {
 
-   event.on('new_simulation', function () {
-      communication.event.emit('new_simulation');
+      for (var seed = 1; seed <= simulationProperty.seedAmount; ++seed) {
+         for (var load = simulationProperty.load.Min; load <= simulationProperty.load.Max; load += simulationProperty.load.Step) {
+            const simulation = new Simulation({
+               _simulationProperty: id,
+               seed: seed,
+               load: load,
+            });
+
+            simulation.save();
+         }
+      }
+
+      communication.event.emit('request_resources');
    });
-
-   // @TODO
-   event.on('finished_simulation', function () {
-
-   });
-}
+});

@@ -18,6 +18,11 @@ var validate = function validate(object) {
       err.Message += "Memory ";
    }
 
+   if (object.CPU === undefined) {
+      err.Result = true;
+      err.Message += "CPU ";
+   }
+
    if (err.Result) throw err.Message + "undefined";
 }
 
