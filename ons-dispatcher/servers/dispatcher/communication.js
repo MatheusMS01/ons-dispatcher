@@ -244,7 +244,8 @@ function treat(data, socket) {
                         // Update simulation property to finished
                         SimulationProperty.findByIdAndUpdate(simulation._simulationProperty,
                            {
-                              state: SimulationProperty.State.Finished
+                              state: SimulationProperty.State.Finished,
+                              endTime: Date.now()
                            },
                            (err) => {
                               if (err) return logger.error(err);

@@ -15,6 +15,8 @@ log4js.configure({
    ]
 });
 
+const logger = log4js.getLogger('dispatcher');
+
 module.exports = function () {
    try {
       communication.execute();

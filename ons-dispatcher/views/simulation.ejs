@@ -24,7 +24,7 @@
       <% } %>
       <% } %>
 
-      <% let unique = [...new Set(allKeys)]; %>
+      <% var unique = [...new Set(allKeys)]; %>
 
       <div id="btn-group" class="p-5">
          <label class="mr-sm-2" for="inlineFormCustomSelect">X Axis:</label>
@@ -53,7 +53,6 @@
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.js"></script>
-   <script src="../public/css/utils.js"></script>
    <script>
       function generateChart() {
 
@@ -68,18 +67,41 @@
          var x_axisArray = [];
          var y_axisArray = [];
 
-         for (var index in results) {
-            var result = JSON.parse(results[index].result)
-
-            x_axisArray.push(result[x_axisValue])
-         }
+         var meanX = {};
+         var meanY = {};
 
          for (var index in results) {
             var result = JSON.parse(results[index].result)
 
-            y_axisArray.push(result[y_axisValue])
+            insertMeanValue(meanX, result['Load'], result[x_axisValue]);
+            insertMeanValue(meanY, result['Load'], result[y_axisValue]);
          }
 
+         // Compute X mean
+         for (var key in meanX) {
+
+            var result = 0;
+
+            for (var value in meanX[key]) {
+               result += meanX[key][value];
+            }
+
+            x_axisArray.push(result / meanX[key].length);
+         }
+
+          // Compute Y mean
+         for (var key in meanY) {
+
+            var result = 0;
+
+            for (var value in meanY[key]) {
+               result += meanY[key][value];
+            }
+
+            y_axisArray.push(result / meanY[key].length);
+         }
+
+         // Plot chart
          var canvas = document.createElement('canvas');
          canvas.className = 'my-5';
          var buttonGroup = document.getElementById("btn-group");
@@ -125,6 +147,14 @@
                }
             }
          });
+      }
+
+      function insertMeanValue(array, key, value) {
+         if (array[key] === undefined) {
+            array[key] = [];
+         }
+
+         array[key].push(value);
       }
    </script>
 </body>

@@ -50,6 +50,13 @@ const simulationPropertySchema = Schema({
    state: {
       type: Number,
       default: State.Executing,
+   },
+   startTime: {
+      type: Date,
+      default: Date.now
+   },
+   endTime: {
+      type: Date
    }
 
 });
