@@ -2,7 +2,6 @@
 <html>
 <head>
    <% include template/head.ejs %>
-   <meta http-equiv="refresh" content="5">
 </head>
 
 <body>
@@ -10,12 +9,15 @@
       <% include template/header.ejs %>
    </header>
 
+   <!--Gambiarra!!?!!-->
+   <p id="result" hidden><%= results %></p>
+
    <div class="container mt-5">
 
       <% var allKeys = [] %>
-
-      <% for(var index in results) { %>
-      <% var result = JSON.parse(results[index].result) %>
+      <% var tmp = JSON.parse(results) %>
+      <% for(var index in tmp) { %>
+      <% var result = JSON.parse(tmp[index].result) %>
       <% const keys = Object.keys(result) %>
       <% for(var key in keys) { %>
       <% allKeys.push(keys[key]) %>
@@ -24,30 +26,107 @@
 
       <% let unique = [...new Set(allKeys)]; %>
 
-      <div class="btn-group">
-         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            X Axis
-         </button>
-         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <div id="btn-group" class="p-5">
+         <label class="mr-sm-2" for="inlineFormCustomSelect">X Axis:</label>
+         <select id="x-axis" class="custom-select mb-2 mr-sm-2 mb-sm-0">
             <% for(var statistic in unique) { %>
-            <a class="dropdown-item" href="#"><%= unique[statistic] %></a>
+            <option value="<%= unique[statistic] %>"><%= unique[statistic] %></option>
             <% } %>
-         </div>
-      </div>
+         </select>
 
-      <div class="btn-group">
-         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Y Axis
-         </button>
-         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+         <label class="mr-sm-2" for="inlineFormCustomSelect">Y Axis:</label>
+         <select id="y-axis" class="custom-select mb-2 mr-sm-2 mb-sm-0">
             <% for(var statistic in unique) { %>
-            <a class="dropdown-item" href="#"><%= unique[statistic] %></a>
+            <option value="<%= unique[statistic] %>"><%= unique[statistic] %></option>
             <% } %>
+         </select>
+
+         <div class="btn-group">
+            <button type="button" onclick="generateChart()" class="btn btn-success" aria-haspopup="true" aria-expanded="false">
+               Plot
+            </button>
          </div>
       </div>
 
       <% include template/footer.ejs %>
    </div> <!-- /container -->
+
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.js"></script>
+   <script src="../public/css/utils.js"></script>
+   <script>
+      function generateChart() {
+
+         var results = JSON.parse(document.getElementById("result").innerHTML);
+
+         var x_axis = document.getElementById("x-axis");
+         var x_axisValue = x_axis.options[x_axis.selectedIndex].value;
+
+         var y_axis = document.getElementById("y-axis");
+         var y_axisValue = y_axis.options[y_axis.selectedIndex].value;
+
+         var x_axisArray = [];
+         var y_axisArray = [];
+
+         for (var index in results) {
+            var result = JSON.parse(results[index].result)
+
+            x_axisArray.push(result[x_axisValue])
+         }
+
+         for (var index in results) {
+            var result = JSON.parse(results[index].result)
+
+            y_axisArray.push(result[y_axisValue])
+         }
+
+         var canvas = document.createElement('canvas');
+         canvas.className = 'my-5';
+         var buttonGroup = document.getElementById("btn-group");
+         buttonGroup.insertBefore(canvas, buttonGroup.childNodes[0]);
+
+         var chart = new Chart(canvas, {
+            type: 'line',
+            data: {
+               labels: x_axisArray,
+               datasets: [{
+                  label: x_axisValue + " x " + y_axisValue,
+                  backgroundColor: 'rgb(255, 99, 132)',
+                  borderColor: 'rgb(255, 99, 132)',
+                  data: y_axisArray,
+                  fill: false,
+               }]
+            },
+            options: {
+               responsive: true,
+               tooltips: {
+                  mode: 'index',
+                  intersect: false,
+               },
+               hover: {
+                  mode: 'nearest',
+                  intersect: true
+               },
+               scales: {
+                  xAxes: [{
+                     display: true,
+                     scaleLabel: {
+                        display: true,
+                        labelString: x_axisValue
+                     }
+                  }],
+                  yAxes: [{
+                     display: true,
+                     scaleLabel: {
+                        display: true,
+                        labelString: y_axisValue
+                     }
+                  }]
+               }
+            }
+         });
+      }
+   </script>
 </body>
 
 </html>

@@ -225,51 +225,47 @@ function treat(data, socket) {
             //   console.log(keys[index] + ":" + output[keys[index]]);
             //}
 
-            Simulation.findByIdAndUpdate(object.SimulationId,
-               {
-                  result: object.Output,
-                  state: Simulation.State.Finished,
-                  $unset: { worker: 1 }
-               },
-               (err, simulation) => {
-                  if (err) return logger.error(err);
-                  // Count if there are simulations that are not finished yet
-                  Simulation.count(
-                     {
-                        _simulationProperty: simulation._simulationProperty,
-                        $or: [{ state: Simulation.State.Pending }, { state: Simulation.State.Executing }]
-                     },
-                     (err, count) => {
-                        if (err) return logger.error(err);
+            Simulation.findByIdAndUpdate(object.SimulationId, {
+               result: object.Output,
+               state: Simulation.State.Finished,
+               $unset: { worker: 1 }
+            }, (err, simulation) => {
+               if (err) return logger.error(err);
+               // Count if there are simulations that are not finished yet
+               Simulation.count(
+                  {
+                     _simulationProperty: simulation._simulationProperty,
+                     $or: [{ state: Simulation.State.Pending }, { state: Simulation.State.Executing }]
+                  },
+                  (err, count) => {
+                     if (err) return logger.error(err);
 
-                        if (count === 0) {
-                           // Update simulation property to finished
-                           SimulationProperty.findByIdAndUpdate(simulation._simulationProperty,
-                              {
-                                 state: SimulationProperty.State.Finished
-                              },
-                              (err) => {
-                                 if (err) return logger.error(err);
-                              });
-                        }
+                     if (count === 0) {
+                        // Update simulation property to finished
+                        SimulationProperty.findByIdAndUpdate(simulation._simulationProperty,
+                           {
+                              state: SimulationProperty.State.Finished
+                           },
+                           (err) => {
+                              if (err) return logger.error(err);
+                           });
+                     }
 
-                        event.emit('request_resources');
-                     });
-               });
+                     event.emit('request_resources');
+                  });
+            });
 
          } else {
             logger.error(object.SimulationId + " executed with Failure " + object.ErrorMessage);
 
-            Simulation.findByIdAndUpdate(object.SimulationId,
-               {
-                  state: Simulation.State.Pending,
-                  $unset: worker,
-               },
-               (err) => {
-                  if (err) return logger.error(err);
+            Simulation.findByIdAndUpdate(object.SimulationId, {
+               state: Simulation.State.Pending,
+               $unset: worker,
+            }, (err) => {
+               if (err) return logger.error(err);
 
-                  event.emit('request_resources');
-               });
+               event.emit('request_resources');
+            });
          }
 
          break;

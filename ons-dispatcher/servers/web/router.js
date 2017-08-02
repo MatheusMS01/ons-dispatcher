@@ -53,12 +53,12 @@ module.exports = function (app) {
       });
    });
 
-   app.get('/simulation/:id', (req, res) => {
-      // CALCULAR AS ESTATISTICAS ANTES DE PASSAR!
-      const query = Simulation.find({ _simulationProperty: req.params.id }).select({ result: 1, _id: 0 });
+   app.get('/simulation/:id', authenticationMiddleware(), (req, res) => {
+
+      const query = Simulation.find({ _simulationProperty: req.params.id, result: { $ne: null } }).select({ result: 1, _id: 0 }).sort('result.load');
 
       query.exec((err, results) => {
-
+         results = JSON.stringify(results)
          res.render('simulation', {
             title: "Simulation",
             results: results
