@@ -73,6 +73,56 @@ module.exports = function (app) {
 
    });
 
+   app.post('/cancel', (req, res) => {
+
+      {
+         const simulationFilter = {
+            _simulationProperty: req.body._simulationProperty,
+            state: Simulation.State.Pending
+         };
+
+         Simulation.update(simulationFilter, { state: Simulation.State.Canceled }, { multi: true }, (err) => {
+            if (err) res.sendStatus(400);
+
+            const simulationPropertyFilter = {
+               _id: req.body._simulationProperty
+            }
+
+            SimulationProperty.update(simulationPropertyFilter, { state: SimulationProperty.State.Finished }, (err) => {
+               if (err) res.sendStatus(400);
+
+               res.sendStatus(200);
+            });
+         });
+      }
+
+   });
+
+   app.post('/remove', (req, res) => {
+
+      {
+         const simulationFilter = {
+            _simulationProperty: req.body._simulationProperty
+         }
+
+         Simulation.find(simulationFilter).remove((err) => {
+            if (err) res.sendStatus(400);
+
+            const simulationPropertyFilter = {
+               _id: req.body._simulationProperty
+            }
+
+            SimulationProperty.findByIdAndRemove(simulationPropertyFilter, (err) => {
+               if (err) res.sendStatus(400);
+
+               res.sendStatus(200);
+            });
+         });
+      }
+
+   });
+
+
    // New Simulation
    app.get('/new_simulation', authenticationMiddleware(), (req, res) => {
       res.render('new_simulation', {

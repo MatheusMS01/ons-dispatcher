@@ -1,0 +1,1 @@
+Cenário: Worker executando simulação; Usuário cancela simulação; Worker retorna com erro; Estado deve ir para cancelado e não pendente
