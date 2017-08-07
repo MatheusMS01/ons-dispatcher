@@ -9,7 +9,7 @@
       <% include template/header.ejs %>
    </header>
 
-   <div class="container mt-5">
+   <div class="container">
       <% if(error_msg.length > 0) { %>
       <div class="alert alert-danger" role="alert">
          <strong><%= error_msg %></strong>
@@ -70,6 +70,12 @@
          </div>
 
          <button type="submit" class="btn btn-primary">Submit</button>
+
+      </form>
+
+      <form method="post" enctype="multipart/form-data" action="/cancel_new_simulation">
+
+         <button type="submit" class="btn">Cancel</button>
 
       </form>
 

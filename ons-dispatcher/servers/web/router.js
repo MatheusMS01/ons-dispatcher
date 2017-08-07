@@ -270,6 +270,9 @@ module.exports = function (app) {
       });
    });
 
+   app.post('/cancel_new_simulation', (req, res) => {
+      res.redirect('/simulations');
+   });
 
    // Logout
    app.get('/logout', (req, res) => {
