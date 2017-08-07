@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "os-utils": "0.0.14",
-    "rimraf": "^2.6.1",
+    "rimraf": "~2.6.1",
     "xml2js": "^0.4.17"
   }
 }
