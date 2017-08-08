@@ -8,6 +8,7 @@ const dgram = require('dgram');
 const log4js = require('log4js');
 const EventEmitter = require('events');
 const communication = require('./communication');
+const ip = require("ip");
 
 log4js.configure({
    appenders: [
@@ -74,7 +75,5 @@ module.exports.execute = function () {
       logger.debug("UDP socket listening " + socket.address().address + ":" + socket.address().port);
    });
 
-   require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-      socket.bind(16180, add);
-   });
+   socket.bind(16180);
 }

@@ -4,6 +4,7 @@
 //
 ////////////////////////////////////////////////
 
+const ip = require("ip");
 const net = require('net');
 const log4js = require('log4js');
 const factory = require('../../../protocol/dwp/factory')
@@ -110,10 +111,8 @@ module.exports.execute = function () {
    });
 
    // Open Socket
-   require('dns').lookup(require('os').hostname(), function (err, add) {
-      server.listen(16180, add, () => {
-         logger.debug("TCP server listening " + server.address().address + ":" + server.address().port);
-      });
+   server.listen(16180, ip.address(), () => {
+      logger.debug("TCP server listening " + server.address().address + ":" + server.address().port);
    });
 }
 
@@ -261,7 +260,7 @@ function treat(data, socket) {
 
             Simulation.findByIdAndUpdate(object.SimulationId, {
                state: Simulation.State.Pending,
-               $unset: worker,
+               $unset: {worker: 1},
             }, (err) => {
                if (err) return logger.error(err);
 
