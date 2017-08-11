@@ -32,7 +32,7 @@ db_driver(app);
 dispatcher();
 
 // Call handler
-router(app);
+router.execute(app);
 
 // Listen requests
 app.listen(8080);

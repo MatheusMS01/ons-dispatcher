@@ -224,11 +224,13 @@ function treat(data, socket) {
             //   console.log(keys[index] + ":" + output[keys[index]]);
             //}
 
-            Simulation.findByIdAndUpdate(object.SimulationId, {
+            var simulationUpdate = {
                result: object.Output,
                state: Simulation.State.Finished,
                $unset: { worker: 1 }
-            }, (err, simulation) => {
+            }
+
+            Simulation.findByIdAndUpdate(object.SimulationId, simulationUpdate, (err, simulation) => {
                if (err) return logger.error(err);
                // Count if there are simulations that are not finished yet
                Simulation.count(
