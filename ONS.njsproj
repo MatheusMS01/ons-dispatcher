@@ -25,10 +25,13 @@
     <Compile Include="database\models\document.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="database\models\simulation.js">
+    <Compile Include="database\models\simulation_instance.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="database\models\simulation_property.js">
+    <Compile Include="database\models\simulation_group.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="database\models\simulation.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="database\models\user.js">
@@ -47,6 +50,12 @@
     <Compile Include="servers\web\router.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="servers\web\routes\home.js" />
+    <Compile Include="servers\web\routes\login.js" />
+    <Compile Include="servers\web\routes\profile.js" />
+    <Compile Include="servers\web\routes\sign_up.js" />
+    <Compile Include="servers\web\routes\simulation.js" />
+    <Compile Include="servers\web\routes\simulations.js" />
     <Compile Include="views\simulation.ejs">
       <SubType>Code</SubType>
     </Compile>
@@ -67,9 +76,7 @@
     <Content Include="views\profile.ejs">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="views\registration.ejs">
-      <SubType>Code</SubType>
-    </Content>
+    <Content Include="views\sign_up.ejs" />
     <Content Include="views\template\footer.ejs">
       <SubType>Code</SubType>
     </Content>
@@ -175,6 +182,7 @@
     <Folder Include="servers\dispatcher\" />
     <Folder Include="servers\dispatcher\dwp_treatment\" />
     <Folder Include="servers\web\" />
+    <Folder Include="servers\web\routes\" />
     <Folder Include="views" />
     <Folder Include="views\template\" />
   </ItemGroup>

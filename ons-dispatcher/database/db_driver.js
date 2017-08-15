@@ -4,6 +4,8 @@
 //
 ////////////////////////////////////////////////
 
+const User = require('../database/models/user');
+
 const mongoose = require('mongoose');
 const log4js = require('log4js');
 const fs = require('fs')
@@ -13,12 +15,6 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const MongoStore = require('connect-mongo')(session);
-
-const User = require('./models/user');
-const Binary = require('./models/binary');
-const Simulation = require('./models/simulation');
-const SimulationProperty = require('./models/simulation_property');
-const Document = require('./models/document');
 
 log4js.configure({
    appenders: [

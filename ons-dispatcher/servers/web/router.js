@@ -4,12 +4,9 @@
 //
 ////////////////////////////////////////////////
 
-const User = require('../../database/models/user');
-const Binary = require('../../database/models/binary');
-const Document = require('../../database/models/document');
-const Simulation = require('../../database/models/simulation');
 const passport = require('passport');
-const simulationHandler = require('../dispatcher/simulation_handler');
+
+const User = require('../../database/models/user')
 
 // Routes
 const home = require('./routes/home');
@@ -20,12 +17,14 @@ const simulation = require('./routes/simulation');
 const simulations = require('./routes/simulations');
 
 module.exports.execute = function (app) {
+
    home(app);
    login(app);
    profile(app);
    sign_up(app);
    simulation(app);
    simulations(app);
+
 }
 
 passport.serializeUser((user, done) => {

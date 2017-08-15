@@ -14,7 +14,7 @@
    <table class="table table-hover table-striped table-bordered">
       <thead>
          <tr>
-            <th>Simulation Name</th>
+            <th>Simulation Group</th>
             <th>Seed Amount</th>
             <th>Priority</th>
             <th>Start Time</th>
@@ -22,17 +22,17 @@
          </tr>
       </thead>
       <tbody>
-         <% for(var index in simulationProperties) { %>
-         <% if(simulationProperties[index].state === 0) { %>
-         <tr id="<%= simulationProperties[index].id %>">
+         <% for(var index in simulationGroups) { %>
+         <% if(simulationGroups[index].state === 0) { %>
+         <tr id="<%= simulationGroups[index].id %>">
             <td>
-               <form method="post" action="/simulation/<%= simulationProperties[index].id %>">
-                  <input type="submit" class="btn btn-link p-0" value="<%= simulationProperties[index].name %>" />
+               <form method="post" action="/simulation/<%= simulationGroups[index].id %>">
+                  <input type="submit" class="btn btn-link p-0" value="<%= simulationGroups[index].name %>" />
                </form>
             </td>
-            <td><%= simulationProperties[index].seedAmount %></td>
-            <td><%= simulationProperties[index].priority %></td>
-            <td><%= simulationProperties[index].startTime %></td>
+            <td><%= simulationGroups[index].seedAmount %></td>
+            <td><%= simulationGroups[index].priority %></td>
+            <td><%= simulationGroups[index].startTime %></td>
             <td>
                <button class="btn btn-large btn-danger" data-toggle="confirmation" data-popout="true" data-singleton="true" name="Cancel">
                   <span class="glyphicon glyphicon-remove"></span> Cancel
@@ -49,7 +49,7 @@
    <table class="table table-hover table-striped table-bordered">
       <thead>
          <tr>
-            <th>Simulation Name</th>
+            <th>Simulation Group</th>
             <th>Seed Amount</th>
             <th>Start Time</th>
             <th>End Time</th>
@@ -57,17 +57,17 @@
          </tr>
       </thead>
       <tbody>
-         <% for(var index in simulationProperties) { %>
-         <% if(simulationProperties[index].state === 1) { %>
-         <tr id="<%= simulationProperties[index].id %>">
+         <% for(var index in simulationGroups) { %>
+         <% if(simulationGroups[index].state === 1) { %>
+         <tr id="<%= simulationGroups[index].id %>">
             <td>
-               <form method="post" action="/simulation/<%= simulationProperties[index].id %>">
-                  <input type="submit" class="btn btn-link p-0" value="<%= simulationProperties[index].name %>" />
+               <form method="post" action="/simulation/<%= simulationGroups[index].id %>">
+                  <input type="submit" class="btn btn-link p-0" value="<%= simulationGroups[index].name %>" />
                </form>
             </td>
-            <td><%= simulationProperties[index].seedAmount %></td>
-            <td><%= simulationProperties[index].startTime %></td>
-            <td><%= simulationProperties[index].endTime %></td>
+            <td><%= simulationGroups[index].seedAmount %></td>
+            <td><%= simulationGroups[index].startTime %></td>
+            <td><%= simulationGroups[index].endTime %></td>
             <td>
                <button class="btn btn-large btn-danger" data-toggle="confirmation" data-popout="true" data-singleton="true" name="Remove">
                   <span class="glyphicon glyphicon-trash"></span> Remove
@@ -80,7 +80,7 @@
    </table>
 
    <div class="my-5">
-      <a href="/new_simulation" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">New simulation</a>
+      <a href="/new_simulation" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">New simulation group</a>
    </div>
 
    <div class="container">
@@ -94,8 +94,7 @@
       })
 
       $('[name=Cancel]').on('confirmed.bs.confirmation', function () {
-         $.post("/cancel",
-            {
+         $.post("/cancel", {
                _simulationProperty: $(this).closest('tr').attr('id')
             }, () => {
                location.reload();

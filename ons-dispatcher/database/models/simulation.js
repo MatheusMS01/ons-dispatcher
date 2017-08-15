@@ -8,42 +8,41 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const State = {
-   Pending:    0,
-   Executing:  1,
-   Finished:   2,
-   Canceled:   3
+   Executing:  0,
+   Finished:   1,
 }
 
 const simulationSchema = Schema({
 
-   _simulationProperty: {
+   _simulationGroup: {
       type: Schema.ObjectId,
-      ref: 'SimulationProperty',
+      ref: 'SimulationGroup',
+      required: true,
+   },
+   _binary: {
+      type: Schema.ObjectId,
+      ref: 'Binary',
+      required: true,
+   },
+   _document: {
+      type: Schema.ObjectId,
+      ref: 'Document',
       required: true
+   },
+   name: {
+      type: String,
+      required: true,
+      unique: true,
    },
    state: {
       type: Number,
-      default: State.Pending
-   },
-   seed: {
-      type: Number,
-      required: true,
-   },
-   load: {
-      type: Number,
-      required: true,
-   },
-   worker: {
-      type: String
-   },
-   result: {
-      type: String
+      default: State.Executing,
    }
 
 });
 
 simulationSchema.statics.State = State;
 
-simulationSchema.index({ _simulationProperty: 1, seed: 1, load: 1 }, { unique: true });
+simulationSchema.index({ _binary: 1, _document: 1 }, { unique: true });
 
 module.exports = mongoose.model('Simulation', simulationSchema);

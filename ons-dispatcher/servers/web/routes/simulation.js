@@ -1,88 +1,134 @@
+////////////////////////////////////////////////
+//
+// Copyright (c) 2017 Matheus Medeiros Sarmento
+//
+////////////////////////////////////////////////
+
+'use strict'
+
 const router = require('../router');
 
 const User = require('../../../database/models/user');
 const Binary = require('../../../database/models/binary');
 const Document = require('../../../database/models/document');
 const Simulation = require('../../../database/models/simulation');
+const SimulationInstance = require('../../../database/models/simulation_instance');
 
 module.exports = function (app) {
-   app.get('/simulation/:id', router.authenticationMiddleware(), (req, res) => {
 
-      const query = Simulation.find({ _simulationProperty: req.params.id, result: { $ne: null } }).select({ result: 1, _id: 0 }).sort('result.load');
+   app.get('/simulation_group/:id', router.authenticationMiddleware(), (req, res) => {
 
-      query.exec((err, results) => {
-         results = JSON.stringify(results)
-         res.render('simulation', {
-            title: "Simulation",
-            results: results
+      // Get all simulationIds associated to this group
+      simulationFilter = { _simulationGroup: req.params.id };
+
+      Simulation.find(simulationFilter).
+         select('_id').
+         exec((err, simulationIds) => {
+            if (err) res.sendStatus(400);
+
+            const simulationInstanceFilter = {
+               _simulation: { $in: simulationIds },
+               result: { $ne: null }
+            }
+
+            // Get all results from all instances that are done
+            SimulationInstance.
+               find(simulationInstanceFilter).
+               select('result -_id').
+               sort('result.load').
+               exec((err, results) => {
+                  if (err) res.sendStatus(400);
+
+                  results = JSON.stringify(results)
+                  res.render('simulation', {
+                     title: "Simulation",
+                     results: results
+                  });
+               });
          });
+   });
 
-      });
-   })
+   app.post('/simulation_group/:id', (req, res) => {
 
-   app.post('/simulation/:id', (req, res) => {
-
-      res.redirect('/simulation/' + req.params.id);
+      res.redirect('/simulation_group/' + req.params.id);
 
    });
 
    app.post('/cancel', (req, res) => {
 
-      {
-         const simulationFilter = {
-            _simulationProperty: req.body._simulationProperty,
-            state: Simulation.State.Pending
-         };
+      const simulationFilter = {
+         _simulationGroup: req.body._simulationGroup,
+         state: Simulation.State.Pending
+      };
 
-         Simulation.update(simulationFilter, { state: Simulation.State.Canceled }, { multi: true }, (err) => {
+      Simulation.find(simulationFilter)
+         .select('_id')
+         .exec((err, simulationIds) => {
             if (err) res.sendStatus(400);
 
-            const simulationPropertyFilter = {
-               _id: req.body._simulationProperty
+            const simulationInstanceFilter = {
+               _simulation: { $in: simulationIds },
+               state: SimulationInstance.State.Pending
             }
 
-            SimulationProperty.update(simulationPropertyFilter, { state: SimulationProperty.State.Finished }, (err) => {
-               if (err) res.sendStatus(400);
+            SimulationInstance.update(simulationInstanceFilter, { state: SimulationInstance.State.Canceled }, { multi: true })
+               .exec((err) => {
+                  if (err) res.sendStatus(400);
 
-               res.sendStatus(200);
-            });
+                  Simulation.update(simulationFilter, { state: Simulation.State.Canceled }, { multi: true })
+                     .exec((err, simulations) => {
+                        if (err) res.sendStatus(400);
+
+                        res.sendStatus(200);
+                     });
+               });
          });
-      }
-
    });
 
    app.post('/remove', (req, res) => {
 
-      {
-         const simulationFilter = {
-            _simulationProperty: req.body._simulationProperty
-         }
+      //const simulationFilter = {
+      //   _simulationGroup: req.body._simulationGroup,
+      //};
 
-         Simulation.find(simulationFilter).remove((err) => {
-            if (err) res.sendStatus(400);
+      //Simulation.find(simulationFilter)
+      //   .remove((err) => {
 
-            const simulationPropertyFilter = {
-               _id: req.body._simulationProperty
-            }
+      //   });
 
-            SimulationProperty.findByIdAndRemove(simulationPropertyFilter, (err) => {
-               if (err) res.sendStatus(400);
+      //{
+      //   const simulationFilter = {
+      //      _simulationProperty: req.body._simulationProperty
+      //   }
 
-               res.sendStatus(200);
-            });
-         });
-      }
+      //   Simulation.find(simulationFilter).remove((err) => {
+      //      if (err) res.sendStatus(400);
+
+      //      const simulationPropertyFilter = {
+      //         _id: req.body._simulationProperty
+      //      }
+
+      //      SimulationProperty.findByIdAndRemove(simulationPropertyFilter, (err) => {
+      //         if (err) res.sendStatus(400);
+
+      //         res.sendStatus(200);
+      //      });
+      //   });
+      //}
 
    });
 
    // New Simulation
    app.get('/new_simulation', router.authenticationMiddleware(), (req, res) => {
       res.render('new_simulation', {
-         title: "New Simulation"
+         title: "New Simulation",
+         active: "new_simulation"
       })
    });
 
    app.post('/new_simulation', (req, res) => {
+
+      console.log(req.files.simulator.name);
 
       if (!req.body.simulationName) {
          req.flash('error_msg', "Simulation name not filled");
@@ -153,15 +199,8 @@ module.exports = function (app) {
       binary.save((err) => {
 
          if (err) {
-
-            if (err.code === 11000) {
-               req.flash('error_msg', "Simulator already exists!");
-               res.redirect('/new_simulation');
-            } else {
-               req.flash('error_msg', "An error occurred. Please try again latter");
-               res.redirect('/new_simulation');
-            }
-
+            req.flash('error_msg', "An error occurred. Please try again latter");
+            res.redirect('/new_simulation');
             return;
          }
 
@@ -174,15 +213,8 @@ module.exports = function (app) {
          document.save((err) => {
 
             if (err) {
-
-               if (err.code === 11000) {
-                  req.flash('error_msg', "Configuration file already exists!");
-                  res.redirect('/new_simulation');
-               } else {
-                  req.flash('error_msg', "An error occurred. Please try again latter");
-                  res.redirect('/new_simulation');
-               }
-
+               req.flash('error_msg', "An error occurred. Please try again latter");
+               res.redirect('/new_simulation');
                return;
             }
 

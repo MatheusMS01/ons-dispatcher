@@ -71,41 +71,57 @@
          var x_axisValue = x_axis.options[x_axis.selectedIndex].value;
          var y_axisValue = y_axis.options[y_axis.selectedIndex].value;
 
-         var x_axisArray = [];
-         var y_axisArray = [];
+         var datasets = [];
 
-         var sampleX = {};
-         var sampleY = {};
+         for (var i = 0; i < 2; ++i)
+         {
+            var x_axisArray = [];
+            var y_axisArray = [];
 
-         for (var index in results) {
-            var result = JSON.parse(results[index].result)
+            var sampleX = {};
+            var sampleY = {};
 
-            insertSampleValue(sampleX, result['Load'], result[x_axisValue]);
-            insertSampleValue(sampleY, result['Load'], result[y_axisValue]);
-         }
+            for (var index in results) {
+               var result = JSON.parse(results[index].result)
 
-         // Compute mean for X
-         for (var key in sampleX) {
-
-            var result = 0;
-
-            for (var value in sampleX[key]) {
-               result += sampleX[key][value];
+               insertSampleValue(sampleX, result['Load'], result[x_axisValue]);
+               insertSampleValue(sampleY, result['Load'], result[y_axisValue]);
             }
 
-            x_axisArray.push(result / sampleX[key].length);
-         }
+            var data = [];
 
-          // Compute mean for Y
-         for (var key in sampleY) {
+            for (var key in sampleX) {
 
-            var result = 0;
+               var resultX = 0;
 
-            for (var value in sampleY[key]) {
-               result += sampleY[key][value];
+               for (var value in sampleX[key]) {
+                  resultX += sampleX[key][value];
+               }
+
+               var resultY = 0;
+
+               for (var value in sampleY[key]) {
+                  resultY += sampleY[key][value];
+               }
+
+               const sample = {
+                  x: resultX / sampleX[key].length,
+                  y: resultY / sampleY[key].length
+               }
+
+               data.push(sample);
+
+               // Label
+               x_axisArray.push(resultX / sampleX[key].length);
             }
 
-            y_axisArray.push(result / sampleY[key].length);
+            datasets.push({
+               label: "Hue", // Simulation name
+               backgroundColor: 'rgb(255, 99, 132)',
+               borderColor: 'rgb(255, 99, 132)',
+               data: data,
+               fill: false,
+            })
          }
 
          // Plot chart
@@ -118,13 +134,7 @@
             type: 'line',
             data: {
                labels: x_axisArray,
-               datasets: [{
-                  label: x_axisValue + " x " + y_axisValue,
-                  backgroundColor: 'rgb(255, 99, 132)',
-                  borderColor: 'rgb(255, 99, 132)',
-                  data: y_axisArray,
-                  fill: false,
-               }]
+               datasets: datasets
             },
             options: {
                responsive: true,

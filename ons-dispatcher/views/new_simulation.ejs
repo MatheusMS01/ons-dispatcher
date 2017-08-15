@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
    <% include template/head.ejs %>
 </head>
@@ -16,68 +17,166 @@
       </div>
       <% } %>
 
-      <form method="post" enctype="multipart/form-data" action="/new_simulation">
+      <div>
+         <form method="post" enctype="multipart/form-data" action="/new_simulation">
 
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Simulation Name</label>
-            <div>
-               <input class="form-control" type="text" name="simulationName">
+            <div class="form-group row">
+               <label class="col-2 col-form-label">Simulation Group Name</label>
+               <div>
+                  <input class="form-control" type="text" name="simulationGroupName">
+               </div>
             </div>
-         </div>
 
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Simulator</label>
-            <label class="custom-file">
-               <input type="file" id="file" class="custom-file-input" name="simulator">
-               <span class="custom-file-control"></span>
-            </label>
-         </div>
-
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Configuration File</label>
-            <label class="custom-file">
-               <input type="file" id="file" class="custom-file-input" name="document">
-               <span class="custom-file-control"></span>
-            </label>
-         </div>
-
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Seed Amount</label>
-            <div>
-               <input class="form-control" type="number" name="seedAmount">
+            <div class="form-group row">
+               <label class="col-2 col-form-label">Seed Amount</label>
+               <div>
+                  <input class="form-control" type="number" name="seedAmount">
+               </div>
             </div>
-         </div>
 
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Minimum load</label>
-            <div>
-               <input class="form-control" type="number" name="minLoad">
+            <div class="form-group row">
+               <label class="col-2 col-form-label">Minimum load</label>
+               <div>
+                  <input class="form-control" type="number" name="minLoad">
+               </div>
             </div>
-         </div>
 
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Maximum load</label>
-            <div>
-               <input class="form-control" type="number" name="maxLoad">
+            <div class="form-group row">
+               <label class="col-2 col-form-label">Maximum load</label>
+               <div>
+                  <input class="form-control" type="number" name="maxLoad">
+               </div>
             </div>
-         </div>
 
-         <div class="form-group row">
-            <label class="col-2 col-form-label">Step</label>
-            <div>
-               <input class="form-control" type="number" name="step">
+            <div class="form-group row">
+               <label class="col-2 col-form-label">Step</label>
+               <div>
+                  <input class="form-control" type="number" name="step">
+               </div>
             </div>
-         </div>
 
-         <button type="submit" class="btn btn-primary">Submit</button>
+            <div id="btn-group">
+               <button id="btn-new-simulation" type="button" onclick="newSimulation()" class="btn btn-primary">New simulation</button>
 
-      </form>
+               <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+         </form>
 
-      <form method="post" enctype="multipart/form-data" action="/cancel_new_simulation">
+      </div>
 
-         <button type="submit" class="btn">Cancel</button>
+      <script>
+         function newSimulation() {
+            var btnGroup = document.getElementById('btn-group');
 
-      </form>
+            var div = document.createElement('div');
+            div.className = 'jumbotron';
+
+            var simulatorDiv = document.createElement('div');
+
+            var simulatorNameLbl = document.createElement('label');
+            simulatorNameLbl.innerHTML = 'Simulator name';
+
+
+            var simulatorNameInput = document.createElement('input');
+            simulatorNameInput.className = 'form-control';
+            simulatorNameInput.type = 'text';
+
+            // < Simulator input >
+            var simulatorInputDiv = document.createElement('div');
+            simulatorInputDiv.className = 'input-group'
+
+            var simulatorInputLbl = document.createElement('label');
+            simulatorInputLbl.className = 'input-group-btn';
+
+            var simulatorInputSpan = document.createElement('span');
+            simulatorInputSpan.className = 'btn btn-primary';
+            simulatorInputSpan.innerHTML = 'Simulator';
+
+            var simulatorInput = document.createElement('input');
+            simulatorInput.type = 'file';
+            simulatorInput.style = 'display: none;';
+            simulatorInput.name = 'simulator';
+
+            var simulatorInputDisplay = document.createElement('input');
+            simulatorInputDisplay.type = 'text';
+            simulatorInputDisplay.className = 'form-control';
+            simulatorInputDisplay.readOnly = true;
+
+            simulatorInputSpan.insertAdjacentElement('beforeend', simulatorInput);
+            simulatorInputLbl.insertAdjacentElement('beforeend', simulatorInputSpan);
+
+            simulatorInputDiv.insertAdjacentElement('beforeend', simulatorInputLbl);
+            simulatorInputDiv.insertAdjacentElement('beforeend', simulatorInputDisplay);
+
+            // </ Simulator input >
+
+            simulatorDiv.insertAdjacentElement('beforeend', simulatorNameLbl);
+            simulatorDiv.insertAdjacentElement('beforeend', simulatorNameInput);
+            simulatorDiv.insertAdjacentElement('beforeend', simulatorInputDiv);
+
+
+            // < Configuration input >
+            var configurationInputDiv = document.createElement('div');
+            configurationInputDiv.className = 'input-group'
+
+            var configurationInputLbl = document.createElement('label');
+            configurationInputLbl.className = 'input-group-btn';
+
+            var configurationInputSpan = document.createElement('span');
+            configurationInputSpan.className = 'btn btn-primary';
+            configurationInputSpan.innerHTML = 'Configuration';
+
+            var configurationInput = document.createElement('input');
+            configurationInput.type = 'file';
+            configurationInput.style = 'display: none;';
+
+            var configurationInputDisplay = document.createElement('input');
+            configurationInputDisplay.type = 'text';
+            configurationInputDisplay.className = 'form-control';
+            configurationInputDisplay.readOnly = true;
+
+            configurationInputSpan.insertAdjacentElement('beforeend', configurationInput);
+            configurationInputLbl.insertAdjacentElement('beforeend', configurationInputSpan);
+
+            configurationInputDiv.insertAdjacentElement('beforeend', configurationInputLbl);
+            configurationInputDiv.insertAdjacentElement('beforeend', configurationInputDisplay);
+
+            // </ Configuration input >
+
+            div.insertAdjacentElement('beforeend', simulatorDiv);
+            div.insertAdjacentElement('beforeend', configurationInputDiv);
+
+            btnGroup.insertBefore(div, btnGroup.childNodes[0]);
+         }
+
+         $(function () {
+
+            // We can attach the `fileselect` event to all file inputs on the page
+            $(document).on('change', ':file', function () {
+               var input = $(this),
+                  numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                  label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+               input.trigger('fileselect', [numFiles, label]);
+            });
+
+            // We can watch for our custom `fileselect` event like this
+            $(document).ready(function () {
+               $(':file').on('fileselect', function (event, numFiles, label) {
+
+                  var input = $(this).parents('.input-group').find(':text'),
+                     log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                  if (input.length) {
+                     input.val(log);
+                  } else {
+                     if (log) alert(log);
+                  }
+
+               });
+            });
+
+         });
+      </script>
 
       <% include template/footer.ejs %>
    </div>

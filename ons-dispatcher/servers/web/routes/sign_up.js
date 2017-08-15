@@ -1,10 +1,17 @@
+////////////////////////////////////////////////
+//
+// Copyright (c) 2017 Matheus Medeiros Sarmento
+//
+////////////////////////////////////////////////
+
 const User = require('../../../database/models/user');
 
 module.exports = function (app) {
 
    app.get('/sign_up', (req, res) => {
       res.render('sign_up', {
-         'title': "Sign Up"
+         'title': "Sign Up",
+         'active': "sign_up"
       });
    });
 

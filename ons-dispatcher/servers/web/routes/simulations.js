@@ -1,16 +1,17 @@
-const SimulationProperty = require('../../../database/models/simulation_property');
+const SimulationGroup = require('../../../database/models/simulation');
 
 const router = require('../router');
 
 module.exports = function (app) {
    // Simulations
    app.get('/simulations', router.authenticationMiddleware(), (req, res) => {
-      SimulationProperty.find({
+      SimulationGroup.find({
          _user: req.user.id,
-      }, (err, simulationProperties) => {
+      }, (err, simulationGroups) => {
          res.render('simulations', {
             title: "Simulations",
-            simulationProperties: simulationProperties
+            active: "simulations",
+            simulationGroups: simulationGroups
          });
       });
    });

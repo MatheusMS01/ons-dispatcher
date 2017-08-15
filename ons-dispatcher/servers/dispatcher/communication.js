@@ -11,8 +11,8 @@ const factory = require('../../../protocol/dwp/factory')
 const worker_discovery = require('./worker_discovery')
 const EventEmitter = require('events');
 
-const SimulationProperty = require('../../database/models/simulation_property');
 const Simulation = require('../../database/models/simulation');
+const SimulationInstance = require('../../database/models/simulation_instance');
 
 const resource_request = require('../../../protocol/dwp/pdu/resource_request')
 const simulation_request = require('../../../protocol/dwp/pdu/simulation_request')
@@ -62,12 +62,10 @@ module.exports.execute = function () {
 
          // All simulations from that worker were not completed
          // Set state to pending again
-         Simulation.find(
-            {
-               'worker': socket.remoteAddress
-            }).
-            exec((err, res) => {
-               for (var index = 0; index < res.length; ++index) {
+         Simulation.find({ 'worker': socket.remoteAddress })
+            .exec((err, res) => {
+
+               for (let index = 0; index < res.length; ++index) {
                   res[index].worker = undefined;
                   res[index].state = Simulation.State.Pending;
 
@@ -128,33 +126,33 @@ event.on('request_resources', () => {
 event.on('run_simulation', (worker) => {
 
    // Find simulation with highest priority which is still pending
-   Simulation.findOne({ 'state': Simulation.State.Pending }).
+   SimulationInstance.findOne({ 'state': Simulation.State.Pending }).
       populate({
-         path: '_simulationProperty',
-         select: '_binary _document priority',
+         path: '_simulation',
+         select: '_binary _document _simulationGroup',
          populate: {
-            path: '_binary _document',
+            path: '_binary _document _simulationGroup',
          },
          options: {
-            sort: { 'priority': -1 }
+            sort: { '_simulationGroup.priority': -1 }
          }
       }).
-      exec((err, simulation) => {
+      exec((err, simulationInstance) => {
          if (err) return logger.error(err);
 
-         if (simulation === null) {
+         if (simulationInstance === null) {
             // No simulations are pending
             logger.debug("No simulations are pending");
             return;
          }
 
-         const pdu = simulation_request.format({ Data: simulation });
+         const pdu = simulation_request.format({ Data: simulationInstance });
          worker.write(pdu, () => {
 
-            simulation.state = Simulation.State.Executing;
-            simulation.worker = worker.remoteAddress;
+            simulationInstance.state = Simulation.State.Executing;
+            simulationInstance.worker = worker.remoteAddress;
 
-            simulation.save((err) => {
+            simulationInstance.save((err) => {
                if (err) return logger.error(err);
 
                //event.emit('request_resources');
@@ -224,29 +222,26 @@ function treat(data, socket) {
             //   console.log(keys[index] + ":" + output[keys[index]]);
             //}
 
-            var simulationUpdate = {
+            var simulationInstanceUpdate = {
                result: object.Output,
                state: Simulation.State.Finished,
                $unset: { worker: 1 }
             }
 
-            Simulation.findByIdAndUpdate(object.SimulationId, simulationUpdate, (err, simulation) => {
+            SimulationInstance.findByIdAndUpdate(object.SimulationId, simulationInstanceUpdate, (err, simulationInstance) => {
                if (err) return logger.error(err);
                // Count if there are simulations that are not finished yet
-               Simulation.count(
-                  {
-                     _simulationProperty: simulation._simulationProperty,
-                     $or: [{ state: Simulation.State.Pending }, { state: Simulation.State.Executing }]
-                  },
+               SimulationInstance.count({
+                  _simulation: simulationInstance._simulation,
+                  $or: [{ state: SimulationInstance.State.Pending }, { state: SimulationInstance.State.Executing }]
+               },
                   (err, count) => {
                      if (err) return logger.error(err);
 
                      if (count === 0) {
-                        // Update simulation property to finished
-                        SimulationProperty.findByIdAndUpdate(simulation._simulationProperty,
-                           {
-                              state: SimulationProperty.State.Finished,
-                              endTime: Date.now()
+                        // Update simulation to finished
+                        Simulation.findByIdAndUpdate(simulationInstance._simulation, {
+                              state: SimulationProperty.State.Finished
                            },
                            (err) => {
                               if (err) return logger.error(err);
@@ -260,9 +255,9 @@ function treat(data, socket) {
          } else {
             logger.error(object.SimulationId + " executed with Failure " + object.ErrorMessage);
 
-            Simulation.findByIdAndUpdate(object.SimulationId, {
+            SimulationInstance.findByIdAndUpdate(object.SimulationId, {
                state: Simulation.State.Pending,
-               $unset: {worker: 1},
+               $unset: { worker: 1 },
             }, (err) => {
                if (err) return logger.error(err);
 
