@@ -65,6 +65,8 @@
       </div>
 
       <script>
+         var count = 0;
+
          function newSimulation() {
             var btnGroup = document.getElementById('btn-group');
 
@@ -114,7 +116,6 @@
             simulatorDiv.insertAdjacentElement('beforeend', simulatorNameInput);
             simulatorDiv.insertAdjacentElement('beforeend', simulatorInputDiv);
 
-
             // < Configuration input >
             var configurationInputDiv = document.createElement('div');
             configurationInputDiv.className = 'input-group'
@@ -129,6 +130,7 @@
             var configurationInput = document.createElement('input');
             configurationInput.type = 'file';
             configurationInput.style = 'display: none;';
+            configurationInput.name = 'configuration';
 
             var configurationInputDisplay = document.createElement('input');
             configurationInputDisplay.type = 'text';

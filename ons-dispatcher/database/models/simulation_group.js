@@ -53,6 +53,4 @@ const simulationGroupSchema = Schema({
 
 simulationGroupSchema.statics.State = State;
 
-simulationGroupSchema.index({ _user: 1, _binary: 1, _document: 1 }, { unique: true });
-
 module.exports = mongoose.model('SimulationGroup', simulationGroupSchema);

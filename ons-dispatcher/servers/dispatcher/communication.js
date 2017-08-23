@@ -14,10 +14,10 @@ const EventEmitter = require('events');
 const Simulation = require('../../database/models/simulation');
 const SimulationInstance = require('../../database/models/simulation_instance');
 
-const resource_request = require('../../../protocol/dwp/pdu/resource_request')
-const simulation_request = require('../../../protocol/dwp/pdu/simulation_request')
-const simulation_response = require('../../../protocol/dwp/pdu/simulation_response')
-const simulation_terminate_request = require('../../../protocol/dwp/pdu/simulation_terminate_request')
+const resourceRequest = require('../../../protocol/dwp/pdu/resource_request')
+const simulationRequest = require('../../../protocol/dwp/pdu/simulation_request')
+const simulationResponse = require('../../../protocol/dwp/pdu/simulation_response')
+const simulationTerminateRequest = require('../../../protocol/dwp/pdu/simulation_terminate_request')
 
 log4js.configure({
    appenders: [
@@ -61,7 +61,6 @@ module.exports.execute = function () {
          removeWorker(socket);
 
          // All simulations from that worker were not completed
-         // Set state to pending again
          Simulation.find({ 'worker': socket.remoteAddress })
             .exec((err, res) => {
 
@@ -118,7 +117,7 @@ event.on('request_resources', () => {
 
    // Request resource information from all workers
    for (var index = 0; index < workerPool.length; ++index) {
-      workerPool[index].write(resource_request.format());
+      workerPool[index].write(resourceRequest.format());
    }
 
 });
@@ -146,7 +145,7 @@ event.on('run_simulation', (worker) => {
             return;
          }
 
-         const pdu = simulation_request.format({ Data: simulationInstance });
+         const pdu = simulationRequest.format({ Data: simulationInstance });
          worker.write(pdu, () => {
 
             simulationInstance.state = Simulation.State.Executing;
@@ -203,7 +202,7 @@ function treat(data, socket) {
       case factory.Id.SimulationResponse:
 
          // treat_simulation_response
-         if (object.Result === simulation_response.Result.Success) {
+         if (object.Result === simulationResponse.Result.Success) {
 
             // @TODO: Remove this workaround then simulator is adjusted
             var output = object.Output;
@@ -216,24 +215,21 @@ function treat(data, socket) {
                return logger.error(err);
             }
 
-            //const keys = Object.keys(output);
-
-            //for (var index = 0; index < keys.length; ++index) {
-            //   console.log(keys[index] + ":" + output[keys[index]]);
-            //}
-
             var simulationInstanceUpdate = {
                result: object.Output,
                state: Simulation.State.Finished,
                $unset: { worker: 1 }
             }
 
-            SimulationInstance.findByIdAndUpdate(object.SimulationId, simulationInstanceUpdate, (err, simulationInstance) => {
+            SimulationInstance.findByIdAndUpdate(object.SimulationId, 
+                  simulationInstanceUpdate, 
+                  (err, simulationInstance) => {
                if (err) return logger.error(err);
                // Count if there are simulations that are not finished yet
                SimulationInstance.count({
                   _simulation: simulationInstance._simulation,
-                  $or: [{ state: SimulationInstance.State.Pending }, { state: SimulationInstance.State.Executing }]
+                  $or: [{ state: SimulationInstance.State.Pending }, 
+                        { state: SimulationInstance.State.Executing }]
                },
                   (err, count) => {
                      if (err) return logger.error(err);

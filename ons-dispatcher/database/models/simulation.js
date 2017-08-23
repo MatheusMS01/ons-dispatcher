@@ -31,8 +31,7 @@ const simulationSchema = Schema({
    },
    name: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
    },
    state: {
       type: Number,
@@ -42,7 +41,5 @@ const simulationSchema = Schema({
 });
 
 simulationSchema.statics.State = State;
-
-simulationSchema.index({ _binary: 1, _document: 1 }, { unique: true });
 
 module.exports = mongoose.model('Simulation', simulationSchema);

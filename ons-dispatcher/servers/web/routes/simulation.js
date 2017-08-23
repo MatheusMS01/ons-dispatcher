@@ -11,6 +11,7 @@ const router = require('../router');
 const User = require('../../../database/models/user');
 const Binary = require('../../../database/models/binary');
 const Document = require('../../../database/models/document');
+const SimulationGroup = require('../../../database/models/simulation_group')
 const Simulation = require('../../../database/models/simulation');
 const SimulationInstance = require('../../../database/models/simulation_instance');
 
@@ -128,22 +129,43 @@ module.exports = function (app) {
 
    app.post('/new_simulation', (req, res) => {
 
-      console.log(req.files.simulator.name);
-
-      if (!req.body.simulationName) {
-         req.flash('error_msg', "Simulation name not filled");
+      if (req.files === null) {
+         req.flash('error_msg', "Files were not submitted!");
          res.redirect('/new_simulation');
          return;
       }
 
-      if (!req.files.simulator) {
-         req.flash('error_msg', "Simulator was not uploaded");
+      var simulatorArray = req.files['simulator'];
+      var configurationArray = req.files['configuration'];
+
+      if (simulatorArray === undefined) {
+         req.flash('error_msg', "Simulator not submitted");
          res.redirect('/new_simulation');
          return;
       }
 
-      if (!req.files.document) {
-         req.flash('error_msg', "Configuration was not uploaded");
+      if (configurationArray === undefined) {
+         req.flash('error_msg', "Configuration not submitted");
+         res.redirect('/new_simulation');
+         return;
+      }
+
+      if(!(simulatorArray instanceof Array)) {
+         simulatorArray = [simulatorArray];
+      }
+
+      if(!(configurationArray instanceof Array)) {
+         configurationArray = [configurationArray];
+      }
+
+      if (simulatorArray.length !== configurationArray.length) {
+         req.flash('error_msg', "Simulator and Configuration must be paired!");
+         res.redirect('/new_simulation');
+         return;
+      }
+
+      if (!req.body.simulationGroupName) {
+         req.flash('error_msg', "Simulation group name not filled");
          res.redirect('/new_simulation');
          return;
       }
@@ -172,7 +194,7 @@ module.exports = function (app) {
          return;
       }
 
-      const simulationName = req.body.simulationName;
+      const simulationGroupName = req.body.simulationGroupName;
       const seedAmount = Number(req.body.seedAmount);
       const minLoad = Number(req.body.minLoad);
       const maxLoad = Number(req.body.maxLoad);
@@ -190,67 +212,74 @@ module.exports = function (app) {
          return;
       }
 
-      const binary = new Binary({
+      const simulationGroup = new SimulationGroup({
          _user: req.user.id,
-         name: req.files.simulator.name,
-         content: req.files.simulator.data
+         name: simulationGroupName,
+         seedAmount: seedAmount,
+         load: {
+            minimum: minLoad,
+            maximum: maxLoad,
+            step: step
+         }
       });
 
-      binary.save((err) => {
+      simulationGroup.save((err) => {
 
          if (err) {
-            req.flash('error_msg', "An error occurred. Please try again latter");
+            req.flash('error_msg', JSON.stringify(err));
             res.redirect('/new_simulation');
             return;
          }
 
-         const document = new Document({
-            _user: req.user.id,
-            name: req.files.document.name,
-            content: req.files.document.data
-         });
+         const simulationLength = simulatorArray.length;
 
-         document.save((err) => {
+         for (var index = 0; index < simulationLength; ++index) {
 
-            if (err) {
-               req.flash('error_msg', "An error occurred. Please try again latter");
-               res.redirect('/new_simulation');
-               return;
-            }
-
-            const simulationProperty = new SimulationProperty({
+            const binary = new Binary({
                _user: req.user.id,
-               _binary: binary.id,
-               _document: document.id,
-               name: simulationName,
-               seedAmount: seedAmount,
-               load: {
-                  Min: minLoad,
-                  Max: maxLoad,
-                  Step: step,
-               }
+               name: simulatorArray[index].name,
+               content: simulatorArray[index].data
             });
 
-            simulationProperty.save((err, simulationProperty) => {
+            const document = new Document({
+               _user: req.user.id,
+               name: configurationArray[index].name,
+               content: configurationArray[index].data
+            });
+
+            binary.save((err) => {
 
                if (err) {
-
-                  if (err.code === 11000) {
-                     req.flash('error_msg', "Simulation already exists!");
-                     res.redirect('/new_simulation');
-                  } else {
-                     req.flash('error_msg', "An error occurred. Please try again latter");
-                     res.redirect('/new_simulation');
-                  }
-
+                  req.flash('error_msg', JSON.stringify(err));
+                  res.redirect('/new_simulation');
                   return;
                }
 
-               simulationHandler.event.emit('new_simulation', simulationProperty.id);
+               document.save((err) => {
 
-               res.redirect('/simulations');
+                  if (err) {
+                     req.flash('error_msg', JSON.stringify(err));
+                     res.redirect('/new_simulation');
+                     return;
+                  }
+
+                  const simulation = new Simulation({
+                     _simulationGroup: simulationGroup.id,
+                     _binary: binary.id,
+                     _document: document.id,
+                     name: "abcde" // TODO
+                  });
+
+                  simulation.save((err) => {
+                     if (err) {
+                        req.flash('error_msg', JSON.stringify(err));
+                        res.redirect('/new_simulation');
+                        return;
+                     }
+                  });
+               });
             });
-         });
+         }
       });
    });
 
