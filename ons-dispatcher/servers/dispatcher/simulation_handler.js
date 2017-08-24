@@ -4,30 +4,49 @@
 //
 ////////////////////////////////////////////////
 
-const SimulationProperty = require('../../database/models/simulation_property')
-const Simulation = require('../../database/models/simulation')
+const Simulation = require('../../database/models/simulation');
+const SimulationInstance = require('../../database/models/simulation_instance');
 const EventEmitter = require('events');
-const communication = require('./communication')
+const communication = require('./communication');
 
 const event = new EventEmitter();
 
 module.exports.event = event;
 
 event.on('new_simulation', (id) => {
-   SimulationProperty.findById(id, (err, simulationProperty) => {
 
-      for (var seed = 1; seed <= simulationProperty.seedAmount; ++seed) {
-         for (var load = simulationProperty.load.Min; load <= simulationProperty.load.Max; load += simulationProperty.load.Step) {
-            const simulation = new Simulation({
-               _simulationProperty: id,
-               seed: seed,
-               load: load,
-            });
+   Simulation.find({ _simulationGroup: id })
+      .populate({
+         path: '_simulationGroup',
+         select: 'seedAmount load'
+      })
+      .exec((err, simulations) => {
+         if (err) return console.log(err);
 
-            simulation.save();
+         var simulationInstanceArray = [];
+
+         for (var index = 0; index < simulations.length; ++index) {
+
+            for (var seed = 1; seed < simulations[index].seedAmount; ++seed) {
+               for (var load = simulations[index].load.minimum;
+                  load < simulations[index].load.maximum;
+                  load += simulations[index].load.step) {
+
+                     const simulationInstance = new SimulationInstance({
+                        _simulation: simulation[index].id,
+                        seed: seed,
+                        load: load
+                     });
+
+                     simulationInstanceArray.push(simulationInstance);
+               }
+
+               SimulationInstance.insertMany(simulationInstanceArray, (err, simulationInstances) => {
+                  if (err) return console.log(err);
+
+                  communication.event.emit('request_resources');
+               });
+            }
          }
-      }
-
-      communication.event.emit('request_resources');
-   });
+      });
 });

@@ -7,6 +7,7 @@
 'use strict'
 
 const router = require('../router');
+const simulationHandler = require('../../dispatcher/simulation_handler')
 
 const User = require('../../../database/models/user');
 const Binary = require('../../../database/models/binary');
@@ -135,31 +136,31 @@ module.exports = function (app) {
          return;
       }
 
-      var simulatorArray = req.files['simulator'];
-      var configurationArray = req.files['configuration'];
+      var binaryFileArray = req.files['simulator'];
+      var documentFileArray = req.files['configuration'];
 
-      if (simulatorArray === undefined) {
-         req.flash('error_msg', "Simulator not submitted");
+      if (binaryFileArray === undefined) {
+         req.flash('error_msg', "binary not submitted");
          res.redirect('/new_simulation');
          return;
       }
 
-      if (configurationArray === undefined) {
-         req.flash('error_msg', "Configuration not submitted");
+      if (documentFileArray === undefined) {
+         req.flash('error_msg', "document not submitted");
          res.redirect('/new_simulation');
          return;
       }
 
-      if(!(simulatorArray instanceof Array)) {
-         simulatorArray = [simulatorArray];
+      if (!(binaryFileArray instanceof Array)) {
+         binaryFileArray = [binaryFileArray];
       }
 
-      if(!(configurationArray instanceof Array)) {
-         configurationArray = [configurationArray];
+      if (!(documentFileArray instanceof Array)) {
+         documentFileArray = [documentFileArray];
       }
 
-      if (simulatorArray.length !== configurationArray.length) {
-         req.flash('error_msg', "Simulator and Configuration must be paired!");
+      if (binaryFileArray.length !== documentFileArray.length) {
+         req.flash('error_msg', "binary and document must be paired!");
          res.redirect('/new_simulation');
          return;
       }
@@ -212,6 +213,33 @@ module.exports = function (app) {
          return;
       }
 
+      var binaryArray = [];
+
+      for (var index = 0; index < binaryFileArray.length; ++index) {
+
+         const binary = new Binary({
+            _user: req.user.id,
+            name: binaryFileArray[index].name,
+            content: binaryFileArray[index].data
+         });
+
+         binaryArray.push(binary);
+
+      }
+
+      var documentArray = [];
+
+      for (var index = 0; index < documentFileArray.length; ++index) {
+
+         const document = new Document({
+            _user: req.user.id,
+            name: documentFileArray[index].name,
+            content: documentFileArray[index].data
+         });
+
+         documentArray.push(document);
+      }
+
       const simulationGroup = new SimulationGroup({
          _user: req.user.id,
          name: simulationGroupName,
@@ -231,23 +259,15 @@ module.exports = function (app) {
             return;
          }
 
-         const simulationLength = simulatorArray.length;
+         Binary.insertMany(binaryArray, (err, binaries) => {
 
-         for (var index = 0; index < simulationLength; ++index) {
+            if (err) {
+               req.flash('error_msg', JSON.stringify(err));
+               res.redirect('/new_simulation');
+               return;
+            }
 
-            const binary = new Binary({
-               _user: req.user.id,
-               name: simulatorArray[index].name,
-               content: simulatorArray[index].data
-            });
-
-            const document = new Document({
-               _user: req.user.id,
-               name: configurationArray[index].name,
-               content: configurationArray[index].data
-            });
-
-            binary.save((err) => {
+            Document.insertMany(documentArray, (err, documents) => {
 
                if (err) {
                   req.flash('error_msg', JSON.stringify(err));
@@ -255,7 +275,21 @@ module.exports = function (app) {
                   return;
                }
 
-               document.save((err) => {
+               var simulationArray = [];
+
+               for (var index = 0; index < binaries.length; ++index) {
+
+                  const simulation = new Simulation({
+                     _simulationGroup: simulationGroup.id,
+                     _binary: binaries[index].id,
+                     _document: documents[index].id,
+                     name: "abcde" // TODO
+                  });
+
+                  simulationArray.push(simulation);
+               }
+
+               Simulation.insertMany(simulationArray, (err) => {
 
                   if (err) {
                      req.flash('error_msg', JSON.stringify(err));
@@ -263,23 +297,12 @@ module.exports = function (app) {
                      return;
                   }
 
-                  const simulation = new Simulation({
-                     _simulationGroup: simulationGroup.id,
-                     _binary: binary.id,
-                     _document: document.id,
-                     name: "abcde" // TODO
-                  });
+                  simulationHandler.event.emit('new_simulation', simulationGroup.id);
 
-                  simulation.save((err) => {
-                     if (err) {
-                        req.flash('error_msg', JSON.stringify(err));
-                        res.redirect('/new_simulation');
-                        return;
-                     }
-                  });
+                  res.redirect('/simulations');
                });
             });
-         }
+         });
       });
    });
 
