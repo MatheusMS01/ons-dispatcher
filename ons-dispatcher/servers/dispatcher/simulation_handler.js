@@ -26,14 +26,13 @@ event.on('new_simulation', (id) => {
          var simulationInstanceArray = [];
 
          for (var index = 0; index < simulations.length; ++index) {
-
-            for (var seed = 1; seed < simulations[index].seedAmount; ++seed) {
-               for (var load = simulations[index].load.minimum;
-                  load < simulations[index].load.maximum;
-                  load += simulations[index].load.step) {
+            for (var seed = 1; seed <= simulations[index]._simulationGroup.seedAmount; ++seed) {
+               for (var load = simulations[index]._simulationGroup.load.minimum;
+                  load <= simulations[index]._simulationGroup.load.maximum;
+                  load += simulations[index]._simulationGroup.load.step) {
 
                      const simulationInstance = new SimulationInstance({
-                        _simulation: simulation[index].id,
+                        _simulation: simulations[index].id,
                         seed: seed,
                         load: load
                      });
@@ -43,6 +42,8 @@ event.on('new_simulation', (id) => {
 
                SimulationInstance.insertMany(simulationInstanceArray, (err, simulationInstances) => {
                   if (err) return console.log(err);
+
+                  console.log(simulationInstances);
 
                   communication.event.emit('request_resources');
                });
