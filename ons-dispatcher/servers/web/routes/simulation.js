@@ -224,7 +224,6 @@ module.exports = function (app) {
          });
 
          binaryArray.push(binary);
-
       }
 
       var documentArray = [];

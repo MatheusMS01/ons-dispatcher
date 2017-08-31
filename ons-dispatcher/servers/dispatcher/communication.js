@@ -125,7 +125,7 @@ event.on('request_resources', () => {
 event.on('run_simulation', (worker) => {
 
    // Find simulation with highest priority which is still pending
-   SimulationInstance.findOne({ 'state': Simulation.State.Pending }).
+   SimulationInstance.findOne({ 'state': SimulationInstance.State.Pending }).
       populate({
          path: '_simulation',
          select: '_binary _document _simulationGroup',

@@ -102,18 +102,18 @@ function treat(data, socket) {
          logger.debug("New simulation received!");
 
          var path = __dirname + "/" + object.Data._id + "/";
-         var binaryContent = Buffer(object.Data._simulationProperty._binary.content);
-         var documentContent = object.Data._simulationProperty._document.content;
+         var binaryContent = Buffer(object.Data._simulation._binary.content);
+         var documentContent = object.Data._simulation._document.content;
 
-         writeFile(path + object.Data._simulationProperty._binary.name, binaryContent, (err) => {
+         writeFile(path + object.Data._simulation._binary.name, binaryContent, (err) => {
              if (err) throw err;
 
-             writeFile(path + object.Data._simulationProperty._document.name, documentContent, (err) => {
+             writeFile(path + object.Data._simulation._document.name, documentContent, (err) => {
                  if (err) throw err;
 
                   var command = "java -jar ";
-                  command += path + object.Data._simulationProperty._binary.name + " ";
-                  command += path + object.Data._simulationProperty._document.name + " ";
+                  command += path + object.Data._simulation._binary.name + " ";
+                  command += path + object.Data._simulation._document.name + " ";
                   command += object.Data.seed + " ";
                   command += object.Data.load + " ";
                   command += object.Data.load + " 1";
