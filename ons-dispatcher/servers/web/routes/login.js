@@ -10,8 +10,8 @@ module.exports = function (app) {
 
    app.get('/login', (req, res) => {
       res.render('login', {
-         title: "Login",
-         active: "login"
+         title: 'Login',
+         active: 'login'
       })
    });
 

@@ -23,6 +23,6 @@ const documentSchema = Schema({
    }
 });
 
-//documentSchema.index({ _user: 1, name: 1 }, { unique: true });
+//documentSchema.idx({ _user: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.model('Document', documentSchema);

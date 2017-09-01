@@ -55,7 +55,7 @@
     <Compile Include="servers\web\routes\profile.js" />
     <Compile Include="servers\web\routes\sign_up.js" />
     <Compile Include="servers\web\routes\simulation.js" />
-    <Compile Include="servers\web\routes\simulations.js" />
+    <Compile Include="servers\web\routes\simulation_group.js" />
     <Compile Include="views\simulation.ejs">
       <SubType>Code</SubType>
     </Compile>
@@ -84,7 +84,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="views\home.ejs" />
-    <Content Include="views\simulations.ejs" />
+    <Content Include="views\simulation_group.ejs" />
     <Content Include="views\topology.ejs" />
     <Compile Include="public\javascripts\upload.js" />
     <Compile Include="public\javascripts\utils\sigma.min.js" />

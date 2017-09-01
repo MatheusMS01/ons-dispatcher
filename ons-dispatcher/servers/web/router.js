@@ -14,7 +14,7 @@ const login = require('./routes/login');
 const profile = require('./routes/profile');
 const sign_up = require('./routes/sign_up');
 const simulation = require('./routes/simulation');
-const simulations = require('./routes/simulations');
+const simulation_group = require('./routes/simulation_group');
 
 module.exports.execute = function (app) {
 
@@ -23,7 +23,7 @@ module.exports.execute = function (app) {
    profile(app);
    sign_up(app);
    simulation(app);
-   simulations(app);
+   simulation_group(app);
 
 }
 

@@ -23,6 +23,6 @@ const binarySchema = Schema({
    }
 });
 
-//binarySchema.index({ _user: 1, name: 1}, { unique: true });
+//binarySchema.idx({ _user: 1, name: 1}, { unique: true });
 
 module.exports = mongoose.model('Binary', binarySchema);

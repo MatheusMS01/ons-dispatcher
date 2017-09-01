@@ -9,21 +9,21 @@ const extend = require('util')._extend
 
 var validate = function validate(object) {
 
-   if (object === undefined) throw "Object is undefined";
+   if (object === undefined) throw 'Object is undefined';
 
-   var err = { 'Result': false, 'Message': "" };
+   var err = { 'Result': false, 'Message': '' };
 
    if (object.Memory === undefined) {
       err.Result = true;
-      err.Message += "Memory ";
+      err.Message += 'Memory ';
    }
 
    if (object.CPU === undefined) {
       err.Result = true;
-      err.Message += "CPU ";
+      err.Message += 'CPU ';
    }
 
-   if (err.Result) throw err.Message + "undefined";
+   if (err.Result) throw err.Message + 'undefined';
 }
 
 var format = function format(data) {

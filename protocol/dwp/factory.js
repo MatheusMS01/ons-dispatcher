@@ -23,7 +23,7 @@ module.exports.Id = Id;
 module.exports.validate = function (object) {
 
    if (object['Id'] === undefined) {
-      throw "Id undefined";
+      throw 'Id undefined';
    }
 
    switch (object['Id']) {
@@ -49,13 +49,13 @@ module.exports.validate = function (object) {
          break;
 
       default:
-         throw "Invalid Id";
+         throw 'Invalid Id';
    }
 
 }
 
-const beginTag = "/BEGIN/";
-const endTag = "/END/";
+const beginTag = '/BEGIN/';
+const endTag = '/END/';
 
 module.exports.encapsulate = function (packet) {
 
@@ -69,11 +69,11 @@ module.exports.expose = function (packet) {
    var endIndex = packet.search(endTag);
 
    if (beginIndex === -1) {
-      throw "Begin tag not found";
+      throw 'Begin tag not found';
    }
 
    if (endIndex === -1) {
-      throw "End tag not found";
+      throw 'End tag not found';
    }
 
    return packet.substring(beginIndex + beginTag.length, endIndex);
@@ -88,12 +88,12 @@ module.exports.remove = function (packet) {
    var endIndex = packet.search(endTag);
 
    if (beginIndex === -1) {
-      throw "Begin tag not found";
+      throw 'Begin tag not found';
    }
 
    if (endIndex === -1) {
-      throw "End tag not found";
+      throw 'End tag not found';
    }
 
-   return packet.replace(packet.substring(beginIndex, endIndex + endTag.length), "");
+   return packet.replace(packet.substring(beginIndex, endIndex + endTag.length), '');
 }

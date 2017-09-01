@@ -20,7 +20,7 @@ module.exports = function(app) {
    // console.log(xml);
 
    app.get('/', function(request, response) {
-      response.render('index');
+      response.render('idx');
    });
 
    app.get('/simulation', function(request, response) {
@@ -42,11 +42,11 @@ module.exports = function(app) {
          }
 
          // Create the Scratch directory, where every data from this user will be temporarily stored
-         this.dir = __dirname + '/../cache/' + request.connection.remoteAddress.replace(/:/g, '') + "/" + fields.type;
+         this.dir = __dirname + '/../cache/' + request.connection.remoteAddress.replace(/:/g, '') + '/' + fields.type;
 
          // Create directories recursively
-         this.dir.split('/').forEach((dir, index, splits) => {
-            const parent = splits.slice(0, index).join('/');
+         this.dir.split('/').forEach((dir, idx, splits) => {
+            const parent = splits.slice(0, idx).join('/');
             const dirPath = path.resolve(parent, dir);
             if (!fs.existsSync(dirPath)) {
                fs.mkdirSync(dirPath);

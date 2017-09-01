@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+   <% include template/head.ejs %>
+</head>
+
+<body>
+   <header>
+      <% include template/header.ejs %>
+   </header>
+
+   <h2 class='page-header'> Executing </h2>
+   <table class='table table-hover table-striped table-bordered'>
+      <thead>
+         <tr>
+            <th style='width:20%'>Simulation Group</th>
+            <th style='width:10%'>Seed Amount</th>
+            <th style='width:10%'>Priority</th>
+            <th>Start Time</th>
+            <th style='width:10%'></th>
+         </tr>
+      </thead>
+      <tbody>
+         <% for(var idx in simulationGroups) { %>
+         <% if(simulationGroups[idx].state === 0) { %>
+         <tr id='<%= simulationGroups[idx].id %>'>
+            <td>
+               <form method='post' action='/simulation_group/<%= simulationGroups[idx].id %>'>
+                  <input type='submit' class='btn btn-link p-0' value='<%= simulationGroups[idx].name %>' />
+               </form>
+            </td>
+            <td><%= simulationGroups[idx].seedAmount %></td>
+            <td><%= simulationGroups[idx].priority %></td>
+            <td><%= simulationGroups[idx].startTime %></td>
+            <td>
+               <button class='btn btn-large btn-danger' data-toggle='confirmation' data-popout='true' data-singleton='true' name='Cancel'>
+                  <span class='glyphicon glyphicon-remove'></span> Cancel
+               </button>
+            </td>
+         </tr>
+         <% } %>
+         <% } %>
+      </tbody>
+   </table>
+
+   <h2 class='page-header'> Finished </h2>
+
+   <table class='table table-hover table-striped table-bordered'>
+      <thead>
+         <tr>
+            <th style='width:20%'>Simulation Group</th>
+            <th style='width:10%'>Seed Amount</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th style='width:10%'></th>
+         </tr>
+      </thead>
+      <tbody>
+         <% for(var idx in simulationGroups) { %>
+         <% if(simulationGroups[idx].state === 1) { %>
+         <tr id='<%= simulationGroups[idx].id %>'>
+            <td>
+               <form method='post' action='/simulation_group/<%= simulationGroups[idx].id %>'>
+                  <input type='submit' class='btn btn-link p-0' value='<%= simulationGroups[idx].name %>' />
+               </form>
+            </td>
+            <td><%= simulationGroups[idx].seedAmount %></td>
+            <td><%= simulationGroups[idx].startTime %></td>
+            <td><%= simulationGroups[idx].endTime %></td>
+            <td>
+               <button class='btn btn-large btn-danger' data-toggle='confirmation' data-popout='true' data-singleton='true' name='Remove'>
+                  <span class='glyphicon glyphicon-trash'></span> Remove
+               </button>
+            </td>
+         </tr>
+         <% } %>
+         <% } %>
+      </tbody>
+   </table>
+
+   <div class='my-5'>
+      <a href='/new_simulation' class='btn btn-primary btn-lg active' role='button' aria-pressed='true'>New simulation group</a>
+   </div>
+
+   <div class='container'>
+      <% include template/footer.ejs %>
+   </div>
+
+   <script>
+      $('[data-toggle=confirmation]').confirmation({
+         rootSelector: '[data-toggle=confirmation]',
+         // other options
+      })
+
+      $('[name=Cancel]').on('confirmed.bs.confirmation', function () {
+         $.post('/cancel', {
+               _simulationProperty: $(this).closest('tr').attr('id')
+            }, () => {
+               location.reload();
+            });
+      });
+
+      $('[name=Remove]').on('confirmed.bs.confirmation', function () {
+         $.post('/remove',
+            {
+               _simulationProperty: $(this).closest('tr').attr('id')
+            }, () => {
+               location.reload();
+            });
+      });
+   </script>
+
+</body>
+
+</html>

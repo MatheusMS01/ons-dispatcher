@@ -10,8 +10,8 @@ module.exports = function (app) {
 
    app.get('/sign_up', (req, res) => {
       res.render('sign_up', {
-         'title': "Sign Up",
-         'active': "sign_up"
+         'title': 'Sign Up',
+         'active': 'sign_up'
       });
    });
 
@@ -22,7 +22,7 @@ module.exports = function (app) {
          req.checkBody('name', 'Name must be between 4-50 characters long.').len(4, 50);
          req.checkBody('email', 'The email you entered is invalid, please try again.').isEmail();
          req.checkBody('password', 'Password must be between 8-100 characters long.').len(8, 100);
-         //req.checkBody("password", "Password must include one lowercase character, one uppercase character, a number, and a special character.").matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.* )(?=.*[^a-zA-Z0-9]).{8,}$/, "i");
+         //req.checkBody('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.* )(?=.*[^a-zA-Z0-9]).{8,}$/, 'i');
          req.checkBody('passwordMatch', 'Passwords do not match, please try again.').equals(req.body.password);
       }
 
@@ -31,7 +31,7 @@ module.exports = function (app) {
 
       if (errors) {
          res.render('sign_up', {
-            'title': "Sign Up",
+            'title': 'Sign Up',
             'errors': errors
          });
 
@@ -47,9 +47,9 @@ module.exports = function (app) {
       User.encryptPassword(password, (err, hash) => {
          if (err) {
             res.render('sign_up', {
-               'title': "Sign Up",
+               'title': 'Sign Up',
                errors: [{
-                  'msg': "An error occurred. Please try again"
+                  'msg': 'An error occurred. Please try again'
                }]
             });
          }
@@ -65,17 +65,17 @@ module.exports = function (app) {
                if (err.code === 11000) {
                   // Unique conflict
                   res.render('sign_up', {
-                     'title': "Sign Up",
+                     'title': 'Sign Up',
                      errors: [{
-                        'msg': "User already exists"
+                        'msg': 'User already exists'
                      }]
                   });
                }
                else {
                   res.render('sign_up', {
-                     'title': "Sign Up",
+                     'title': 'Sign Up',
                      errors: [{
-                        'msg': "An error occurred. Please try again"
+                        'msg': 'An error occurred. Please try again'
                      }]
                   });
                }

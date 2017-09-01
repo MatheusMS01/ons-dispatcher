@@ -4,17 +4,17 @@
 //
 ////////////////////////////////////////////////
 
-const mongoose = require('mongoose');
+const mongoose = require( 'mongoose' );
 const Schema = mongoose.Schema;
 
 const State = {
-   Pending:    0,
-   Executing:  1,
-   Finished:   2,
-   Canceled:   3,
+   Pending: 0,
+   Executing: 1,
+   Finished: 2,
+   Canceled: 3,
 }
 
-const simulationInstanceSchema = Schema({
+const simulationInstanceSchema = Schema( {
 
    _simulation: {
       type: Schema.ObjectId,
@@ -44,6 +44,6 @@ const simulationInstanceSchema = Schema({
 
 simulationInstanceSchema.statics.State = State;
 
-simulationInstanceSchema.index({ _simulation: 1, seed: 1, load: 1 }, { unique: true });
+simulationInstanceSchema.index( { _simulation: 1, seed: 1, load: 1 }, { unique: true });
 
-module.exports = mongoose.model('SimulationInstance', simulationInstanceSchema);
+module.exports = mongoose.model( 'SimulationInstance', simulationInstanceSchema );

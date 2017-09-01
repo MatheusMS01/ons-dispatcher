@@ -4,15 +4,15 @@
 //
 ////////////////////////////////////////////////
 
-const mongoose = require('mongoose');
+const mongoose = require( 'mongoose' );
 const Schema = mongoose.Schema;
 
 const State = {
-   Executing:  0,
-   Finished:   1,
+   Executing: 0,
+   Finished: 1,
 }
 
-const simulationSchema = Schema({
+const simulationSchema = Schema( {
 
    _simulationGroup: {
       type: Schema.ObjectId,
@@ -42,4 +42,4 @@ const simulationSchema = Schema({
 
 simulationSchema.statics.State = State;
 
-module.exports = mongoose.model('Simulation', simulationSchema);
+module.exports = mongoose.model( 'Simulation', simulationSchema );

@@ -8,7 +8,7 @@ const dgram = require('dgram');
 const log4js = require('log4js');
 const EventEmitter = require('events');
 const communication = require('./communication');
-const ip = require("ip");
+const ip = require('ip');
 
 log4js.configure({
    appenders: [
@@ -30,7 +30,7 @@ const event = new EventEmitter();
 
 event.on('event', (workerInfo) => {
 
-   logger.debug("Sending response to " + workerInfo.address + ":" + workerInfo.port)
+   logger.debug('Sending response to ' + workerInfo.address + ':' + workerInfo.port)
 
    // Send response to worker
    socket.send(socket.address().address, workerInfo.port, workerInfo.address);
@@ -43,10 +43,10 @@ module.exports.execute = function () {
    // Remove from local cache
    communication.event.on('new_worker', function (workerAddress) {
 
-      var index = pendingList.indexOf(workerAddress);
+      var idx = pendingList.indexOf(workerAddress);
 
-      if (index > -1) {
-         pendingList.splice(index, 1);
+      if (idx > -1) {
+         pendingList.splice(idx, 1);
       }
    });
 
@@ -57,13 +57,13 @@ module.exports.execute = function () {
 
    socket.on('message', (message, rinfo) => {
 
-      if (message.indexOf("NewWorker") <= -1) {
+      if (message.indexOf('NewWorker') <= -1) {
          // Discard this message
-         logger.error("Invalid message!");
+         logger.error('Invalid message!');
          return;
       }
 
-      logger.debug(message.toString() + " from: " + rinfo.address);
+      logger.debug(message.toString() + ' from: ' + rinfo.address);
 
       if (pendingList.indexOf(rinfo.address) === -1) {
          // New worker identified
@@ -72,7 +72,7 @@ module.exports.execute = function () {
    });
 
    socket.on('listening', () => {
-      logger.debug("UDP socket listening " + socket.address().address + ":" + socket.address().port);
+      logger.debug('UDP socket listening ' + socket.address().address + ':' + socket.address().port);
    });
 
    socket.bind(16180);
