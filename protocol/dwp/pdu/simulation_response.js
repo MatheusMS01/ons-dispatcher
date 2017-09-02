@@ -4,43 +4,43 @@
 //
 ////////////////////////////////////////////////
 
-const factory = require('../factory')
-const extend = require('util')._extend
+const factory = require( '../factory' )
+const extend = require( 'util' )._extend
 
 const Result = {
    Success: 0,
    Failure: 1,
 };
 
-var validate = function validate(data) {
+var validate = function validate( data ) {
 
-   if (data === undefined) throw "Object is undefined";
+   if ( data === undefined ) throw 'Object is undefined';
 
-   var err = { 'Result': false, 'Message': "" };
+   var err = { 'Result': false, 'Message': '' };
 
-   if (data.Result === undefined) {
+   if ( data.Result === undefined ) {
       err.Result = true;
-      err.Message += "Result ";
+      err.Message += 'Result ';
    }
 
-   if (data.SimulationId === undefined) {
+   if ( data.SimulationId === undefined ) {
       err.Result = true;
-      err.Message += "SimulationId ";
+      err.Message += 'SimulationId ';
    }
 
-   if (err.Result) throw err.Message + "undefined";
+   if ( err.Result ) throw err.Message + 'undefined';
 }
 
-var format = function format(data) {
+var format = function format( data ) {
 
-   validate(data);
+   validate( data );
 
-   var object = extend({}, { Id: factory.Id.SimulationResponse });
-   object = extend(object, data);
+   var object = extend( {}, { Id: factory.Id.SimulationResponse });
+   object = extend( object, data );
 
-   var packet = JSON.stringify(object);
+   var packet = JSON.stringify( object );
 
-   return factory.encapsulate(packet);
+   return factory.encapsulate( packet );
 }
 
 module.exports = {
