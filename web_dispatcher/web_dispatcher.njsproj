@@ -101,7 +101,6 @@
     <Folder Include="public\js\" />
     <Folder Include="servers\" />
     <Folder Include="servers\dispatcher\" />
-    <Folder Include="servers\dispatcher\dwp_treatment\" />
     <Folder Include="servers\web\" />
     <Folder Include="servers\web\routes\" />
     <Folder Include="views" />

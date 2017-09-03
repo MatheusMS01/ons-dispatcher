@@ -13,11 +13,12 @@ const EventEmitter = require( 'events' );
 
 const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
+const SimulationGroup = require( '../../database/models/simulation_group' );
 
-const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' )
-const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request' )
-const simulationResponse = require( '../../../protocol/dwp/pdu/simulation_response' )
-const simulationTerminateRequest = require( '../../../protocol/dwp/pdu/simulation_terminate_request' )
+const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' );
+const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request' );
+const simulationResponse = require( '../../../protocol/dwp/pdu/simulation_response' );
+const simulationTerminateRequest = require( '../../../protocol/dwp/pdu/simulation_terminate_request' );
 
 log4js.configure( {
    appenders: [
@@ -92,12 +93,15 @@ module.exports.execute = function () {
          buffer += data;
 
          var packet;
+
          try {
+
             do {
                packet = factory.expose( buffer );
                buffer = factory.remove( buffer );
             } while ( buffer.length !== 0 )
-         } catch ( err ) {
+
+         } catch ( exc ) {
             return;
          }
 
@@ -194,7 +198,7 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
-         availabilityList.push( { worker: socket, memory: object.Memory, cpu: object.CPU });
+         availabilityList.push( { worker: socket, memory: object.memory, cpu: object.cpu });
 
          computeMostIdleWorker();
 
@@ -218,7 +222,7 @@ function treat( data, socket ) {
 
             var simulationInstanceUpdate = {
                result: object.Output,
-               state: Simulation.State.Finished,
+               state: SimulationInstance.State.Finished,
                $unset: { 'worker': 1 }
             }
 
@@ -231,25 +235,49 @@ function treat( data, socket ) {
                      _simulation: simulationInstance._simulation,
                      $or: [{ state: SimulationInstance.State.Pending },
                      { state: SimulationInstance.State.Executing }]
-                  },
-                     ( err, count ) => {
-                        if ( err ) return logger.error( err );
+                  }, ( err, count ) => {
 
-                        if ( count === 0 ) {
-                           // Update simulation to finished
-                           Simulation.findByIdAndUpdate( simulationInstance._simulation, {
-                              state: SimulationProperty.State.Finished
-                           },
-                              ( err ) => {
+                     if ( err ) {
+                        return logger.error( err );
+                     }
 
-                                 if ( err ) {
-                                    return logger.error( err );
-                                 }
-                              });
-                        }
+                     if ( count === 0 ) {
+                        // Update simulation to finished
+                        Simulation.findByIdAndUpdate( simulationInstance._simulation, {
+                           state: Simulation.State.Finished
+                        }, ( err, simulation ) => {
 
-                        event.emit( 'request_resources' );
-                     });
+                           if ( err ) {
+                              return logger.error( err );
+                           }
+
+                           Simulation.count( {
+                              _simulationGroup: simulation._simulationGroup,
+                              state: Simulation.State.Executing
+                           }, ( err, count ) => {
+
+                              if ( err ) {
+                                 return logger.error( err );
+                              }
+
+                              if ( count === 0 ) {
+
+                                 SimulationGroup.findByIdAndUpdate( simulation._simulationGroup, {
+                                    state: SimulationGroup.State.Finished
+                                 }, ( err, simulation ) => {
+
+                                    if ( err ) {
+                                       return logger.error( err );
+                                    }
+
+                                 });
+                              }
+                           });
+                        });
+                     }
+
+                     event.emit( 'request_resources' );
+                  });
                });
 
          } else {

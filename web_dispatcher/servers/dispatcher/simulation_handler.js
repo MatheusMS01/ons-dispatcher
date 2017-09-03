@@ -21,18 +21,23 @@ event.on( 'new_simulation', ( id ) => {
          select: 'seedAmount load'
       })
       .exec(( err, simulations ) => {
-         if ( err ) return console.log( err );
 
-         var simulationInstances = [];
+         if ( err ) {
+            return console.log( err );
+         }
 
          for ( var idx = 0; idx < simulations.length; ++idx ) {
+
+            var simulationInstances = [];
+
             for ( var seed = 1; seed <= simulations[idx]._simulationGroup.seedAmount; ++seed ) {
                for ( var load = simulations[idx]._simulationGroup.load.minimum;
+
                   load <= simulations[idx]._simulationGroup.load.maximum;
                   load += simulations[idx]._simulationGroup.load.step ) {
 
                   const simulationInstance = new SimulationInstance( {
-                     _simulation: simulations[idx].id,
+                     _simulation: simulations[idx]._id,
                      seed: seed,
                      load: load
                   });
@@ -41,7 +46,10 @@ event.on( 'new_simulation', ( id ) => {
                }
 
                SimulationInstance.insertMany( simulationInstances, ( err, simulationInstances ) => {
-                  if ( err ) return console.log( err );
+
+                  if ( err ) {
+                     return console.log( err );
+                  }
 
                   console.log( simulationInstances );
 
