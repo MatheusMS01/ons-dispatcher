@@ -65,8 +65,6 @@
       </div>
 
       <script>
-         var count = 0;
-
          function newSimulation() {
             var btnGroup = document.getElementById('btn-group');
 
@@ -76,12 +74,13 @@
             var simulatorDiv = document.createElement('div');
 
             var simulatorNameLbl = document.createElement('label');
-            simulatorNameLbl.innerHTML = 'Simulator name';
-
+            simulatorNameLbl.innerHTML = 'Simulation name';
 
             var simulatorNameInput = document.createElement('input');
             simulatorNameInput.className = 'form-control';
             simulatorNameInput.type = 'text';
+            simulatorNameInput.name = 'simulationName';
+            
 
             // < Simulator input >
             var simulatorInputDiv = document.createElement('div');

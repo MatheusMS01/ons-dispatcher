@@ -188,8 +188,15 @@ module.exports = function ( app ) {
          return;
       }
 
+      var simulationNames = req.body.simulationName;
       var binaryFiles = req.files['simulator'];
       var documentFiles = req.files['configuration'];
+
+      if ( simulationNames === undefined ) {
+         req.flash( 'error_msg', 'simulation name not submitted' );
+         res.redirect( '/new_simulation' );
+         return;
+      }
 
       if ( binaryFiles === undefined ) {
          req.flash( 'error_msg', 'binary not submitted' );
@@ -203,6 +210,10 @@ module.exports = function ( app ) {
          return;
       }
 
+      if ( !( simulationNames instanceof Array ) ) {
+         simulationNames = [simulationNames];
+      }
+
       if ( !( binaryFiles instanceof Array ) ) {
          binaryFiles = [binaryFiles];
       }
@@ -211,8 +222,8 @@ module.exports = function ( app ) {
          documentFiles = [documentFiles];
       }
 
-      if ( binaryFiles.length !== documentFiles.length ) {
-         req.flash( 'error_msg', 'binary and document must be paired!' );
+      if ( ( simulationNames.length !== binaryFiles.length ) || ( binaryFiles.length !== documentFiles.length ) ) {
+         req.flash( 'error_msg', 'simulation name, binary and document must be filled!' );
          res.redirect( '/new_simulation' );
          return;
       }
@@ -334,8 +345,10 @@ module.exports = function ( app ) {
                      _simulationGroup: simulationGroup.id,
                      _binary: binaries[idx].id,
                      _document: documents[idx].id,
-                     name: 'abcde' // TODO
+                     name: simulationNames[idx]
                   });
+
+                  console.log(simulation);
 
                   simulations.push( simulation );
                }
