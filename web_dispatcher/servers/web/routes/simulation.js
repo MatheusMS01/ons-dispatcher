@@ -75,76 +75,101 @@ module.exports = function ( app ) {
 
       const simulationFilter = {
          _simulationGroup: req.body._simulationGroup,
-         state: Simulation.State.Pending
+         state: Simulation.State.Executing
       };
 
+      // Find all simulations from this group
       Simulation.find( simulationFilter )
-         .select( '_id' )
+         .select( 'id' )
          .exec(( err, simulationIds ) => {
 
             if ( err ) {
-               res.sendStatus( 400 );
-               return;
+               return console.log( err );
             }
 
             const simulationInstanceFilter = {
-               _simulation: { $in: simulationIds },
-               state: SimulationInstance.State.Pending
+               _simulation: { $in: simulationIds }
             }
 
             SimulationInstance.update( simulationInstanceFilter, { state: SimulationInstance.State.Canceled }, { multi: true })
                .exec(( err ) => {
 
                   if ( err ) {
-                     res.sendStatus( 400 );
-                     return;
+                     return console.log( err );
                   }
 
-                  Simulation.update( simulationFilter, { state: Simulation.State.Canceled }, { multi: true })
-                     .exec(( err, simulations ) => {
-
-                        if ( err ) {
-                           res.sendStatus( 400 );
-                           return;
-                        }
-
-                        res.sendStatus( 200 );
-                     });
                });
          });
+
+      Simulation.update( simulationFilter, { state: Simulation.State.Canceled }, { multi: true })
+         .exec(( err ) => {
+
+            if ( err ) {
+               return console.log( err );
+            }
+
+         });
+
+      SimulationGroup.findByIdAndUpdate( req.body._simulationGroup, { state: SimulationGroup.State.Finished }, ( err ) => {
+
+         if ( err ) {
+            console.log( err );
+            return res.sendStatus( 400 );
+         }
+
+         res.sendStatus( 200 );
+
+      });
    });
 
    app.post( '/remove', ( req, res ) => {
 
-      //const simulationFilter = {
-      //   _simulationGroup: req.body._simulationGroup,
-      //};
+      // TODO: Remove binaries and documents
 
-      //Simulation.find(simulationFilter)
-      //   .remove((err) => {
+      const simulationFilter = {
+         _simulationGroup: req.body._simulationGroup
+      };
 
-      //   });
+      // Find all simulations from this group
+      Simulation.find( simulationFilter )
+         .select( 'id' )
+         .exec(( err, simulationIds ) => {
 
-      //{
-      //   const simulationFilter = {
-      //      _simulationProperty: req.body._simulationProperty
-      //   }
+            if ( err ) {
+               return console.log( err );
+            }
 
-      //   Simulation.find(simulationFilter).remove((err) => {
-      //      if (err) res.sendStatus(400);
+            const simulationInstanceFilter = {
+               _simulation: { $in: simulationIds }
+            }
 
-      //      const simulationPropertyFilter = {
-      //         _id: req.body._simulationProperty
-      //      }
+            SimulationInstance.find( simulationInstanceFilter ).remove(( err ) => {
 
-      //      SimulationProperty.findByIdAndRemove(simulationPropertyFilter, (err) => {
-      //         if (err) res.sendStatus(400);
+               if ( err ) {
+                  return console.log( err );
+               }
 
-      //         res.sendStatus(200);
-      //      });
-      //   });
-      //}
+            });
+         });
 
+      Simulation.find( simulationFilter ).remove(( err ) => {
+
+         if ( err ) {
+            return console.log( err );
+         }
+
+      });
+
+      SimulationGroup.findByIdAndRemove( req.body._simulationGroup, ( err ) => {
+
+         if ( err ) {
+            console.log( err );
+            return res.sendStatus( 400 );
+         }
+
+         res.sendStatus( 200 );
+
+      });
    });
 
    // New Simulation

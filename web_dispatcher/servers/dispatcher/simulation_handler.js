@@ -51,8 +51,6 @@ event.on( 'new_simulation', ( id ) => {
                      return console.log( err );
                   }
 
-                  console.log( simulationInstances );
-
                   communication.event.emit( 'request_resources' );
                });
             }

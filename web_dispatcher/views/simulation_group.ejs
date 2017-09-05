@@ -95,7 +95,7 @@
 
       $('[name=Cancel]').on('confirmed.bs.confirmation', function () {
          $.post('/cancel', {
-               _simulationProperty: $(this).closest('tr').attr('id')
+               _simulationGroup: $(this).closest('tr').attr('id')
             }, () => {
                location.reload();
             });
@@ -104,7 +104,7 @@
       $('[name=Remove]').on('confirmed.bs.confirmation', function () {
          $.post('/remove',
             {
-               _simulationProperty: $(this).closest('tr').attr('id')
+               _simulationGroup: $(this).closest('tr').attr('id')
             }, () => {
                location.reload();
             });
