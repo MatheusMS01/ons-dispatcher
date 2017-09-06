@@ -53,8 +53,10 @@
       <% include template/footer.ejs %>
    </div> <!-- /container -->
 
-   <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.js'></script>
+   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
    <script>
+      google.charts.load( 'current', { 'packages': ['corechart'] });
+
       function generateChart() {
 
          var results = JSON.parse( document.getElementById( 'result' ).innerHTML );
@@ -86,118 +88,92 @@
             simulations[simulationId].push( result );
          }
 
-         var datasets = [];
+         var simIdx = 0;
 
          for ( var simulation in simulations ) {
 
-            var x_axes = [];
-            var y_axes = [];
+            var data = new google.visualization.DataTable();
 
-            var sampleX = {};
-            var sampleY = {};
+            data.addColumn( 'number', results[simIdx]._simulation.name );
+            data.addColumn( 'number', results[simIdx]._simulation.name );
+            ++simIdx;
 
+            var rows = [];
+            var greater = 0;
+
+            loop:
             for ( var idx in simulations[simulation] ) {
 
                var result = simulations[simulation][idx];
 
-               insertSampleValue( sampleX, result['Load'], result[x_axisValue] );
-               insertSampleValue( sampleY, result['Load'], result[y_axisValue] );
+               for ( var row in rows ) {
+
+                  if ( result[x_axisValue] === rows[row][0] ) {
+                     rows[row].push( result[y_axisValue] );
+
+                     if ( rows[row].length > greater ) {
+                        greater = rows[row].length;
+                     }
+
+                     continue loop;
+                  }
+               }
+
+               rows.push( [result[x_axisValue], result[y_axisValue]] );
             }
 
-            var data = [];
+            if ( greater > 0 ) {
 
-            // Compute mean for each axis (sampleX = sampleY)
-            for ( var key in sampleX ) {
-
-               var meanX = 0;
-
-               for ( var value in sampleX[key] ) {
-                  meanX += sampleX[key][value];
+               for ( var i = 0; i < greater - 2; ++i ) {
+                  data.addColumn( { type: 'number', role: 'interval' });
                }
 
-               // Values to calculate confidence interval
-               var greaterY = 0;
-               var lesserY = Number.MAX_SAFE_INTEGER;
+               for ( row in rows ) {
 
-               var meanY = 0;
+                  // Compute average
+                  var subArray = rows[row].slice( 1, rows[row].length );
 
-               for ( var value in sampleY[key] ) {
-                  meanY += sampleY[key][value];
+                  var total = 0;
+
+                  for ( var i = 0; i < subArray.length; ++i ) {
+                     total += subArray[i];
+                  }
+
+                  const average = total / subArray.length;
+
+                  rows[row][1] = average;
+
+                  // Fill with null
+                  if ( rows[row].length < greater ) {
+
+                     var diff = greater - rows[row].length;
+
+                     for ( var i = 0; i < diff; ++i ) {
+                        rows[row].push( null );
+                     }
+                  }
                }
-
-               const sample = {
-                  x: meanX / sampleX[key].length,
-                  y: meanY / sampleY[key].length
-               }
-
-               data.push( sample );
-
-               // Label
-               x_axes.push( meanX / sampleX[key].length );
             }
 
-            const r = Math.floor( Math.random() * 255 );
-            const g = Math.floor( Math.random() * 255 );
-            const b = Math.floor( Math.random() * 255 );
+            data.addRows( rows );
 
-            datasets.push( {
-               'label': results[0]._simulation.name, // Simulation name
-               'backgroundColor': 'rgb(' + r + ',' + g + ',' + b + ')',
-               'borderColor': 'rgb(' + r + ',' + g + ',' + b + ')',
-               'data': data,
-               'fill': false,
-            })
+            var options = {
+               series: [{ 'color': '#' + Math.floor( Math.random() * 16777215 ).toString( 16 ) }],
+               intervals: { style: 'boxes' },
+               legend: 'none',
+            };
+
+
+            var div = document.createElement( 'div' );
+            div.className = 'my-5';
+            var buttonGroup = document.getElementById( 'btn-group' );
+            buttonGroup.insertBefore( div, buttonGroup.childNodes[0] );
+
+            var chart_lines = new google.visualization.LineChart( div );
+            chart_lines.draw( data, options );
          }
-
-         // Plot chart
-         var canvas = document.createElement( 'canvas' );
-         canvas.className = 'my-5';
-         var buttonGroup = document.getElementById( 'btn-group' );
-         buttonGroup.insertBefore( canvas, buttonGroup.childNodes[0] );
-
-         var chart = new Chart( canvas, {
-            'type': 'line',
-            'data': {
-               'labels': x_axes,
-               'datasets': datasets
-            },
-            'options': {
-               'responsive': true,
-               'tooltips': {
-                  'mode': 'index',
-                  'intersect': false,
-               },
-               'hover': {
-                  'mode': 'nearest',
-                  'intersect': true
-               },
-               'scales': {
-                  'xAxes': [{
-                     'display': true,
-                     'scaleLabel': {
-                        'display': true,
-                        'labelString': x_axisValue
-                     }
-                  }],
-                  'yAxes': [{
-                     'display': true,
-                     'scaleLabel': {
-                        'display': true,
-                        'labelString': y_axisValue
-                     }
-                  }]
-               }
-            }
-         });
       }
 
-      function insertSampleValue( array, key, value ) {
-         if ( array[key] === undefined ) {
-            array[key] = [];
-         }
-
-         array[key].push( value );
-      }
    </script>
 </body>
 

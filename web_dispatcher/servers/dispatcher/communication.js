@@ -46,6 +46,7 @@ module.exports.execute = function () {
 
    server.on( 'connection', ( socket ) => {
 
+
       // Insert new worker to the pool
       workerPool.push( socket );
 
@@ -284,7 +285,7 @@ function treat( data, socket ) {
             logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
 
             SimulationInstance.findByIdAndUpdate( object.SimulationId, {
-               'state': Simulation.State.Pending,
+               'state': SimulationInstance.State.Pending,
                $unset: { 'worker': 1 },
             }, ( err ) => {
                if ( err ) {
