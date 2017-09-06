@@ -10,12 +10,15 @@ const dgram = require( 'dgram' );
 const EventEmitter = require( 'events' );
 const log4js = require( 'log4js' );
 
-log4js.configure( {
-   appenders: [
-      { type: 'console' },
-      { type: 'file', filename: 'logs/ddp.log', category: 'ddp' }
-   ]
-});
+log4js.configure({
+   appenders: {
+     out: { type: 'stdout' },
+     app: { type: 'file', filename: 'log/ddp.log' }
+   },
+   categories: {
+     default: { appenders: [ 'out', 'app' ], level: 'debug' }
+   }
+ });
 
 var event = new EventEmitter();
 module.exports.event = event;
@@ -23,7 +26,7 @@ module.exports.event = event;
 var receivedResponse = false;
 
 // Responsible for loggin into console and log file
-const logger = log4js.getLogger( 'ddp' );
+const logger = log4js.getLogger();
 
 
 module.exports.execute = function () {

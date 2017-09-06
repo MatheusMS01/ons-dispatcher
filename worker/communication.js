@@ -17,15 +17,18 @@ const dirname = require( 'path' ).dirname;
 const exec = require( 'child_process' ).exec;
 const rimraf = require( 'rimraf' );
 
-log4js.configure( {
-   appenders: [
-      { type: 'console' },
-      { type: 'file', filename: 'logs/communication.log', category: 'communication' }
-   ]
+log4js.configure({
+   appenders: {
+     out: { type: 'stdout' },
+     app: { type: 'file', filename: 'log/communication.log' }
+   },
+   categories: {
+     default: { appenders: [ 'out', 'app' ], level: 'debug' }
+   }
 });
 
 // Responsible for loggin into console and log file
-const logger = log4js.getLogger( 'communication' );
+const logger = log4js.getLogger();
 
 var buffer = '';
 
