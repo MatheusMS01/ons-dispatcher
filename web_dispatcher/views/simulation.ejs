@@ -82,33 +82,37 @@
             const result = JSON.parse( results[idx].result );
 
             if ( simulations[simulationId] === undefined ) {
-               simulations[simulationId] = [];
+               simulations[simulationId] = {
+                  name: results[idx]._simulation.name,
+                  results: []
+               };
             }
 
-            simulations[simulationId].push( result );
+            simulations[simulationId].results.push( result );
          }
 
-         var simIdx = 0;
+         var datas = [];
 
          for ( var simulation in simulations ) {
 
             var data = new google.visualization.DataTable();
 
-            data.addColumn( 'number', results[simIdx]._simulation.name );
-            data.addColumn( 'number', results[simIdx]._simulation.name );
-            ++simIdx;
+            data.addColumn( 'number', x_axisValue );
+            data.addColumn( 'number', simulations[simulation].name );
 
             var rows = [];
             var greater = 0;
 
+            // Iterate over all results from simulation
             loop:
-            for ( var idx in simulations[simulation] ) {
+            for ( var idx in simulations[simulation].results ) {
 
-               var result = simulations[simulation][idx];
+               var result = simulations[simulation].results[idx];
 
                for ( var row in rows ) {
 
                   if ( result[x_axisValue] === rows[row][0] ) {
+
                      rows[row].push( result[y_axisValue] );
 
                      if ( rows[row].length > greater ) {
@@ -124,7 +128,7 @@
 
             if ( greater > 0 ) {
 
-               for ( var i = 0; i < greater - 2; ++i ) {
+               for ( var idx = 0; idx < greater - 2; ++idx ) {
                   data.addColumn( { type: 'number', role: 'interval' });
                }
 
@@ -135,8 +139,8 @@
 
                   var total = 0;
 
-                  for ( var i = 0; i < subArray.length; ++i ) {
-                     total += subArray[i];
+                  for ( var idx = 0; idx < subArray.length; ++idx ) {
+                     total += subArray[idx];
                   }
 
                   const average = total / subArray.length;
@@ -148,7 +152,7 @@
 
                      var diff = greater - rows[row].length;
 
-                     for ( var i = 0; i < diff; ++i ) {
+                     for ( var idx = 0; idx < diff; ++idx ) {
                         rows[row].push( null );
                      }
                   }
@@ -156,22 +160,63 @@
             }
 
             data.addRows( rows );
+            datas.push( data );
 
-            var options = {
-               series: [{ 'color': '#' + Math.floor( Math.random() * 16777215 ).toString( 16 ) }],
-               intervals: { style: 'boxes' },
-               legend: 'none',
-            };
+            //var div = document.createElement( 'div' );
+            //div.className = 'my-5';
+            //var buttonGroup = document.getElementById( 'btn-group' );
+            //buttonGroup.insertBefore( div, buttonGroup.childNodes[0] );
 
-
-            var div = document.createElement( 'div' );
-            div.className = 'my-5';
-            var buttonGroup = document.getElementById( 'btn-group' );
-            buttonGroup.insertBefore( div, buttonGroup.childNodes[0] );
-
-            var chart_lines = new google.visualization.LineChart( div );
-            chart_lines.draw( data, options );
+            //var chart_lines = new google.visualization.LineChart( div );
+            //chart_lines.draw( data, options );
          }
+
+         var data = datas[0];
+
+         console.log( data );
+
+         if ( datas.length > 1 ) {
+
+            for ( var idx = 1; idx <= datas.length; ++idx ) {
+
+               if ( idx === datas.length ) {
+                  break;
+               }
+
+               console.log( idx );
+
+               data = google.visualization.data.join( data, datas[idx], 'full', [[0, 0]], [1, 2], [1, 2] );
+            }
+
+         }
+
+         var div = document.createElement( 'div' );
+         div.className = 'my-5';
+         var buttonGroup = document.getElementById( 'btn-group' );
+         buttonGroup.insertBefore( div, buttonGroup.childNodes[0] );
+
+         var options = {
+            title: x_axisValue + ' v ' + y_axisValue,
+            series: [{ 'color': '#' + pad(( Math.random() * 0xFFFFFF << 0 ).toString( 16 ), 6 ) }],
+            intervals: { style: 'boxes' },
+            hAxis: {
+               title: x_axisValue
+            },
+            vAxis: {
+               title: y_axisValue
+            },
+            legend: { position: 'right' },
+            height: 500
+         };
+
+         var chart_lines = new google.visualization.LineChart( div );
+         chart_lines.draw( data, options );
+      }
+
+      function pad( n, width, z ) {
+         z = z || '0';
+         n = n + '';
+         return n.length >= width ? n : new Array( width - n.length + 1 ).join( z ) + n;
       }
 
    </script>

@@ -62,21 +62,19 @@ module.exports.execute = function () {
 
          removeWorker( socket );
 
-         // All simulations from that worker were not completed
-         Simulation.find( { 'worker': socket.remoteAddress })
-            .exec(( err, res ) => {
+         const simulationInstanceFilter = { worker: socket.remoteAddress };
 
-               for ( let idx = 0; idx < res.length; ++idx ) {
-                  res[idx].worker = undefined;
-                  res[idx].state = Simulation.State.Pending;
+         // Update all SimulationInstances that were executing by worker to pending again
+         SimulationInstance.update( simulationInstanceFilter, {
+            state: SimulationInstance.State.Pending,
+            $unset: { worker: 1 }
+         }, { multi: true })
+            .exec(( err ) => {
 
-                  res[idx].save(( err ) => {
-                     if ( err ) return logger.error( err );
-
-                     // Simulation is pending again
-                     event.emit( 'request_resources' );
-                  });
+               if ( err ) {
+                  return logger.error( err );
                }
+
             });
 
          logger.debug( 'Worker ' + socket.remoteAddress + ' left the pool' );
@@ -138,30 +136,36 @@ event.on( 'run_simulation', ( worker ) => {
             path: '_binary _document _simulationGroup',
          },
          options: {
-            sort: { '_simulationGroup.priority': -1 }
+            sort: {
+               '_simulationGroup.priority': -1,
+               'seed': -1
+            }
          }
       }).
       exec(( err, simulationInstance ) => {
-         if ( err ) return logger.error( err );
 
-         if ( simulationInstance === null ) {
-            // No simulations are pending
-            logger.debug( 'No simulations are pending' );
-            return;
+         if ( err ) {
+            return logger.error( err );
          }
 
-         const pdu = simulationRequest.format( { Data: simulationInstance });
-         worker.write( pdu, () => {
+         if ( simulationInstance === null ) {
+            return logger.debug( 'No simulations are pending' );
+         }
 
-            simulationInstance.state = Simulation.State.Executing;
-            simulationInstance.worker = worker.remoteAddress;
+         simulationInstance.state = SimulationInstance.State.Executing;
+         simulationInstance.worker = worker.remoteAddress;
 
-            simulationInstance.save(( err ) => {
-               if ( err ) return logger.error( err );
+         simulationInstance.save(( err ) => {
 
-               //event.emit('request_resources');
-            });
+            if ( err ) {
+               return logger.error( err );
+            }
+
+            const pdu = simulationRequest.format( { Data: simulationInstance });
+            worker.write( pdu );
          });
+
+
       });
 });
 
@@ -231,7 +235,7 @@ function treat( data, socket ) {
                simulationInstanceUpdate,
                ( err, simulationInstance ) => {
                   if ( err ) return logger.error( err );
-                  // Count if there are simulations that are not finished yet
+                  // Count if there are simulationInstances that are not finished yet
                   SimulationInstance.count( {
                      _simulation: simulationInstance._simulation,
                      $or: [{ state: SimulationInstance.State.Pending },
@@ -252,6 +256,7 @@ function treat( data, socket ) {
                               return logger.error( err );
                            }
 
+                           // Count simulations from this group that are still executing
                            Simulation.count( {
                               _simulationGroup: simulation._simulationGroup,
                               state: Simulation.State.Executing
