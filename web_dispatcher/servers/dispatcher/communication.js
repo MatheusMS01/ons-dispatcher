@@ -14,6 +14,7 @@ const EventEmitter = require( 'events' );
 const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
 const SimulationGroup = require( '../../database/models/simulation_group' );
+const Worker = require( '../../database/models/worker' );
 
 const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' );
 const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request' );
@@ -44,11 +45,17 @@ module.exports.event = event;
 
 module.exports.execute = function () {
 
+   // Clean all workers
+   Worker.remove( {}, ( err ) => {
+      if ( err ) {
+         logger.error( err )
+      }
+   });
+
    server.on( 'connection', ( socket ) => {
 
       // Insert new worker to the pool
-      workerPool.push( socket );
-
+      addWorker( socket );
       // Emit to UDP discovery
       event.emit( 'new_worker', socket.remoteAddress );
 
@@ -61,21 +68,19 @@ module.exports.execute = function () {
 
          removeWorker( socket );
 
-         // All simulations from that worker were not completed
-         Simulation.find( { 'worker': socket.remoteAddress })
-            .exec(( err, res ) => {
+         const simulationInstanceFilter = { worker: socket.remoteAddress };
 
-               for ( let idx = 0; idx < res.length; ++idx ) {
-                  res[idx].worker = undefined;
-                  res[idx].state = Simulation.State.Pending;
+         // Update all SimulationInstances that were executing by worker to pending again
+         SimulationInstance.update( simulationInstanceFilter, {
+            state: SimulationInstance.State.Pending,
+            $unset: { worker: 1 }
+         }, { multi: true })
+            .exec(( err ) => {
 
-                  res[idx].save(( err ) => {
-                     if ( err ) return logger.error( err );
-
-                     // Simulation is pending again
-                     event.emit( 'request_resources' );
-                  });
+               if ( err ) {
+                  return logger.error( err );
                }
+
             });
 
          logger.debug( 'Worker ' + socket.remoteAddress + ' left the pool' );
@@ -137,34 +142,56 @@ event.on( 'run_simulation', ( worker ) => {
             path: '_binary _document _simulationGroup',
          },
          options: {
-            sort: { '_simulationGroup.priority': -1 }
+            sort: {
+               '_simulationGroup.priority': -1,
+               'seed': -1
+            }
          }
-      }).
-      exec(( err, simulationInstance ) => {
-         if ( err ) return logger.error( err );
+      })
+      .exec(( err, simulationInstance ) => {
+
+         if ( err ) {
+            return logger.error( err );
+         }
 
          if ( simulationInstance === null ) {
-            // No simulations are pending
-            logger.debug( 'No simulations are pending' );
-            return;
+            return logger.debug( 'No simulations are pending' );
          }
 
-         const pdu = simulationRequest.format( { Data: simulationInstance });
-         worker.write( pdu, () => {
+         simulationInstance.state = SimulationInstance.State.Executing;
+         simulationInstance.worker = worker.remoteAddress;
 
-            simulationInstance.state = Simulation.State.Executing;
-            simulationInstance.worker = worker.remoteAddress;
+         simulationInstance.save(( err ) => {
 
-            simulationInstance.save(( err ) => {
-               if ( err ) return logger.error( err );
+            if ( err ) {
+               return logger.error( err );
+            }
 
-               //event.emit('request_resources');
-            });
+            const pdu = simulationRequest.format( { Data: simulationInstance });
+            worker.write( pdu );
          });
+
       });
 });
 
+function addWorker( worker ) {
+
+   const newWorker = new Worker( {
+      address: worker.remoteAddress,
+   });
+
+   newWorker.save();
+
+   workerPool.push( worker );
+}
+
 function removeWorker( worker ) {
+
+   Worker.remove( { address: worker.remoteAddress }, ( err ) => {
+      if ( err ) {
+         return logger.error( err );
+      }
+   });
 
    var idx = 0;
 
@@ -198,6 +225,8 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
+         Worker.update( { address: socket.remoteAddress }, { lastResource: { cpu: object.cpu, memory: object.memory } }, ( err ) => { if ( err ) return logger.error( err ) });
+
          availabilityList.push( { worker: socket, memory: object.memory, cpu: object.cpu });
 
          computeMostIdleWorker();
@@ -230,7 +259,7 @@ function treat( data, socket ) {
                simulationInstanceUpdate,
                ( err, simulationInstance ) => {
                   if ( err ) return logger.error( err );
-                  // Count if there are simulations that are not finished yet
+                  // Count if there are simulationInstances that are not finished yet
                   SimulationInstance.count( {
                      _simulation: simulationInstance._simulation,
                      $or: [{ state: SimulationInstance.State.Pending },
@@ -251,6 +280,7 @@ function treat( data, socket ) {
                               return logger.error( err );
                            }
 
+                           // Count simulations from this group that are still executing
                            Simulation.count( {
                               _simulationGroup: simulation._simulationGroup,
                               state: Simulation.State.Executing
@@ -284,7 +314,7 @@ function treat( data, socket ) {
             logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
 
             SimulationInstance.findByIdAndUpdate( object.SimulationId, {
-               'state': Simulation.State.Pending,
+               'state': SimulationInstance.State.Pending,
                $unset: { 'worker': 1 },
             }, ( err ) => {
                if ( err ) {
@@ -299,7 +329,6 @@ function treat( data, socket ) {
 
       default:
          return logger.error( 'Invalid message received from ' + socket.remoteAddress );
-
    }
 }
 

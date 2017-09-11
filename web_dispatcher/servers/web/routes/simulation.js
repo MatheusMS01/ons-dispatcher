@@ -48,13 +48,12 @@ module.exports = function ( app ) {
                .sort( 'load' )
                .exec(( err, results ) => {
 
-                  var a = JSON.stringify( results );
-
                   if ( err ) {
                      res.sendStatus( 400 );
                      return;
                   }
 
+                  // TODO: USAR AJAX! OLHAR COMO É FEITO COM PROFILE
                   results = JSON.stringify( results )
 
                   res.render( 'simulation', {

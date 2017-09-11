@@ -28,9 +28,10 @@ event.on( 'new_simulation', ( id ) => {
 
          for ( var idx = 0; idx < simulations.length; ++idx ) {
 
-            var simulationInstances = [];
-
             for ( var seed = 1; seed <= simulations[idx]._simulationGroup.seedAmount; ++seed ) {
+
+               var simulationInstances = [];
+
                for ( var load = simulations[idx]._simulationGroup.load.minimum;
 
                   load <= simulations[idx]._simulationGroup.load.maximum;
