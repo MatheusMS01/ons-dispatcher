@@ -50,7 +50,6 @@
          </div>
       </div>
 
-      <% include template/footer.ejs %>
    </div> <!-- /container -->
 
    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -126,6 +125,8 @@
                rows.push( [result[x_axisValue], result[y_axisValue]] );
             }
 
+            console.log( rows );
+
             if ( greater > 0 ) {
 
                for ( var idx = 0; idx < greater - 2; ++idx ) {
@@ -161,19 +162,9 @@
 
             data.addRows( rows );
             datas.push( data );
-
-            //var div = document.createElement( 'div' );
-            //div.className = 'my-5';
-            //var buttonGroup = document.getElementById( 'btn-group' );
-            //buttonGroup.insertBefore( div, buttonGroup.childNodes[0] );
-
-            //var chart_lines = new google.visualization.LineChart( div );
-            //chart_lines.draw( data, options );
          }
 
          var data = datas[0];
-
-         console.log( data );
 
          if ( datas.length > 1 ) {
 
@@ -183,9 +174,13 @@
                   break;
                }
 
-               console.log( idx );
+               var dt1Columns = [1];
 
-               data = google.visualization.data.join( data, datas[idx], 'full', [[0, 0]], [1, 2], [1, 2] );
+               if ( idx > 1 ) {
+                  dt1Columns = Array.from( { length: idx }, ( v, k ) => k + 1 );
+               }
+
+               data = google.visualization.data.join( data, datas[idx], 'full', [[0, 0]], dt1Columns, [1] );
             }
 
          }
@@ -198,7 +193,7 @@
          var options = {
             title: x_axisValue + ' v ' + y_axisValue,
             series: [{ 'color': '#' + pad(( Math.random() * 0xFFFFFF << 0 ).toString( 16 ), 6 ) }],
-            intervals: { style: 'boxes' },
+            intervals: { style: 'bars' },
             hAxis: {
                title: x_axisValue
             },
@@ -206,7 +201,8 @@
                title: y_axisValue
             },
             legend: { position: 'right' },
-            height: 500
+            height: 500,
+            focusTarget: 'category'
          };
 
          var chart_lines = new google.visualization.LineChart( div );
@@ -223,3 +219,6 @@
 </body>
 
 </html>
+<footer>
+   <% include template/footer.ejs %>
+</footer>

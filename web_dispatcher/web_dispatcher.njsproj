@@ -37,6 +37,9 @@
     <Compile Include="database\models\user.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="database\models\worker.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="public\js\bootstrap-confirmation.min.js" />
     <Compile Include="public\js\bootstrap.js" />
     <Compile Include="public\js\bootstrap.min.js" />

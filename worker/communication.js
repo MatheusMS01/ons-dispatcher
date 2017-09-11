@@ -98,7 +98,6 @@ function treat( data, socket ) {
             socket.write( resource_response.format( data ) );
          });
 
-
          break;
 
       case factory.Id.SimulationRequest:

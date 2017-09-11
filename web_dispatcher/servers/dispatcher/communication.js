@@ -14,6 +14,7 @@ const EventEmitter = require( 'events' );
 const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
 const SimulationGroup = require( '../../database/models/simulation_group' );
+const Worker = require( '../../database/models/worker' );
 
 const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' );
 const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request' );
@@ -44,12 +45,17 @@ module.exports.event = event;
 
 module.exports.execute = function () {
 
+   // Clean all workers
+   Worker.remove( {}, ( err ) => {
+      if ( err ) {
+         logger.error( err )
+      }
+   });
+
    server.on( 'connection', ( socket ) => {
 
-
       // Insert new worker to the pool
-      workerPool.push( socket );
-
+      addWorker( socket );
       // Emit to UDP discovery
       event.emit( 'new_worker', socket.remoteAddress );
 
@@ -141,8 +147,8 @@ event.on( 'run_simulation', ( worker ) => {
                'seed': -1
             }
          }
-      }).
-      exec(( err, simulationInstance ) => {
+      })
+      .exec(( err, simulationInstance ) => {
 
          if ( err ) {
             return logger.error( err );
@@ -165,11 +171,27 @@ event.on( 'run_simulation', ( worker ) => {
             worker.write( pdu );
          });
 
-
       });
 });
 
+function addWorker( worker ) {
+
+   const newWorker = new Worker( {
+      address: worker.remoteAddress,
+   });
+
+   newWorker.save();
+
+   workerPool.push( worker );
+}
+
 function removeWorker( worker ) {
+
+   Worker.remove( { address: worker.remoteAddress }, ( err ) => {
+      if ( err ) {
+         return logger.error( err );
+      }
+   });
 
    var idx = 0;
 
@@ -202,6 +224,8 @@ function treat( data, socket ) {
    switch ( object.Id ) {
 
       case factory.Id.ResourceResponse:
+
+         Worker.update( { address: socket.remoteAddress }, { lastResource: { cpu: object.cpu, memory: object.memory } }, ( err ) => { if ( err ) return logger.error( err ) });
 
          availabilityList.push( { worker: socket, memory: object.memory, cpu: object.cpu });
 
@@ -305,7 +329,6 @@ function treat( data, socket ) {
 
       default:
          return logger.error( 'Invalid message received from ' + socket.remoteAddress );
-
    }
 }
 
