@@ -4,24 +4,26 @@
 //
 ////////////////////////////////////////////////
 
-const ip = require( 'ip' );
-const net = require( 'net' );
-const log4js = require( 'log4js' );
-const factory = require( '../../../protocol/dwp/factory' )
-const worker_discovery = require( './worker_discovery' )
-const EventEmitter = require( 'events' );
+const ip = require('ip');
+const net = require('net');
+const log4js = require('log4js');
+const factory = require('../../../protocol/dwp/factory')
+const worker_discovery = require('./worker_discovery')
+const EventEmitter = require('events');
+var AsyncLock = require('async-lock');
+var lock = new AsyncLock();
 
-const Simulation = require( '../../database/models/simulation' );
-const SimulationInstance = require( '../../database/models/simulation_instance' );
-const SimulationGroup = require( '../../database/models/simulation_group' );
-const Worker = require( '../../database/models/worker' );
+const Simulation = require('../../database/models/simulation');
+const SimulationInstance = require('../../database/models/simulation_instance');
+const SimulationGroup = require('../../database/models/simulation_group');
+const Worker = require('../../database/models/worker');
 
-const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' );
-const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request' );
-const simulationResponse = require( '../../../protocol/dwp/pdu/simulation_response' );
-const simulationTerminateRequest = require( '../../../protocol/dwp/pdu/simulation_terminate_request' );
+const resourceRequest = require('../../../protocol/dwp/pdu/resource_request');
+const simulationRequest = require('../../../protocol/dwp/pdu/simulation_request');
+const simulationResponse = require('../../../protocol/dwp/pdu/simulation_response');
+const simulationTerminateRequest = require('../../../protocol/dwp/pdu/simulation_terminate_request');
 
-log4js.configure( {
+log4js.configure({
    appenders: [
       { type: 'console' },
       { type: 'file', filename: 'logs/communication.log', category: 'communication' }
@@ -29,7 +31,7 @@ log4js.configure( {
 });
 
 // Responsible for logging into console and log file
-const logger = log4js.getLogger( 'communication' );
+const logger = log4js.getLogger('communication');
 
 // TCP socket in which all the dispatcher-workers communication will be accomplished
 const server = net.createServer();
@@ -46,54 +48,54 @@ module.exports.event = event;
 module.exports.execute = function () {
 
    // Clean all workers
-   Worker.remove( {}, ( err ) => {
-      if ( err ) {
-         logger.error( err )
+   Worker.remove({}, (err) => {
+      if (err) {
+         logger.error(err)
       }
    });
 
-   server.on( 'connection', ( socket ) => {
+   server.on('connection', (socket) => {
 
       // Insert new worker to the pool
-      addWorker( socket );
+      addWorker(socket);
       // Emit to UDP discovery
-      event.emit( 'new_worker', socket.remoteAddress );
+      event.emit('new_worker', socket.remoteAddress);
 
       // Since new worker is online, check if there are simulations pending
-      event.emit( 'request_resources' );
+      event.emit('request_resources');
 
-      logger.debug( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
+      logger.debug(socket.remoteAddress + ':' + socket.remotePort + ' connected');
 
-      socket.once( 'close', () => {
+      socket.once('close', () => {
 
-         removeWorker( socket );
+         removeWorker(socket);
 
          const simulationInstanceFilter = { worker: socket.remoteAddress };
 
          // Update all SimulationInstances that were executing by worker to pending again
-         SimulationInstance.update( simulationInstanceFilter, {
+         SimulationInstance.update(simulationInstanceFilter, {
             state: SimulationInstance.State.Pending,
             $unset: { worker: 1 }
          }, { multi: true })
-            .exec(( err ) => {
+            .exec((err) => {
 
-               if ( err ) {
-                  return logger.error( err );
+               if (err) {
+                  return logger.error(err);
                }
 
             });
 
-         logger.debug( 'Worker ' + socket.remoteAddress + ' left the pool' );
+         logger.debug('Worker ' + socket.remoteAddress + ' left the pool');
 
-         if ( workerPool.length === 0 ) {
-            logger.warn( 'There are no workers left' );
+         if (workerPool.length === 0) {
+            logger.warn('There are no workers left');
             return;
          }
 
          computeMostIdleWorker();
       });
 
-      socket.on( 'data', ( data ) => {
+      socket.on('data', (data) => {
          // Treat chunk data
          buffer += data;
 
@@ -102,40 +104,39 @@ module.exports.execute = function () {
          try {
 
             do {
-               packet = factory.expose( buffer );
-               buffer = factory.remove( buffer );
-            } while ( buffer.length !== 0 )
+               packet = factory.expose(buffer);
+               buffer = factory.remove(buffer);
+            } while (buffer.length !== 0)
 
-         } catch ( exc ) {
+         } catch (e) {
             return;
          }
 
-         treat( packet, socket );
+         treat(packet, socket);
       });
 
-      socket.on( 'error', () => { });
+      socket.on('error', () => { });
    });
 
    // Open Socket
-   server.listen( 16180, ip.address(), () => {
-      logger.debug( 'TCP server listening ' + server.address().address + ':' + server.address().port );
+   server.listen(16180, ip.address(), () => {
+      logger.debug('TCP server listening ' + server.address().address + ':' + server.address().port);
    });
 }
 
-event.on( 'request_resources', () => {
+event.on('request_resources', () => {
 
    // Request resource information from all workers
-   for ( var idx = 0; idx < workerPool.length; ++idx ) {
-      workerPool[idx].write( resourceRequest.format() );
+   for (var idx = 0; idx < workerPool.length; ++idx) {
+      workerPool[idx].write(resourceRequest.format());
    }
-
 });
 
-event.on( 'run_simulation', ( worker ) => {
+event.on('run_simulation', (worker) => {
 
    // Find simulation with highest priority which is still pending
-   SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending }).
-      populate( {
+   SimulationInstance.findOne({ 'state': SimulationInstance.State.Pending }).
+      populate({
          path: '_simulation',
          select: '_binary _document _simulationGroup',
          populate: {
@@ -148,86 +149,88 @@ event.on( 'run_simulation', ( worker ) => {
             }
          }
       })
-      .exec(( err, simulationInstance ) => {
+      .exec((err, simulationInstance) => {
 
-         if ( err ) {
-            return logger.error( err );
+         if (err) {
+            return logger.error(err);
          }
 
-         if ( simulationInstance === null ) {
-            return logger.debug( 'No simulations are pending' );
+         if (simulationInstance === null) {
+            return logger.debug('No simulations are pending');
          }
 
          simulationInstance.state = SimulationInstance.State.Executing;
          simulationInstance.worker = worker.remoteAddress;
 
-         simulationInstance.save(( err ) => {
+         simulationInstance.save((err) => {
 
-            if ( err ) {
-               return logger.error( err );
+            if (err) {
+               return logger.error(err);
             }
 
-            const pdu = simulationRequest.format( { Data: simulationInstance });
-            worker.write( pdu );
-         });
+            const pdu = simulationRequest.format({ Data: simulationInstance });
 
+            worker.write(pdu);
+
+            event.emit('request_resources');
+
+         });
       });
 });
 
-function addWorker( worker ) {
+function addWorker(worker) {
 
-   const newWorker = new Worker( {
+   const newWorker = new Worker({
       address: worker.remoteAddress,
    });
 
    newWorker.save();
 
-   workerPool.push( worker );
+   workerPool.push(worker);
 }
 
-function removeWorker( worker ) {
+function removeWorker(worker) {
 
-   Worker.remove( { address: worker.remoteAddress }, ( err ) => {
-      if ( err ) {
-         return logger.error( err );
+   Worker.remove({ address: worker.remoteAddress }, (err) => {
+      if (err) {
+         return logger.error(err);
       }
    });
 
    var idx = 0;
 
-   idx = workerPool.indexOf( worker );
+   idx = workerPool.indexOf(worker);
 
-   if ( idx > -1 ) {
-      workerPool.splice( idx, 1 );
+   if (idx > -1) {
+      workerPool.splice(idx, 1);
    }
 
    // Worker leaves network while computing most idle machine
    // This might be a rare scenario, but must be prevented since may cause locking
-   for ( idx = 0; idx < availabilityList.length; ++idx ) {
-      if ( availabilityList[idx].worker === worker ) {
-         availabilityList.splice( idx, 1 );
+   for (idx = 0; idx < availabilityList.length; ++idx) {
+      if (availabilityList[idx].worker === worker) {
+         availabilityList.splice(idx, 1);
       }
    }
-
 }
 
-function treat( data, socket ) {
+function treat(data, socket) {
 
-   var object = JSON.parse( data.toString() );
+   var object = JSON.parse(data.toString());
 
    try {
-      factory.validate( object );
-   } catch ( err ) {
-      return logger.error( err );
+      factory.validate(object);
+   } catch (err) {
+      return logger.error(err);
    }
 
-   switch ( object.Id ) {
+   switch (object.Id) {
 
       case factory.Id.ResourceResponse:
 
-         Worker.update( { address: socket.remoteAddress }, { lastResource: { cpu: object.cpu, memory: object.memory } }, ( err ) => { if ( err ) return logger.error( err ) });
+         Worker.update({ address: socket.remoteAddress }, { lastResource: { cpu: object.cpu, memory: object.memory } }, (err) => { if (err) return logger.error(err) });
 
-         availabilityList.push( { worker: socket, memory: object.memory, cpu: object.cpu });
+         availabilityList.push({ worker: socket, memory: object.memory, cpu: object.cpu });
 
          computeMostIdleWorker();
 
@@ -236,17 +239,17 @@ function treat( data, socket ) {
       case factory.Id.SimulationResponse:
 
          // treat_simulation_response
-         if ( object.Result === simulationResponse.Result.Success ) {
+         if (object.Result === simulationResponse.Result.Success) {
 
             // @TODO: Remove this workaround then simulator is adjusted
             var output = object.Output;
-            output = output.replace( /,([^,]*)$/, '$1' );
+            output = output.replace(/,([^,]*)$/, '$1');
 
             try {
-               output = JSON.parse( output );
-               object.Output = JSON.stringify( output );
-            } catch ( err ) {
-               return logger.error( err );
+               output = JSON.parse(output);
+               object.Output = JSON.stringify(output);
+            } catch (err) {
+               return logger.error(err);
             }
 
             var simulationInstanceUpdate = {
@@ -255,49 +258,49 @@ function treat( data, socket ) {
                $unset: { 'worker': 1 }
             }
 
-            SimulationInstance.findByIdAndUpdate( object.SimulationId,
+            SimulationInstance.findByIdAndUpdate(object.SimulationId,
                simulationInstanceUpdate,
-               ( err, simulationInstance ) => {
-                  if ( err ) return logger.error( err );
+               (err, simulationInstance) => {
+                  if (err) return logger.error(err);
                   // Count if there are simulationInstances that are not finished yet
-                  SimulationInstance.count( {
+                  SimulationInstance.count({
                      _simulation: simulationInstance._simulation,
                      $or: [{ state: SimulationInstance.State.Pending },
                      { state: SimulationInstance.State.Executing }]
-                  }, ( err, count ) => {
+                  }, (err, count) => {
 
-                     if ( err ) {
-                        return logger.error( err );
+                     if (err) {
+                        return logger.error(err);
                      }
 
-                     if ( count === 0 ) {
+                     if (count === 0) {
                         // Update simulation to finished
-                        Simulation.findByIdAndUpdate( simulationInstance._simulation, {
+                        Simulation.findByIdAndUpdate(simulationInstance._simulation, {
                            state: Simulation.State.Finished
-                        }, ( err, simulation ) => {
+                        }, (err, simulation) => {
 
-                           if ( err ) {
-                              return logger.error( err );
+                           if (err) {
+                              return logger.error(err);
                            }
 
                            // Count simulations from this group that are still executing
-                           Simulation.count( {
+                           Simulation.count({
                               _simulationGroup: simulation._simulationGroup,
                               state: Simulation.State.Executing
-                           }, ( err, count ) => {
+                           }, (err, count) => {
 
-                              if ( err ) {
-                                 return logger.error( err );
+                              if (err) {
+                                 return logger.error(err);
                               }
 
-                              if ( count === 0 ) {
+                              if (count === 0) {
 
-                                 SimulationGroup.findByIdAndUpdate( simulation._simulationGroup, {
+                                 SimulationGroup.findByIdAndUpdate(simulation._simulationGroup, {
                                     state: SimulationGroup.State.Finished
-                                 }, ( err, simulation ) => {
+                                 }, (err, simulation) => {
 
-                                    if ( err ) {
-                                       return logger.error( err );
+                                    if (err) {
+                                       return logger.error(err);
                                     }
 
                                  });
@@ -306,35 +309,35 @@ function treat( data, socket ) {
                         });
                      }
 
-                     event.emit( 'request_resources' );
+                     event.emit('request_resources');
                   });
                });
 
          } else {
-            logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
+            logger.error(object.SimulationId + ' executed with Failure ' + object.ErrorMessage);
 
-            SimulationInstance.findByIdAndUpdate( object.SimulationId, {
+            SimulationInstance.findByIdAndUpdate(object.SimulationId, {
                'state': SimulationInstance.State.Pending,
                $unset: { 'worker': 1 },
-            }, ( err ) => {
-               if ( err ) {
-                  return logger.error( err );
+            }, (err) => {
+               if (err) {
+                  return logger.error(err);
                }
 
-               event.emit( 'request_resources' );
+               event.emit('request_resources');
             });
          }
 
          break;
 
       default:
-         return logger.error( 'Invalid message received from ' + socket.remoteAddress );
+         return logger.error('Invalid message received from ' + socket.remoteAddress);
    }
 }
 
 function computeMostIdleWorker() {
 
-   if ( availabilityList.length !== workerPool.length ) {
+   if (availabilityList.length !== workerPool.length) {
       // Not all resources were received
       return;
    }
@@ -342,8 +345,8 @@ function computeMostIdleWorker() {
    // Temporary map to store most idle worker
    var mostIdle = { memory: 0, cpu: 0 };
 
-   for ( var idx = 0; idx < availabilityList.length; ++idx ) {
-      if ( availabilityList[idx].cpu > mostIdle.cpu ) {
+   for (var idx = 0; idx < availabilityList.length; ++idx) {
+      if (availabilityList[idx].cpu > mostIdle.cpu) {
          mostIdle.worker = availabilityList[idx].worker;
          mostIdle.cpu = availabilityList[idx].cpu;
       }
@@ -353,9 +356,9 @@ function computeMostIdleWorker() {
    availabilityList = [];
 
    // 30% of free CPU. This parameter was chosen in order to avoid lag
-   if ( mostIdle.cpu >= 0.30 ) {
+   if (mostIdle.cpu >= 0.50) {
       // Emit event announcing that every worker sent its resources and this is the most idle
-      event.emit( 'run_simulation', mostIdle.worker );
+      event.emit('run_simulation', mostIdle.worker);
    }
 
 }

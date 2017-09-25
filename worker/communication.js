@@ -54,12 +54,11 @@ module.exports = function () {
             do {
                packet = factory.expose( buffer );
                buffer = factory.remove( buffer );
+               treat( packet, socket );
             } while ( buffer.length !== 0 )
          } catch ( err ) {
             return;
          }
-
-         treat( packet, socket );
       });
 
       socket.on( 'error', ( err ) => {
@@ -91,8 +90,6 @@ function treat( data, socket ) {
                cpu: ( 1 - cpu ),
                memory: resource.getMemoryAvailable()
             };
-
-            logger.debug( data.cpu );
 
             // Respond dispatcher
             socket.write( resource_response.format( data ) );
