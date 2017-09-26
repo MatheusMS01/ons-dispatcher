@@ -347,8 +347,6 @@ module.exports = function (app) {
                      name: simulationNames[idx]
                   });
 
-                  console.log(simulation);
-
                   simulations.push(simulation);
                }
 

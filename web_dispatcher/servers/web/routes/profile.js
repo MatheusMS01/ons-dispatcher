@@ -15,7 +15,7 @@ module.exports = function ( app ) {
       Worker.find( {}, ( err, workers ) => {
 
          if ( err ) console.log( err );
-         console.log( workers );
+
          res.render( 'profile', {
             title: 'Profile',
             active: 'profile',

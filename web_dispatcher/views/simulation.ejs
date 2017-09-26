@@ -53,6 +53,7 @@
    </div> <!-- /container -->
 
    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+   <script src="../js/xepOnline.jqPlugin.js"></script>
    <script>
       google.charts.load( 'current', { 'packages': ['corechart'] });
 
@@ -185,6 +186,16 @@
 
          var div = document.createElement( 'div' );
          div.className = 'my-5';
+         div.id = x_axisValue + '_v_' + y_axisValue;
+
+         var downloadBtn = document.createElement('a');
+         downloadBtn.onclick = function() {
+            return xepOnline.Formatter.Format(x_axisValue + '_v_' + y_axisValue, {render:'download'});
+         }
+         downloadBtn.className = 'btn-primary';
+         downloadBtn.innerHTML = 'Download';
+         downloadBtn.href = '#';
+
          var buttonGroup = document.getElementById( 'btn-group' );
          buttonGroup.insertBefore( div, buttonGroup.childNodes[0] );
 
@@ -205,6 +216,8 @@
 
          var chart_lines = new google.visualization.LineChart( div );
          chart_lines.draw( data, options );
+
+         buttonGroup.insertBefore( downloadBtn, buttonGroup.childNodes[0] );
       }
 
       function pad( n, width, z ) {

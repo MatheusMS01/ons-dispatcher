@@ -294,7 +294,8 @@ function treat( data, socket ) {
                               if ( count === 0 ) {
 
                                  SimulationGroup.findByIdAndUpdate( simulation._simulationGroup, {
-                                    state: SimulationGroup.State.Finished
+                                    state: SimulationGroup.State.Finished,
+                                    endTime: Date.now()
                                  }, ( err, simulation ) => {
 
                                     if ( err ) {

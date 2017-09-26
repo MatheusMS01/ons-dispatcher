@@ -55,31 +55,7 @@
                </div>
             </div>
 
-            <div class="jumbotron">
-               <div>
-                  <label>Simulation name</label>
-                  <input class="form-control" type="text" name="simulationName">
-                  <div class="input-group" style="margin-top: 10px;">
-                     <label class="input-group-btn">
-                        <span class="btn btn-primary" style="min-width: 120px;">
-                           Simulator
-                           <input type="file" name="simulator" style="display: none;">
-                        </span>
-                     </label><input type="text" class="form-control" readonly="">
-                  </div>
-               </div>
-
-               <div class="input-group" style="margin-top: 10px;">
-                  <label class="input-group-btn">
-                     <span class="btn btn-primary" style="min-width: 120px;">
-                        Configuration
-                        <input type="file" name="configuration" style="display: none;">
-                     </span>
-                  </label>
-                  <input type="text" class="form-control" readonly="">
-               </div>
-
-            </div><div id='btn-group'>
+            <div id='btn-group'>
                <button id='btn-new-simulation' type='button' onclick='newSimulation()' class='btn btn-primary'>New simulation</button>
 
                <button type='submit' class='btn btn-primary'>Submit</button>
@@ -177,6 +153,8 @@
 
             btnGroup.insertBefore( div, btnGroup.childNodes[0] );
          }
+
+         window.onload = newSimulation;
 
          $( function () {
 
