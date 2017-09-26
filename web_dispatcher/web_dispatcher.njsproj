@@ -93,7 +93,6 @@
     </Content>
     <Content Include="views\home.ejs" />
     <Content Include="views\simulation_group.ejs" />
-    <Content Include="views\topology.ejs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="database\" />

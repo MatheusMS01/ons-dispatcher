@@ -55,7 +55,31 @@
                </div>
             </div>
 
-            <div id='btn-group'>
+            <div class="jumbotron">
+               <div>
+                  <label>Simulation name</label>
+                  <input class="form-control" type="text" name="simulationName">
+                  <div class="input-group" style="margin-top: 10px;">
+                     <label class="input-group-btn">
+                        <span class="btn btn-primary" style="min-width: 120px;">
+                           Simulator
+                           <input type="file" name="simulator" style="display: none;">
+                        </span>
+                     </label><input type="text" class="form-control" readonly="">
+                  </div>
+               </div>
+
+               <div class="input-group" style="margin-top: 10px;">
+                  <label class="input-group-btn">
+                     <span class="btn btn-primary" style="min-width: 120px;">
+                        Configuration
+                        <input type="file" name="configuration" style="display: none;">
+                     </span>
+                  </label>
+                  <input type="text" class="form-control" readonly="">
+               </div>
+
+            </div><div id='btn-group'>
                <button id='btn-new-simulation' type='button' onclick='newSimulation()' class='btn btn-primary'>New simulation</button>
 
                <button type='submit' class='btn btn-primary'>Submit</button>
@@ -66,123 +90,113 @@
 
       <script>
          function newSimulation() {
-            var btnGroup = document.getElementById('btn-group');
+            var btnGroup = document.getElementById( 'btn-group' );
 
-            var div = document.createElement('div');
+            var div = document.createElement( 'div' );
             div.className = 'jumbotron';
 
-            var simulatorDiv = document.createElement('div');
+            var simulatorDiv = document.createElement( 'div' );
 
-            var simulatorNameLbl = document.createElement('label');
+            var simulatorNameLbl = document.createElement( 'label' );
             simulatorNameLbl.innerHTML = 'Simulation name';
 
-            var simulatorNameInput = document.createElement('input');
+            var simulatorNameInput = document.createElement( 'input' );
             simulatorNameInput.className = 'form-control';
             simulatorNameInput.type = 'text';
             simulatorNameInput.name = 'simulationName';
-            
+
 
             // < Simulator input >
-            var simulatorInputDiv = document.createElement('div');
+            var simulatorInputDiv = document.createElement( 'div' );
             simulatorInputDiv.className = 'input-group'
             simulatorInputDiv.style = 'margin-top: 10px';
 
-            var simulatorInputLbl = document.createElement('label');
+            var simulatorInputLbl = document.createElement( 'label' );
             simulatorInputLbl.className = 'input-group-btn';
 
-            var simulatorInputSpan = document.createElement('span');
+            var simulatorInputSpan = document.createElement( 'span' );
             simulatorInputSpan.className = 'btn btn-primary';
             simulatorInputSpan.innerHTML = 'Simulator';
             simulatorInputSpan.style = 'min-width: 120px';
 
-            var simulatorInput = document.createElement('input');
+            var simulatorInput = document.createElement( 'input' );
             simulatorInput.type = 'file';
             simulatorInput.style = 'display: none;';
             simulatorInput.name = 'simulator';
 
-            var simulatorInputDisplay = document.createElement('input');
+            var simulatorInputDisplay = document.createElement( 'input' );
             simulatorInputDisplay.type = 'text';
             simulatorInputDisplay.className = 'form-control';
             simulatorInputDisplay.readOnly = true;
 
-            simulatorInputSpan.insertAdjacentElement('beforeend', simulatorInput);
-            simulatorInputLbl.insertAdjacentElement('beforeend', simulatorInputSpan);
+            simulatorInputSpan.insertAdjacentElement( 'beforeend', simulatorInput );
+            simulatorInputLbl.insertAdjacentElement( 'beforeend', simulatorInputSpan );
 
-            simulatorInputDiv.insertAdjacentElement('beforeend', simulatorInputLbl);
-            simulatorInputDiv.insertAdjacentElement('beforeend', simulatorInputDisplay);
+            simulatorInputDiv.insertAdjacentElement( 'beforeend', simulatorInputLbl );
+            simulatorInputDiv.insertAdjacentElement( 'beforeend', simulatorInputDisplay );
 
             // </ Simulator input >
 
-            simulatorDiv.insertAdjacentElement('beforeend', simulatorNameLbl);
-            simulatorDiv.insertAdjacentElement('beforeend', simulatorNameInput);
-            simulatorDiv.insertAdjacentElement('beforeend', simulatorInputDiv);
+            simulatorDiv.insertAdjacentElement( 'beforeend', simulatorNameLbl );
+            simulatorDiv.insertAdjacentElement( 'beforeend', simulatorNameInput );
+            simulatorDiv.insertAdjacentElement( 'beforeend', simulatorInputDiv );
 
             // < Configuration input >
-            var configurationInputDiv = document.createElement('div');
+            var configurationInputDiv = document.createElement( 'div' );
             configurationInputDiv.className = 'input-group'
             configurationInputDiv.style = 'margin-top: 10px';
 
-            var configurationInputLbl = document.createElement('label');
+            var configurationInputLbl = document.createElement( 'label' );
             configurationInputLbl.className = 'input-group-btn';
 
-            var configurationInputSpan = document.createElement('span');
+            var configurationInputSpan = document.createElement( 'span' );
             configurationInputSpan.className = 'btn btn-primary';
             configurationInputSpan.innerHTML = 'Configuration';
             configurationInputSpan.style = 'min-width: 120px';
 
-            var configurationInput = document.createElement('input');
+            var configurationInput = document.createElement( 'input' );
             configurationInput.type = 'file';
             configurationInput.style = 'display: none;';
             configurationInput.name = 'configuration';
 
-            var configurationInputDisplay = document.createElement('input');
+            var configurationInputDisplay = document.createElement( 'input' );
             configurationInputDisplay.type = 'text';
             configurationInputDisplay.className = 'form-control';
             configurationInputDisplay.readOnly = true;
 
-            configurationInputSpan.insertAdjacentElement('beforeend', configurationInput);
-            configurationInputLbl.insertAdjacentElement('beforeend', configurationInputSpan);
+            configurationInputSpan.insertAdjacentElement( 'beforeend', configurationInput );
+            configurationInputLbl.insertAdjacentElement( 'beforeend', configurationInputSpan );
 
-            configurationInputDiv.insertAdjacentElement('beforeend', configurationInputLbl);
-            configurationInputDiv.insertAdjacentElement('beforeend', configurationInputDisplay);
+            configurationInputDiv.insertAdjacentElement( 'beforeend', configurationInputLbl );
+            configurationInputDiv.insertAdjacentElement( 'beforeend', configurationInputDisplay );
 
             // </ Configuration input >
 
-            div.insertAdjacentElement('beforeend', simulatorDiv);
-            div.insertAdjacentElement('beforeend', configurationInputDiv);
+            div.insertAdjacentElement( 'beforeend', simulatorDiv );
+            div.insertAdjacentElement( 'beforeend', configurationInputDiv );
 
-            btnGroup.insertBefore(div, btnGroup.childNodes[0]);
+            btnGroup.insertBefore( div, btnGroup.childNodes[0] );
          }
 
-         $(function () {
+         $( function () {
 
-            // We can attach the `fileselect` event to all file inputs on the page
-            $(document).on('change', ':file', function () {
-               var input = $(this),
-                  numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                  label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-               input.trigger('fileselect', [numFiles, label]);
-            });
+            $( document ).on( 'change', ':file', function () {
+               var input = $( this );
+               var numFiles = input.get( 0 ).files ? input.get( 0 ).files.length : 1;
+               var label = input.val().replace( /\\/g, '/' ).replace( /.*\//, '' );
 
-            // We can watch for our custom `fileselect` event like this
-            $(document).ready(function () {
-               $(':file').on('fileselect', function (event, numFiles, label) {
+               var input2 = $( this ).parents( '.input-group' ).find( ':text' ),
+                  log = numFiles > 1 ? numFiles + ' files selected' : label;
 
-                  var input = $(this).parents('.input-group').find(':text'),
-                     log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-                  if (input.length) {
-                     input.val(log);
-                  } else {
-                     if (log) alert(log);
-                  }
-
-               });
+               if ( input2.length ) {
+                  input2.val( log );
+               } else {
+                  if ( log ) alert( log );
+               }
             });
 
          });
       </script>
-
       <% include template/footer.ejs %>
    </div>
 
