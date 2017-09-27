@@ -133,8 +133,8 @@ event.on( 'request_resources', () => {
 event.on( 'run_simulation', ( worker ) => {
 
    // Find simulation with highest priority which is still pending
-   SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending }).
-      populate( {
+   SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending })
+      .populate( {
          path: '_simulation',
          select: '_binary _document _simulationGroup',
          populate: {
@@ -317,7 +317,7 @@ function treat( data, socket ) {
 
             SimulationInstance.findByIdAndUpdate( object.SimulationId, {
                'state': SimulationInstance.State.Pending,
-               $unset: { 'worker': 1 },
+               $unset: { 'worker': 1 }
             }, ( err ) => {
                if ( err ) {
                   return logger.error( err );
