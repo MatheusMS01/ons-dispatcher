@@ -92,8 +92,9 @@
          xmlhttp.open( 'GET', '../simulation/' + id, true );
 
          xmlhttp.onreadystatechange = function () {
+
             if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ) {
-               results = JSON.parse( xmlhttp.responseText );
+               results = JSON.parse( xmlhttp.response );
 
                var simulations = [];
 

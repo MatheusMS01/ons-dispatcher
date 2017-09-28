@@ -24,8 +24,9 @@ module.exports = function ( app ) {
       });
    });
 
-   app.get( '/ajaxcall', ( req, res ) => {
+   app.get( '/workers', ( req, res ) => {
       Worker.find( {}, ( err, workers ) => {
+         console.log( workers );
          res.send( workers );
       });
    });

@@ -99,10 +99,7 @@ module.exports = function (app) {
                      return;
                   }
 
-                  results = JSON.stringify( results );
-
-                  res.writeHead( 200, { 'Content-Type': 'text/html' });
-                  res.end( results );
+                  res.send( results );
                });
          });
    });

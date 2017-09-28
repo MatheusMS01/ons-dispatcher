@@ -70,7 +70,7 @@ module.exports.execute = function () {
 
          const simulationInstanceFilter = { worker: socket.remoteAddress };
 
-         // Update all SimulationInstances that were executing by worker to pending again
+         // Update all SimulationInstances that were executing by this worker that left to pending again
          SimulationInstance.update( simulationInstanceFilter, {
             state: SimulationInstance.State.Pending,
             $unset: { worker: 1 }
@@ -104,13 +104,12 @@ module.exports.execute = function () {
             do {
                packet = factory.expose( buffer );
                buffer = factory.remove( buffer );
+               treat( packet, socket );
             } while ( buffer.length !== 0 )
 
          } catch ( e ) {
             return;
          }
-
-         treat( packet, socket );
       });
 
       socket.on( 'error', () => { });
