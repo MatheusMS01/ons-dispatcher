@@ -11,7 +11,7 @@ const User = require( '../../database/models/user' )
 // Routes
 const home = require( './routes/home' );
 const login = require( './routes/login' );
-const profile = require( './routes/profile' );
+const dashboard = require( './routes/dashboard' );
 const sign_up = require( './routes/sign_up' );
 const simulation = require( './routes/simulation' );
 const simulation_group = require( './routes/simulation_group' );
@@ -20,7 +20,7 @@ module.exports.execute = function ( app ) {
 
    home( app );
    login( app );
-   profile( app );
+   dashboard( app );
    sign_up( app );
    simulation( app );
    simulation_group( app );

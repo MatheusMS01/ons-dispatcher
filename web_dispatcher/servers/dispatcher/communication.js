@@ -70,7 +70,7 @@ module.exports.execute = function () {
 
          const simulationInstanceFilter = { worker: socket.remoteAddress };
 
-         // Update all SimulationInstances that were executing by worker to pending again
+         // Update all SimulationInstances that were executing by this worker that left to pending again
          SimulationInstance.update( simulationInstanceFilter, {
             state: SimulationInstance.State.Pending,
             $unset: { worker: 1 }
@@ -104,13 +104,12 @@ module.exports.execute = function () {
             do {
                packet = factory.expose( buffer );
                buffer = factory.remove( buffer );
+               treat( packet, socket );
             } while ( buffer.length !== 0 )
 
          } catch ( e ) {
             return;
          }
-
-         treat( packet, socket );
       });
 
       socket.on( 'error', () => { });
@@ -133,8 +132,8 @@ event.on( 'request_resources', () => {
 event.on( 'run_simulation', ( worker ) => {
 
    // Find simulation with highest priority which is still pending
-   SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending }).
-      populate( {
+   SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending })
+      .populate( {
          path: '_simulation',
          select: '_binary _document _simulationGroup',
          populate: {
@@ -259,7 +258,11 @@ function treat( data, socket ) {
             SimulationInstance.findByIdAndUpdate( object.SimulationId,
                simulationInstanceUpdate,
                ( err, simulationInstance ) => {
-                  if ( err ) return logger.error( err );
+
+                  if ( err ) {
+                     return logger.error( err );
+                  }
+
                   // Count if there are simulationInstances that are not finished yet
                   SimulationInstance.count( {
                      _simulation: simulationInstance._simulation,
@@ -317,7 +320,7 @@ function treat( data, socket ) {
 
             SimulationInstance.findByIdAndUpdate( object.SimulationId, {
                'state': SimulationInstance.State.Pending,
-               $unset: { 'worker': 1 },
+               $unset: { 'worker': 1 }
             }, ( err ) => {
                if ( err ) {
                   return logger.error( err );

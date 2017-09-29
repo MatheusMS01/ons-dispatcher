@@ -65,6 +65,45 @@ module.exports = function (app) {
          });
    });
 
+   app.get( '/simulation/:id', ( req, res ) => {
+
+      var simulationFilter = { _simulationGroup: req.params.id };
+      
+      Simulation.find(simulationFilter)
+         .select('_id')
+         .exec((err, simulationIds) => {
+
+            if (err) {
+               res.sendStatus(400);
+               return;
+            }
+
+            const simulationInstanceFilter = {
+               _simulation: { $in: simulationIds },
+               result: { $ne: null }
+            }
+
+            // Get all results from all instances that are done
+            SimulationInstance
+               .find(simulationInstanceFilter)
+               .populate({
+                  path: '_simulation',
+                  select: 'name'
+               })
+               .select('result _simulation -_id')
+               .sort('load')
+               .exec((err, results) => {
+
+                  if (err) {
+                     res.sendStatus(400);
+                     return;
+                  }
+
+                  res.send( results );
+               });
+         });
+   });
+
    app.post('/simulation_group/:id', (req, res) => {
 
       res.redirect('/simulation_group/' + req.params.id);

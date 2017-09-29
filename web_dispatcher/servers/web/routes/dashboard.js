@@ -9,23 +9,24 @@ const Worker = require( '../../../database/models/worker' )
 
 module.exports = function ( app ) {
 
-   // Profile
-   app.get( '/profile', router.authenticationMiddleware(), ( req, res ) => {
+   // dashboard
+   app.get( '/dashboard', router.authenticationMiddleware(), ( req, res ) => {
 
       Worker.find( {}, ( err, workers ) => {
 
          if ( err ) console.log( err );
 
-         res.render( 'profile', {
-            title: 'Profile',
-            active: 'profile',
+         res.render( 'dashboard', {
+            title: 'Dashboard',
+            active: 'dashboard',
             workers: JSON.stringify( workers )
          })
       });
    });
 
-   app.get( '/ajaxcall', ( req, res ) => {
-      Worker.find( {}, ( err, workers ) => {
+   app.get( '/workers', ( req, res ) => {
+      Worker.find( { lastResource: { $ne: null } }, ( err, workers ) => {
+
          res.send( workers );
       });
    });

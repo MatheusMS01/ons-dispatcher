@@ -17,13 +17,13 @@ const dirname = require( 'path' ).dirname;
 const exec = require( 'child_process' ).exec;
 const rimraf = require( 'rimraf' );
 
-log4js.configure({
+log4js.configure( {
    appenders: {
-     out: { type: 'stdout' },
-     app: { type: 'file', filename: 'log/communication.log' }
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/communication.log' }
    },
    categories: {
-     default: { appenders: [ 'out', 'app' ], level: 'debug' }
+      default: { appenders: ['out', 'app'], level: 'debug' }
    }
 });
 
@@ -43,7 +43,9 @@ module.exports = function () {
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
-      socket.connect( 16180, dispatcherAddress );
+      socket.connect( 16180, dispatcherAddress, () => {
+         logger.debug( 'Connection established' );
+      });
 
       socket.on( 'data', ( data ) => {
          // Treat chunk data
@@ -61,10 +63,16 @@ module.exports = function () {
          }
       });
 
-      socket.on( 'error', ( err ) => {
-         socket.destroy();
-         process.exit();
-      })
+      socket.on( 'error', () => {
+         //socket.destroy();
+         //process.exit();
+      });
+
+
+      socket.on( 'close', () => {
+         logger.warn( 'Dispatcher connection closed!' );
+         ddp.resume();
+      });
    });
 }
 
