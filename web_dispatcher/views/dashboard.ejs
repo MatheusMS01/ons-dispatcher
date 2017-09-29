@@ -21,7 +21,6 @@
       function generateChart() {
 
          // Ajax
-
          drawChart();
          setInterval( drawChart, 1000 );
       }
@@ -32,17 +31,15 @@
          xmlhttp.open( 'GET', '/workers', true );
 
          xmlhttp.onreadystatechange = function () {
-
+            console.log('oe');
             if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ) {
-
+               console.log('oe2');
                const workers = JSON.parse( xmlhttp.response );
 
                for ( var idx = 0; idx < workers.length; ++idx ) {
 
                   var div;
-
                   var container = document.getElementById( 'container' );
-
 
                   if ( ( div = document.getElementById( workers[idx].address ) === null ) ) {
 
@@ -74,7 +71,6 @@
                   };
 
                   var chart = new google.visualization.Gauge( div );
-
                   chart.draw( data, options );
                }
             }
