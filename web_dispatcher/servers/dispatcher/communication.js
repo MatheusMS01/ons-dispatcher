@@ -258,7 +258,11 @@ function treat( data, socket ) {
             SimulationInstance.findByIdAndUpdate( object.SimulationId,
                simulationInstanceUpdate,
                ( err, simulationInstance ) => {
-                  if ( err ) return logger.error( err );
+
+                  if ( err ) {
+                     return logger.error( err );
+                  }
+
                   // Count if there are simulationInstances that are not finished yet
                   SimulationInstance.count( {
                      _simulation: simulationInstance._simulation,

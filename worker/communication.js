@@ -43,7 +43,9 @@ module.exports = function () {
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
-      socket.connect( 16180, dispatcherAddress );
+      socket.connect( 16180, dispatcherAddress, () => {
+         logger.debug( 'Connection established' );
+      });
 
       socket.on( 'data', ( data ) => {
          // Treat chunk data
@@ -68,6 +70,7 @@ module.exports = function () {
 
 
       socket.on( 'close', () => {
+         logger.warn( 'Dispatcher connection closed!' );
          ddp.resume();
       });
    });

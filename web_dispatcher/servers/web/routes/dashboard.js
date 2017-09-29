@@ -17,7 +17,7 @@ module.exports = function ( app ) {
          if ( err ) console.log( err );
 
          res.render( 'dashboard', {
-            title: 'dashboard',
+            title: 'Dashboard',
             active: 'dashboard',
             workers: JSON.stringify( workers )
          })
@@ -25,8 +25,8 @@ module.exports = function ( app ) {
    });
 
    app.get( '/workers', ( req, res ) => {
-      Worker.find( {}, ( err, workers ) => {
-         console.log( workers );
+      Worker.find( { lastResource: { $ne: null } }, ( err, workers ) => {
+
          res.send( workers );
       });
    });

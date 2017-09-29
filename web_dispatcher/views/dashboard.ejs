@@ -18,6 +18,8 @@
       google.charts.load( 'current', { 'packages': ['gauge'] });
       google.charts.setOnLoadCallback( generateChart );
 
+      var workerAddresses = [];
+
       function generateChart() {
 
          // Ajax
@@ -28,33 +30,33 @@
       function drawChart() {
 
          const xmlhttp = new XMLHttpRequest();
-         xmlhttp.open( 'GET', '/workers', true );
 
          xmlhttp.onreadystatechange = function () {
-            console.log('oe');
+
             if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ) {
-               console.log('oe2');
+
                const workers = JSON.parse( xmlhttp.response );
+
+               var activeWorkers = [];
+
+               const container = document.getElementById( 'container' );
 
                for ( var idx = 0; idx < workers.length; ++idx ) {
 
                   var div;
-                  var container = document.getElementById( 'container' );
 
-                  if ( ( div = document.getElementById( workers[idx].address ) === null ) ) {
+                  if ( ( div = document.getElementById( workers[idx].address ) ) === null ) {
+
+                     workerAddresses.push( workers[idx].address );
+                     activeWorkers.push( workers[idx].address );
 
                      div = document.createElement( 'div' );
                      div.style = 'width: 50%; margin: 0 auto;';
                      div.id = workers[idx].address;
                      container.appendChild( div );
 
-                     var h1 = document.createElement( 'h1' );
-                     h1.innerHTML = workers[idx].address;
-                     h1.style = 'width: 50%; margin: 0 auto;'
-                     container.appendChild( h1 );
-
-                     var hr = document.createElement( 'hr' );
-                     container.appendChild( hr );
+                  } else {
+                     activeWorkers.push( workers[idx].address );
                   }
 
                   var data = google.visualization.arrayToDataTable( [
@@ -73,8 +75,23 @@
                   var chart = new google.visualization.Gauge( div );
                   chart.draw( data, options );
                }
+
+               for ( var idx = 0; idx < workerAddresses.length; ++idx ) {
+                  var found = activeWorkers.indexOf( workerAddresses[idx] );
+
+                  if ( found === -1 ) {
+                     const div = document.getElementById( workerAddresses[idx] );
+                     div.remove();
+
+                     workerAddresses.splice( idx, 1 );
+                  }
+               }
             }
          }
+
+         xmlhttp.open( 'GET', '/workers', true );
+         xmlhttp.send();
+
       }
    </script>
 
