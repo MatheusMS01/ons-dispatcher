@@ -17,13 +17,13 @@ const dirname = require( 'path' ).dirname;
 const exec = require( 'child_process' ).exec;
 const rimraf = require( 'rimraf' );
 
-log4js.configure({
+log4js.configure( {
    appenders: {
-     out: { type: 'stdout' },
-     app: { type: 'file', filename: 'log/communication.log' }
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/communication.log' }
    },
    categories: {
-     default: { appenders: [ 'out', 'app' ], level: 'debug' }
+      default: { appenders: ['out', 'app'], level: 'debug' }
    }
 });
 
@@ -61,10 +61,15 @@ module.exports = function () {
          }
       });
 
-      socket.on( 'error', ( err ) => {
-         socket.destroy();
-         process.exit();
-      })
+      socket.on( 'error', () => {
+         //socket.destroy();
+         //process.exit();
+      });
+
+
+      socket.on( 'close', () => {
+         ddp.resume();
+      });
    });
 }
 

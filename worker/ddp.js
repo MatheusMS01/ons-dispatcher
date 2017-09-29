@@ -10,56 +10,32 @@ const dgram = require( 'dgram' );
 const EventEmitter = require( 'events' );
 const log4js = require( 'log4js' );
 
-log4js.configure({
+log4js.configure( {
    appenders: {
-     out: { type: 'stdout' },
-     app: { type: 'file', filename: 'log/ddp.log' }
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/ddp.log' }
    },
    categories: {
-     default: { appenders: [ 'out', 'app' ], level: 'debug' }
+      default: { appenders: ['out', 'app'], level: 'debug' }
    }
- });
+});
 
 var event = new EventEmitter();
-module.exports.event = event;
 
 var receivedResponse = false;
 
 // Responsible for loggin into console and log file
 const logger = log4js.getLogger();
 
+const socket = dgram.createSocket( 'udp4' );
 
-module.exports.execute = function () {
-   const socket = dgram.createSocket( 'udp4' );
+function execute() {
 
    socket.on( 'listening', () => {
 
-      const message = 'NewWorker';
-
       socket.setBroadcast( true );
 
-      // Send message and wait for dispatcher's response
-      // If it did not respond, send another time for each 1 second
-      socket.send( message, 0, message.length, 16180, '255.255.255.255' );
-
-      var tries = 0;
-
-      var intervalId = setInterval(() => {
-
-         if ( tries >= 10 ) {
-            logger.warn( 'Dispatcher not found after ' + tries + ' tries' );
-            process.exit();
-         }
-
-         if ( receivedResponse ) {
-            clearInterval( intervalId );
-            return;
-         }
-
-         socket.send( message, 0, message.length, 16180, '255.255.255.255' );
-
-         ++tries;
-      }, 1000 );
+      resume();
    });
 
    socket.on( 'message', ( message, rinfo ) => {
@@ -75,4 +51,34 @@ module.exports.execute = function () {
 
    // Bind to any port
    socket.bind();
+}
+
+function resume() {
+
+   send();
+
+   var intervalId = setInterval(() => {
+
+      if ( receivedResponse ) {
+         receivedResponse = false;
+         clearInterval( intervalId );
+         return;
+      }
+
+      send();
+   }, 1000 );
+}
+
+function send() {
+
+   const message = 'NewWorker';
+
+   // Send message and wait for dispatcher's response
+   socket.send( message, 0, message.length, 16180, '255.255.255.255' );
+}
+
+module.exports = {
+   execute,
+   resume,
+   event
 }
