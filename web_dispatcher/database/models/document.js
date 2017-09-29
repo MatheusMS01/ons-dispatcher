@@ -8,6 +8,7 @@ const mongoose = require( 'mongoose' );
 const Schema = mongoose.Schema;
 
 const documentSchema = Schema( {
+
    _user: {
       type: Schema.ObjectId,
       ref: 'User',
@@ -21,6 +22,7 @@ const documentSchema = Schema( {
       type: String,
       required: true
    }
+
 });
 
 //documentSchema.idx({ _user: 1, name: 1 }, { unique: true });

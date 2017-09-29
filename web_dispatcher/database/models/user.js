@@ -10,12 +10,13 @@ const Schema = mongoose.Schema;
 const bcrypt = require( 'bcryptjs' );
 
 const userSchema = Schema( {
+
    email: {
       type: String,
       required: true,
       lowercase: true,
       trim: true,
-      unique: true,
+      unique: true
    },
    name: {
       type: String,
@@ -29,7 +30,8 @@ const userSchema = Schema( {
       type: Boolean,
       default: false
    }
-})
+
+});
 
 const saltRounds = 10;
 

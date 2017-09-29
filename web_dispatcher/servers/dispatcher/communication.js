@@ -134,7 +134,6 @@ event.on( 'request_resources', () => {
 
 event.on( 'run_simulation', ( worker ) => {
 
-   // Find simulation with highest priority which is still pending
    SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending })
       .populate( {
          path: '_simulation',
@@ -144,11 +143,11 @@ event.on( 'run_simulation', ( worker ) => {
          },
          options: {
             sort: {
-               '_simulationGroup.priority': -1,
-               'seed': -1
+               '_simulationgroup.priority': -1 // Not sure if this is working
             }
          }
       })
+      .sort( { seed: -1, load: 1 }) // Do not change the order!
       .exec(( err, simulationInstance ) => {
 
          if ( err ) {
@@ -243,7 +242,7 @@ function treat( data, socket ) {
 
             var output = object.Output;
             // @TODO: Remove this workaround then simulator is adjusted
-            //output = output.replace( /,([^,]*)$/, '$1' );
+            output = output.replace( /,([^,]*)$/, '$1' );
 
             try {
                output = JSON.parse( output );
