@@ -10,12 +10,15 @@ const log4js = require( 'log4js' );
 const factory = require( '../../../protocol/dwp/factory' )
 const worker_discovery = require( './worker_discovery' )
 const EventEmitter = require( 'events' );
+const config = require( './configuration' ).getConfiguration();
 
+// Schemas
 const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
 const SimulationGroup = require( '../../database/models/simulation_group' );
 const Worker = require( '../../database/models/worker' );
 
+// Pdus
 const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' );
 const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request' );
 const simulationResponse = require( '../../../protocol/dwp/pdu/simulation_response' );
@@ -238,15 +241,17 @@ function treat( data, socket ) {
          // treat_simulation_response
          if ( object.Result === simulationResponse.Result.Success ) {
 
-            // @TODO: Remove this workaround then simulator is adjusted
             var output = object.Output;
-            output = output.replace( /,([^,]*)$/, '$1' );
+            // @TODO: Remove this workaround then simulator is adjusted
+            //output = output.replace( /,([^,]*)$/, '$1' );
 
             try {
                output = JSON.parse( output );
                object.Output = JSON.stringify( output );
             } catch ( err ) {
-               return logger.error( err );
+               // If an error occurred, update it to finished
+               // No need to keep trying executing this simulation
+               logger.error( err );
             }
 
             var simulationInstanceUpdate = {
@@ -351,14 +356,15 @@ function computeMostIdleWorker() {
       if ( availabilityList[idx].cpu > mostIdle.cpu ) {
          mostIdle.worker = availabilityList[idx].worker;
          mostIdle.cpu = availabilityList[idx].cpu;
+         mostIdle.memory = availabilityList[idx].memory;
       }
    }
 
    // Clean list
    availabilityList = [];
 
-   // 30% of free CPU. This parameter was chosen in order to avoid lag
-   if ( mostIdle.cpu >= 0.50 ) {
+   // In order to avoid lag
+   if ( ( mostIdle.cpu >= config.CPUThreshold ) && ( mostIdle.memory >= config.MemoryThreshold ) ) {
       // Emit event announcing that every worker sent its resources and this is the most idle
       event.emit( 'run_simulation', mostIdle.worker );
    }

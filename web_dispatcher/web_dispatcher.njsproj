@@ -44,6 +44,9 @@
     <Compile Include="public\js\bootstrap.js" />
     <Compile Include="public\js\bootstrap.min.js" />
     <Compile Include="public\js\jquery-3.2.1.js" />
+    <Compile Include="servers\dispatcher\configuration.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="servers\dispatcher\dispatcher.js" />
     <Compile Include="servers\dispatcher\communication.js">
       <SubType>Code</SubType>
@@ -75,6 +78,9 @@
     <Content Include="public\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="public\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="package.json" />
+    <Content Include="servers\dispatcher\config\config.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\dashboard.ejs" />
     <Content Include="views\login.ejs">
       <SubType>Code</SubType>
@@ -101,6 +107,7 @@
     <Folder Include="public\js\" />
     <Folder Include="servers\" />
     <Folder Include="servers\dispatcher\" />
+    <Folder Include="servers\dispatcher\config\" />
     <Folder Include="servers\web\" />
     <Folder Include="servers\web\routes\" />
     <Folder Include="views" />
