@@ -250,8 +250,6 @@ function treat( data, socket ) {
          if ( object.Result === simulationResponse.Result.Success ) {
 
             var output = object.Output;
-            // @TODO: Remove this workaround then simulator is adjusted
-            output = output.replace( /,([^,]*)$/, '$1' );
 
             try {
                output = JSON.parse( output );
