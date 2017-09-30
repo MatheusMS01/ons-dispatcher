@@ -8,6 +8,7 @@
 
 const dgram = require( 'dgram' );
 const EventEmitter = require( 'events' );
+const configuration = require( './configuration' ).getConfiguration();
 const log4js = require( 'log4js' );
 
 log4js.configure( {
@@ -35,6 +36,11 @@ function execute() {
 
       socket.setBroadcast( true );
 
+      if ( configuration.DispatcherAddress !== undefined ) {
+         logger.debug( 'Dispatcher address is configured: ' + configuration.DispatcherAddress );
+         return event.emit( 'dispatcher_response', configuration.DispatcherAddress );;
+      }
+
       resume();
    });
 
@@ -44,6 +50,7 @@ function execute() {
 
       if ( !receivedResponse ) {
          // Avoid duplicates
+         logger.debug( 'Received response from dispatcher' );
          event.emit( 'dispatcher_response', rinfo.address );
          receivedResponse = true;
       }
@@ -54,6 +61,8 @@ function execute() {
 }
 
 function resume() {
+
+   logger.debug( 'Trying to discover dispatcher via UDP broadcast' );
 
    send();
 

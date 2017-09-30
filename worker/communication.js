@@ -39,7 +39,7 @@ module.exports = function () {
    // Remove from local cache
    ddp.event.on( 'dispatcher_response', ( dispatcherAddress ) => {
 
-      logger.debug( 'Response received! Trying to connect to ' + dispatcherAddress + ':16180' );
+      logger.debug( 'Trying to connect to ' + dispatcherAddress + ':16180' );
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
@@ -63,7 +63,8 @@ module.exports = function () {
          }
       });
 
-      socket.on( 'error', () => {
+      socket.on( 'error', ( err ) => {
+         logger.warn( err.code );
          //socket.destroy();
          //process.exit();
       });
@@ -109,9 +110,9 @@ function treat( data, socket ) {
 
          logger.debug( 'New simulation received!' );
 
-         var path = __dirname + '/' + object.Data._id + '/';
-         var binaryContent = Buffer( object.Data._simulation._binary.content );
-         var documentContent = object.Data._simulation._document.content;
+         const path = __dirname + '/' + object.Data._id + '/';
+         const binaryContent = Buffer( object.Data._simulation._binary.content );
+         const documentContent = object.Data._simulation._document.content;
 
          writeFile( path + object.Data._simulation._binary.name, binaryContent, ( err ) => {
             if ( err ) throw err;
@@ -166,7 +167,10 @@ function treat( data, socket ) {
                   socket.write( simulation_response.format( data ) );
 
                   rimraf( path, ( err ) => {
-                     if ( err ) return logger.error( err );
+
+                     if ( err ) {
+                        return logger.error( err );
+                     }
                   });
                });
 
