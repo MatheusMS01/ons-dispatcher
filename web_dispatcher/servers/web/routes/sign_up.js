@@ -32,7 +32,8 @@ module.exports = function (app) {
       if (errors) {
          res.render('sign_up', {
             'title': 'Sign Up',
-            'errors': errors
+            'errors': errors,
+            'active': 'sign_up'
          });
 
          return;

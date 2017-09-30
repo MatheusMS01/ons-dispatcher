@@ -22,7 +22,6 @@
 
       function generateChart() {
 
-         // Ajax
          drawChart();
          setInterval( drawChart, 1000 );
       }
@@ -50,13 +49,33 @@
                      workerAddresses.push( workers[idx].address );
                      activeWorkers.push( workers[idx].address );
 
+                     mainDiv = document.createElement( 'div' );
+                     mainDiv.style = 'width: 50%; margin: 0 auto;';
+                     mainDiv.id = 'main_' + workers[idx].address;
+
+                     ip = document.createElement( 'h1' );
+                     ip.innerHTML = workers[idx].address;
+                     mainDiv.appendChild( ip );
+
+                     runningInstance = document.createElement( 'h3' );
+                     runningInstance.innerHTML = 'Running instances: ' + workers[idx].runningInstances;
+                     runningInstance.id = 'ri_' + workers[idx].address;
+                     mainDiv.appendChild( runningInstance );
+
                      div = document.createElement( 'div' );
-                     div.style = 'width: 50%; margin: 0 auto;';
                      div.id = workers[idx].address;
-                     container.appendChild( div );
+                     mainDiv.appendChild( div );
+
+                     hr = document.createElement( 'hr' );
+                     mainDiv.appendChild( hr );
+
+                     container.appendChild( mainDiv );
 
                   } else {
                      activeWorkers.push( workers[idx].address );
+
+                     runningInstance = document.getElementById( 'ri_' + workers[idx].address );
+                     runningInstance.innerHTML = 'Running instances: ' + workers[idx].runningInstances;
                   }
 
                   var data = google.visualization.arrayToDataTable( [
@@ -77,10 +96,12 @@
                }
 
                for ( var idx = 0; idx < workerAddresses.length; ++idx ) {
+
                   var found = activeWorkers.indexOf( workerAddresses[idx] );
 
                   if ( found === -1 ) {
-                     const div = document.getElementById( workerAddresses[idx] );
+
+                     const div = document.getElementById( 'main_' + workerAddresses[idx] );
                      div.remove();
 
                      workerAddresses.splice( idx, 1 );
@@ -91,7 +112,6 @@
 
          xmlhttp.open( 'GET', '/workers', true );
          xmlhttp.send();
-
       }
    </script>
 

@@ -158,6 +158,7 @@ event.on( 'run_simulation', ( worker ) => {
             return logger.debug( 'No simulations are pending' );
          }
 
+         // @TODO: update instead of save
          simulationInstance.state = SimulationInstance.State.Executing;
          simulationInstance.worker = worker.remoteAddress;
 
@@ -173,8 +174,12 @@ event.on( 'run_simulation', ( worker ) => {
 
             event.emit( 'request_resources' );
 
+            updateWorkerRunningInstances( worker.remoteAddress );
+
          });
+
       });
+
 });
 
 function addWorker( worker ) {
@@ -191,9 +196,11 @@ function addWorker( worker ) {
 function removeWorker( worker ) {
 
    Worker.remove( { address: worker.remoteAddress }, ( err ) => {
+
       if ( err ) {
          return logger.error( err );
       }
+
    });
 
    var idx = 0;
@@ -207,6 +214,7 @@ function removeWorker( worker ) {
    // Worker leaves network while computing most idle machine
    // This might be a rare scenario, but must be prevented since may cause locking
    for ( idx = 0; idx < availabilityList.length; ++idx ) {
+
       if ( availabilityList[idx].worker === worker ) {
          availabilityList.splice( idx, 1 );
       }
@@ -227,7 +235,15 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
-         Worker.update( { address: socket.remoteAddress }, { lastResource: { cpu: object.cpu, memory: object.memory } }, ( err ) => { if ( err ) return logger.error( err ) });
+         Worker.update( { address: socket.remoteAddress },
+            { lastResource: { cpu: object.cpu, memory: object.memory } },
+            ( err ) => {
+
+               if ( err ) {
+                  return logger.error( err )
+               }
+
+            });
 
          availabilityList.push( { worker: socket, memory: object.memory, cpu: object.cpu });
 
@@ -252,6 +268,18 @@ function treat( data, socket ) {
                // No need to keep trying executing this simulation
                logger.error( err );
             }
+
+            // TODO: Adjust this to avoid finding twice
+            SimulationInstance.findById( object.SimulationId, ( err, res ) => {
+
+               if ( err ) {
+                  return logger.error( err );
+               }
+
+               updateWorkerRunningInstances( res.worker );
+
+            });
+            //
 
             var simulationInstanceUpdate = {
                result: object.Output,
@@ -368,4 +396,23 @@ function computeMostIdleWorker() {
       event.emit( 'run_simulation', mostIdle.worker );
    }
 
+}
+
+function updateWorkerRunningInstances( workerId ) {
+
+   SimulationInstance.count( { worker: workerId }, ( err, count ) => {
+
+      if ( err ) {
+         return logger.error( err );
+      }
+
+      Worker.update( { address: workerId }, { runningInstances: count }, ( err ) => {
+
+         if ( err ) {
+            logger.error( err );
+         }
+
+      });
+
+   });
 }

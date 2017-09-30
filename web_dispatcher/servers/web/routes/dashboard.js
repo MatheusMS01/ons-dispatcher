@@ -14,7 +14,9 @@ module.exports = function ( app ) {
 
       Worker.find( {}, ( err, workers ) => {
 
-         if ( err ) console.log( err );
+         if ( err ) {
+            return console.log( err );
+         }
 
          res.render( 'dashboard', {
             title: 'Dashboard',
@@ -25,10 +27,12 @@ module.exports = function ( app ) {
    });
 
    app.get( '/workers', ( req, res ) => {
-      Worker.find( { lastResource: { $ne: null } }, ( err, workers ) => {
 
-         res.send( workers );
-      });
+      Worker.find( { lastResource: { $ne: null } },
+         ( err, workers ) => {
+
+            res.send( workers );
+         });
    });
 
 }

@@ -1,4 +1,4 @@
 ﻿{
-   "CPUThreshold": 0.1,
-   "MemoryThreshold": 0.1
+   "CPUThreshold": 0.5,
+   "MemoryThreshold": 0.5
 }
