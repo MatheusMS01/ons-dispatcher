@@ -66,6 +66,7 @@
 
       <script>
          function newSimulation() {
+
             var btnGroup = document.getElementById( 'btn-group' );
 
             var div = document.createElement( 'div' );
@@ -80,7 +81,6 @@
             simulatorNameInput.className = 'form-control';
             simulatorNameInput.type = 'text';
             simulatorNameInput.name = 'simulationName';
-
 
             // < Simulator input >
             var simulatorInputDiv = document.createElement( 'div' );
@@ -151,7 +151,7 @@
             div.insertAdjacentElement( 'beforeend', simulatorDiv );
             div.insertAdjacentElement( 'beforeend', configurationInputDiv );
 
-            btnGroup.insertBefore( div, btnGroup.childNodes[0] );
+            btnGroup.insertAdjacentElement( 'beforebegin', div );
          }
 
          window.onload = newSimulation;

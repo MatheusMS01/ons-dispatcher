@@ -48,12 +48,7 @@ module.exports.event = event;
 
 module.exports.execute = function () {
 
-   // Clean all workers
-   Worker.remove( {}, ( err ) => {
-      if ( err ) {
-         logger.error( err )
-      }
-   });
+   cleanUp();
 
    server.on( 'connection', ( socket ) => {
 
@@ -74,10 +69,8 @@ module.exports.execute = function () {
          const simulationInstanceFilter = { worker: socket.remoteAddress };
 
          // Update all SimulationInstances that were executing by this worker that left to pending again
-         SimulationInstance.update( simulationInstanceFilter, {
-            state: SimulationInstance.State.Pending,
-            $unset: { worker: 1 }
-         }, { multi: true })
+         SimulationInstance.update( simulationInstanceFilter,
+            { state: SimulationInstance.State.Pending, $unset: { worker: 1 } }, { multi: true })
             .exec(( err ) => {
 
                if ( err ) {
@@ -415,4 +408,25 @@ function updateWorkerRunningInstances( workerId ) {
       });
 
    });
+}
+
+function cleanUp() {
+
+   // Clean all workers
+   Worker.remove( {}, ( err ) => {
+      if ( err ) {
+         logger.error( err )
+      }
+   });
+
+   // Clean all simulations that were executing when dispatcher died
+   SimulationInstance.update( { state: SimulationInstance.State.Executing },
+      { state: SimulationInstance.State.Pending, $unset: { worker: 1 } }, { multi: true })
+      .exec(( err ) => {
+
+         if ( err ) {
+            return logger.error( err );
+         }
+
+      });
 }

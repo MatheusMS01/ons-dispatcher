@@ -125,9 +125,7 @@ module.exports = function ( app ) {
                return console.log( err );
             }
 
-            const simulationInstanceFilter = {
-               _simulation: { $in: simulationIds }
-            }
+            const simulationInstanceFilter = { _simulation: { $in: simulationIds } }
 
             SimulationInstance.update( simulationInstanceFilter,
                { state: SimulationInstance.State.Canceled }, { multi: true })
