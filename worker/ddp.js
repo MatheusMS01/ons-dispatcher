@@ -79,6 +79,7 @@ function resume() {
       if ( tries >= 10 && ( configuration.DispatcherAddress !== undefined ) ) {
          logger.debug( tries + ' tries to connect to dispatcher via UDP broadcast. Trying again with address configured' );
          tries = 0;
+         clearInterval( intervalId );
          return event.emit( 'dispatcher_response', configuration.DispatcherAddress );
       }
 

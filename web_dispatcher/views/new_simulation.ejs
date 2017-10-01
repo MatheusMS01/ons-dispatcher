@@ -55,6 +55,10 @@
                </div>
             </div>
 
+            <div class="checkbox">
+               <label><input id="cb-same-simulator" type="checkbox">Use same simulator</label>
+            </div>
+
             <div id='btn-group'>
                <button id='btn-new-simulation' type='button' onclick='newSimulation()' class='btn btn-primary'>New simulation</button>
 
@@ -65,12 +69,52 @@
       </div>
 
       <script>
+         var simulationCount = 0;
+
          function newSimulation() {
+
+            var myId = simulationCount++;
+
+            var cb = document.getElementById( 'cb-same-simulator' );
+
+            if ( simulationCount > 1 ) {
+               cb.disabled = true;
+            }
+
+            if ( !cb.checked ) {
+               completeSimulation( myId );
+            } else {
+               partialSimulation( myId );
+            }
+
+         }
+
+         function completeSimulation( myId ) {
 
             var btnGroup = document.getElementById( 'btn-group' );
 
             var div = document.createElement( 'div' );
             div.className = 'jumbotron';
+
+            var closeBtn = document.createElement( 'button' );
+            closeBtn.type = 'button';
+            closeBtn.className = 'close';
+            closeBtn.setAttribute( 'aria-label', 'close' );
+            closeBtn.innerHTML = '<span aria-hidden="true">&times;</span>';
+            closeBtn.style = 'color: red';
+            closeBtn.onclick = function () {
+               if ( myId !== 0 ) {
+                  div.remove();
+                  simulationCount--;
+
+                  if ( simulationCount === 1 ) {
+                     var cb = document.getElementById( 'cb-same-simulator' );
+                     cb.disabled = false;
+                  }
+               }
+            }
+
+            div.insertAdjacentElement( 'beforeend', closeBtn );
 
             var simulatorDiv = document.createElement( 'div' );
 
@@ -116,6 +160,72 @@
             simulatorDiv.insertAdjacentElement( 'beforeend', simulatorNameLbl );
             simulatorDiv.insertAdjacentElement( 'beforeend', simulatorNameInput );
             simulatorDiv.insertAdjacentElement( 'beforeend', simulatorInputDiv );
+
+            // < Configuration input >
+            var configurationInputDiv = document.createElement( 'div' );
+            configurationInputDiv.className = 'input-group'
+            configurationInputDiv.style = 'margin-top: 10px';
+
+            var configurationInputLbl = document.createElement( 'label' );
+            configurationInputLbl.className = 'input-group-btn';
+
+            var configurationInputSpan = document.createElement( 'span' );
+            configurationInputSpan.className = 'btn btn-primary';
+            configurationInputSpan.innerHTML = 'Configuration';
+            configurationInputSpan.style = 'min-width: 120px';
+
+            var configurationInput = document.createElement( 'input' );
+            configurationInput.type = 'file';
+            configurationInput.style = 'display: none;';
+            configurationInput.name = 'configuration';
+
+            var configurationInputDisplay = document.createElement( 'input' );
+            configurationInputDisplay.type = 'text';
+            configurationInputDisplay.className = 'form-control';
+            configurationInputDisplay.readOnly = true;
+
+            configurationInputSpan.insertAdjacentElement( 'beforeend', configurationInput );
+            configurationInputLbl.insertAdjacentElement( 'beforeend', configurationInputSpan );
+
+            configurationInputDiv.insertAdjacentElement( 'beforeend', configurationInputLbl );
+            configurationInputDiv.insertAdjacentElement( 'beforeend', configurationInputDisplay );
+
+            // </ Configuration input >
+
+            div.insertAdjacentElement( 'beforeend', simulatorDiv );
+            div.insertAdjacentElement( 'beforeend', configurationInputDiv );
+
+            btnGroup.insertAdjacentElement( 'beforebegin', div );
+         }
+
+         function partialSimulation( myId ) {
+
+            var btnGroup = document.getElementById( 'btn-group' );
+
+            var div = document.createElement( 'div' );
+            div.className = 'jumbotron';
+
+            var closeBtn = document.createElement( 'button' );
+            closeBtn.type = 'button';
+            closeBtn.className = 'close';
+            closeBtn.setAttribute( 'aria-label', 'close' );
+            closeBtn.innerHTML = '<span aria-hidden="true">&times;</span>';
+            closeBtn.style = 'color: red';
+            closeBtn.onclick = function () {
+               if ( myId !== 0 ) {
+                  div.remove();
+                  simulationCount--;
+
+                  if ( simulationCount === 1 ) {
+                     var cb = document.getElementById( 'cb-same-simulator' );
+                     cb.disabled = false;
+                  }
+               }
+            }
+
+            div.insertAdjacentElement( 'beforeend', closeBtn );
+
+            var simulatorDiv = document.createElement( 'div' );
 
             // < Configuration input >
             var configurationInputDiv = document.createElement( 'div' );

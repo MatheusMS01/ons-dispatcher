@@ -39,8 +39,6 @@ const server = net.createServer();
 
 var workerPool = [];
 
-var availabilityList = [];
-
 var buffer = '';
 
 var event = new EventEmitter();
@@ -50,15 +48,17 @@ module.exports.execute = function () {
 
    cleanUp();
 
+   requestResource();
+
+   dispatch();
+
    server.on( 'connection', ( socket ) => {
 
       // Insert new worker to the pool
       addWorker( socket );
+
       // Emit to UDP discovery
       event.emit( 'new_worker', socket.remoteAddress );
-
-      // Since new worker is online, check if there are simulations pending
-      event.emit( 'request_resources' );
 
       logger.debug( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
 
@@ -85,8 +85,6 @@ module.exports.execute = function () {
             logger.warn( 'There are no workers left' );
             return;
          }
-
-         computeMostIdleWorker();
       });
 
       socket.on( 'data', ( data ) => {
@@ -117,14 +115,6 @@ module.exports.execute = function () {
    });
 }
 
-event.on( 'request_resources', () => {
-
-   // Request resource information from all workers
-   for ( var idx = 0; idx < workerPool.length; ++idx ) {
-      workerPool[idx].write( resourceRequest.format() );
-   }
-});
-
 event.on( 'run_simulation', ( worker ) => {
 
    SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending })
@@ -148,7 +138,7 @@ event.on( 'run_simulation', ( worker ) => {
          }
 
          if ( simulationInstance === null ) {
-            return logger.debug( 'No simulations are pending' );
+            return;
          }
 
          // @TODO: update instead of save
@@ -165,21 +155,36 @@ event.on( 'run_simulation', ( worker ) => {
 
             worker.write( pdu );
 
-            event.emit( 'request_resources' );
-
             updateWorkerRunningInstances( worker.remoteAddress );
-
          });
-
       });
-
 });
+
+function requestResource() {
+
+   setInterval( function () {
+
+      for ( var idx = 0; idx < workerPool.length; ++idx ) {
+         workerPool[idx].write( resourceRequest.format() );
+      }
+
+   }, config.RequestResourceTimeout * 1000)
+}
+
+function dispatch() {
+
+   // From time to time, request resources in order to fill possible idle machines
+   setInterval( function () {
+
+      computeMostIdleWorker();
+
+   }, config.DispatchTimeout * 1000 );
+
+}
 
 function addWorker( worker ) {
 
-   const newWorker = new Worker( {
-      address: worker.remoteAddress,
-   });
+   const newWorker = new Worker( { address: worker.remoteAddress });
 
    newWorker.save();
 
@@ -196,21 +201,10 @@ function removeWorker( worker ) {
 
    });
 
-   var idx = 0;
-
-   idx = workerPool.indexOf( worker );
+   const idx = workerPool.indexOf( worker );
 
    if ( idx > -1 ) {
       workerPool.splice( idx, 1 );
-   }
-
-   // Worker leaves network while computing most idle machine
-   // This might be a rare scenario, but must be prevented since may cause locking
-   for ( idx = 0; idx < availabilityList.length; ++idx ) {
-
-      if ( availabilityList[idx].worker === worker ) {
-         availabilityList.splice( idx, 1 );
-      }
    }
 }
 
@@ -235,12 +229,7 @@ function treat( data, socket ) {
                if ( err ) {
                   return logger.error( err )
                }
-
             });
-
-         availabilityList.push( { worker: socket, memory: object.memory, cpu: object.cpu });
-
-         computeMostIdleWorker();
 
          break;
 
@@ -267,8 +256,11 @@ function treat( data, socket ) {
                   return logger.error( err );
                }
 
-               updateWorkerRunningInstances( res.worker );
+               if ( res === null ) {
+                  return;
+               }
 
+               updateWorkerRunningInstances( res.worker );
             });
             //
 
@@ -334,7 +326,6 @@ function treat( data, socket ) {
                         });
                      }
 
-                     event.emit( 'request_resources' );
                   });
                });
 
@@ -348,8 +339,6 @@ function treat( data, socket ) {
                if ( err ) {
                   return logger.error( err );
                }
-
-               event.emit( 'request_resources' );
             });
          }
 
@@ -362,31 +351,33 @@ function treat( data, socket ) {
 
 function computeMostIdleWorker() {
 
-   if ( availabilityList.length !== workerPool.length ) {
-      // Not all resources were received
-      return;
-   }
+   Worker.findOne( {} )
+      .sort( { 'lastResource.cpu': -1, 'lastResource.memory': -1 })
+      .exec(( err, mostIdleWorker ) => {
 
-   // Temporary map to store most idle worker
-   var mostIdle = { memory: 0, cpu: 0 };
+         if ( err ) {
+            return logger.error( err );
+         }
 
-   for ( var idx = 0; idx < availabilityList.length; ++idx ) {
-      if ( availabilityList[idx].cpu > mostIdle.cpu ) {
-         mostIdle.worker = availabilityList[idx].worker;
-         mostIdle.cpu = availabilityList[idx].cpu;
-         mostIdle.memory = availabilityList[idx].memory;
-      }
-   }
+         if ( mostIdleWorker === null ) {
+            return;
+         }
 
-   // Clean list
-   availabilityList = [];
+         if ( mostIdleWorker.lastResource === undefined ) {
+            return;
+         }
 
-   // In order to avoid lag
-   if ( ( mostIdle.cpu >= config.CPUThreshold ) && ( mostIdle.memory >= config.MemoryThreshold ) ) {
-      // Emit event announcing that every worker sent its resources and this is the most idle
-      event.emit( 'run_simulation', mostIdle.worker );
-   }
+         if ( ( mostIdleWorker.lastResource.cpu >= config.CPUThreshold ) &&
+            ( mostIdleWorker.lastResource.memory >= config.MemoryThreshold ) ) {
 
+            for ( var idx in workerPool ) {
+               if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
+                  event.emit( 'run_simulation', workerPool[idx] );
+                  return;
+               }
+            }
+         }
+      });
 }
 
 function updateWorkerRunningInstances( workerId ) {

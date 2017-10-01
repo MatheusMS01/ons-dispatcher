@@ -6,13 +6,13 @@
 
 var fs = require( 'fs' );
 
-var configuration;
+var configuration = {};
 
 load();
 
 module.exports.getConfiguration = function () {
 
-   if ( configuration === undefined ) {
+   if ( Object.keys( configuration ).length === 0 && configuration.constructor === Object ) {
       load();
    }
 
@@ -20,10 +20,11 @@ module.exports.getConfiguration = function () {
 }
 
 function load() {
+
    try {
       configuration = JSON.parse( fs.readFileSync( __dirname + '/config/config.json', 'utf8' ).replace( /^\uFEFF/, '' ) );
    } catch ( err ) {
-      console.log( err );
+
    }
 
    treatDefaultValues();
@@ -49,6 +50,22 @@ function treatDefaultValues() {
          configuration.MemoryThreshold = 1;
       } else if ( configuration.MemoryThreshold < 0 ) {
          configuration.MemoryThreshold = 0
+      }
+   }
+
+   if ( configuration.RequestResourceTimeout === undefined || typeof configuration.RequestResourceTimeout === 'string' ) {
+      configuration.RequestResourceTimeout = 1;
+   } else {
+      if ( configuration.RequestResourceTimeout < 1 ) {
+         configuration.RequestResourceTimeout = 1;
+      }
+   }
+
+   if ( configuration.DispatchTimeout === undefined || typeof configuration.DispatchTimeout === 'string' ) {
+      configuration.DispatchTimeout = 3;
+   } else {
+      if ( configuration.DispatchTimeout < 3 ) {
+         configuration.DispatchTimeout = 3;
       }
    }
 }
