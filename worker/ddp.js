@@ -38,7 +38,7 @@ function execute() {
 
       if ( configuration.DispatcherAddress !== undefined ) {
          logger.debug( 'Dispatcher address is configured: ' + configuration.DispatcherAddress );
-         return event.emit( 'dispatcher_response', configuration.DispatcherAddress );;
+         return event.emit( 'dispatcher_response', configuration.DispatcherAddress );
       }
 
       resume();
@@ -66,6 +66,8 @@ function resume() {
 
    send();
 
+   var tries = 0;
+
    var intervalId = setInterval(() => {
 
       if ( receivedResponse ) {
@@ -74,6 +76,13 @@ function resume() {
          return;
       }
 
+      if ( tries >= 10 && ( configuration.DispatcherAddress !== undefined ) ) {
+         logger.debug( tries + ' tries to connect to dispatcher via UDP broadcast. Trying again with address configured' );
+         tries = 0;
+         return event.emit( 'dispatcher_response', configuration.DispatcherAddress );
+      }
+
+      ++tries;
       send();
    }, 1000 );
 }

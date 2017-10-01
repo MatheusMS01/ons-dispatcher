@@ -6,28 +6,14 @@
 
 var fs = require( 'fs' );
 var validateIP = require( 'validate-ip-node' );
-const log4js = require( 'log4js' );
 
-log4js.configure( {
-   appenders: {
-      out: { type: 'stdout' },
-      app: { type: 'file', filename: 'log/configuration.log' }
-   },
-   categories: {
-      default: { appenders: ['out', 'app'], level: 'debug' }
-   }
-});
-
-// Responsible for loggin into console and log file
-const logger = log4js.getLogger();
-
-var configuration;
+var configuration = {};
 
 load();
 
 module.exports.getConfiguration = function () {
 
-   if ( configuration === undefined ) {
+   if ( Object.keys( configuration ).length === 0 && configuration.constructor === Object ) {
       load();
    }
 
@@ -39,8 +25,7 @@ function load() {
    try {
       configuration = JSON.parse( fs.readFileSync( __dirname + '/config/config.json', 'utf8' ).replace( /^\uFEFF/, '' ) );
    } catch ( err ) {
-      configuration = {};
-      return;
+
    }
 
    treatDefaultValues();
