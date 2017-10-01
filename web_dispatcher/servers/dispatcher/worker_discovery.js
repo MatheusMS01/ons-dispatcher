@@ -41,7 +41,7 @@ event.on( 'event', ( workerInfo ) => {
 module.exports.execute = function () {
 
    // Remove from local cache
-   communication.event.on( 'new_worker', function ( workerAddress ) {
+   communication.event.on( 'new_worker', ( workerAddress ) => {
 
       var idx = pendingList.indexOf( workerAddress );
 

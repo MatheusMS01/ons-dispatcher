@@ -24,7 +24,7 @@ const LocalStrategy = require( 'passport-local' ).Strategy;
 const MongoStore = require( 'connect-mongo' )( session );
 
 const mongoUrl = 'mongodb://localhost/ons';
-const mongoOptions = { useMongoClient: true, promiseLibrary: require( 'bluebird' ) };
+const mongoOptions = { useMongoClient: true };
 
 app.use( express.static( __dirname + '/public' ) );
 app.use( bodyParser.urlencoded( { extended: false }) );

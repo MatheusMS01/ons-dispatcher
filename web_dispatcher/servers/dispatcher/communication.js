@@ -168,7 +168,7 @@ function requestResource() {
          workerPool[idx].write( resourceRequest.format() );
       }
 
-   }, config.RequestResourceTimeout * 1000)
+   }, config.RequestResourceTimeout * 1000 )
 }
 
 function dispatch() {
@@ -351,7 +351,7 @@ function treat( data, socket ) {
 
 function computeMostIdleWorker() {
 
-   Worker.findOne( {} )
+   Worker.findOne( {})
       .sort( { 'lastResource.cpu': -1, 'lastResource.memory': -1 })
       .exec(( err, mostIdleWorker ) => {
 

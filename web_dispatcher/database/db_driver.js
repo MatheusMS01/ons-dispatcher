@@ -17,7 +17,9 @@ log4js.configure({
 // Responsible for loggin into console and log file
 const logger = log4js.getLogger('db_driver');
 
-module.exports = function (mongoUrl, mongoOptions) {
+module.exports = function ( mongoUrl, mongoOptions ) {
+
+   mongoose.Promise = require( 'bluebird' );
    mongoose.connect(mongoUrl, mongoOptions);
 
    var connection = mongoose.connection;

@@ -221,6 +221,10 @@ module.exports = function ( app ) {
 
    app.post( '/new_simulation', ( req, res ) => {
 
+      if ( req.body['sameSimulator'] === 'on' ) {
+         console.log( 'hi' );
+      }
+
       if ( req.files === null ) {
          req.flash( 'error_msg', 'Files were not submitted!' );
          res.redirect( '/new_simulation' );
@@ -261,10 +265,14 @@ module.exports = function ( app ) {
          documentFiles = [documentFiles];
       }
 
-      if ( ( simulationNames.length !== binaryFiles.length ) || ( binaryFiles.length !== documentFiles.length ) ) {
-         req.flash( 'error_msg', 'simulation name, binary and document must be filled!' );
-         res.redirect( '/new_simulation' );
-         return;
+      if ( req.body['sameSimulator'] !== 'on' ) {
+
+         if ( ( simulationNames.length !== binaryFiles.length ) ||
+            ( binaryFiles.length !== documentFiles.length ) ) {
+            req.flash( 'error_msg', 'simulation name, binary and document must be filled!' );
+            res.redirect( '/new_simulation' );
+            return;
+         }
       }
 
       if ( !req.body.simulationGroupName ) {
@@ -315,7 +323,7 @@ module.exports = function ( app ) {
          return;
       }
 
-      var binarys = [];
+      var binaries = [];
 
       for ( var idx = 0; idx < binaryFiles.length; ++idx ) {
 
@@ -325,7 +333,9 @@ module.exports = function ( app ) {
             content: binaryFiles[idx].data
          });
 
-         binarys.push( binary );
+         console.log( binary.name );
+
+         binaries.push( binary );
       }
 
       var documents = [];
@@ -360,7 +370,7 @@ module.exports = function ( app ) {
             return;
          }
 
-         Binary.insertMany( binarys, ( err, binaries ) => {
+         Binary.insertMany( binaries, ( err, binaries ) => {
 
             if ( err ) {
                req.flash( 'error_msg', JSON.stringify( err ) );
@@ -378,13 +388,24 @@ module.exports = function ( app ) {
 
                var simulations = [];
 
-               for ( var idx = 0; idx < binaries.length; ++idx ) {
+               for ( var idx = 0; idx < documents.length; ++idx ) {
+
+                  var binary = {};
+                  var simulationName = {};
+
+                  if ( req.body['sameSimulator'] === 'on' ) {
+                     binary = binaries[0];
+                     simulationName = documents[idx];
+                  } else {
+                     binary = binaries[idx];
+                     simulationName = simulationNames[idx];
+                  }
 
                   const simulation = new Simulation( {
                      _simulationGroup: simulationGroup.id,
-                     _binary: binaries[idx].id,
+                     _binary: binary.id,
                      _document: documents[idx].id,
-                     name: simulationNames[idx]
+                     name: simulationName
                   });
 
                   simulations.push( simulation );
