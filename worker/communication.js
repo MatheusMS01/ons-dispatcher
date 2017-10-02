@@ -64,7 +64,10 @@ module.exports = function () {
       });
 
       socket.on( 'error', ( err ) => {
-         logger.warn( err.code );
+
+         if ( err.code ) {
+            logger.warn( err.code );
+         }
          //socket.destroy();
          //process.exit();
       });
@@ -94,9 +97,9 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceRequest:
 
-         resource.getCPUAvailable(( cpu ) => {
+         resource.getCpuUsage(( cpuUsage ) => {
             var data = {
-               cpu: ( 1 - cpu ),
+               cpu: ( 1 - cpuUsage ),
                memory: resource.getMemoryAvailable()
             };
 
@@ -133,12 +136,12 @@ function treat( data, socket ) {
 
                   var simulationId;
 
-                  for ( var index = 0; index < simulationPID.length; ++index ) {
+                  for ( var idx = 0; idx < simulationPID.length; ++idx ) {
 
-                     if ( simulationPID[index].PID == child.pid ) {
+                     if ( simulationPID[idx].PID == child.pid ) {
 
-                        simulationId = simulationPID[index].SimulationId;
-                        simulationPID.splice( index, 1 );
+                        simulationId = simulationPID[idx].SimulationId;
+                        simulationPID.splice( idx, 1 );
 
                         break;
                      }
@@ -186,9 +189,9 @@ function treat( data, socket ) {
       case factory.Id.SimulationTerminateRequest:
          var pid;
 
-         for ( var index = 0; index < simulationPID.length; ++index ) {
-            if ( simulationPID[index].SimulationId == object.SimulationId ) {
-               pid = simulationPID[index].PID;
+         for ( var idx = 0; idx < simulationPID.length; ++idx ) {
+            if ( simulationPID[idx].SimulationId == object.SimulationId ) {
+               pid = simulationPID[idx].PID;
             }
          }
 

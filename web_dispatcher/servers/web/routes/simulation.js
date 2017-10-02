@@ -16,214 +16,165 @@ const SimulationGroup = require( '../../../database/models/simulation_group' )
 const Simulation = require( '../../../database/models/simulation' );
 const SimulationInstance = require( '../../../database/models/simulation_instance' );
 
+const log4js = require( 'log4js' );
+
+log4js.configure( {
+   appenders: {
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/simulation.log' }
+   },
+   categories: {
+      default: { appenders: ['out', 'app'], level: 'debug' }
+   }
+});
+
+const logger = log4js.getLogger();
+
 module.exports = function ( app ) {
 
    app.get( '/simulation_group/:id', router.authenticationMiddleware(), ( req, res ) => {
 
-      // Get all simulationIds associated to this group
+      // @TODO: this is being done to fill simulation's page dropbox. Find a better way of doing this
       var simulationFilter = { _simulationGroup: req.params.id };
 
-      Simulation.find( simulationFilter )
-         .select( '_id' )
-         .exec(( err, simulationIds ) => {
+      var promise = Simulation.find( simulationFilter ).select( '_id' ).exec();
 
-            if ( err ) {
-               res.sendStatus( 400 );
-               return;
-            }
+      promise.then( function ( simulationIds ) {
 
-            const simulationInstanceFilter = {
-               _simulation: { $in: simulationIds },
-               result: { $ne: null }
-            }
+         const simulationInstanceFilter = { _simulation: { $in: simulationIds }, result: { $ne: null } };
+         const simulationInstancePopulate = { path: '_simulation', select: 'name' };
 
-            // Get all results from all instances that are done
-            SimulationInstance
-               .find( simulationInstanceFilter )
-               .populate( {
-                  path: '_simulation',
-                  select: 'name'
-               })
-               .select( 'result _simulation -_id' )
-               .sort( 'load' )
-               .exec(( err, results ) => {
+         return SimulationInstance.find( simulationInstanceFilter ).populate( simulationInstancePopulate ).select( 'result _simulation -_id' ).sort( 'load' ).exec();
+      })
 
-                  if ( err ) {
-                     res.sendStatus( 400 );
-                     return;
-                  }
+      .then( function ( simulationInstances ) {
 
-                  // TODO: USAR AJAX! OLHAR COMO � FEITO COM PROFILE
-                  results = JSON.stringify( results )
+         simulationInstances = JSON.stringify( simulationInstances )
 
-                  res.render( 'simulation', {
-                     title: 'Simulation',
-                     active: 'simulation',
-                     results: results
-                  });
-               });
-         });
+         const options = { title: 'Simulation', active: 'simulation', results: simulationInstances };
+
+         res.render( 'simulation', options );
+      })
+
+      .catch( function ( err ) {
+
+         res.sendStatus( 400 );
+
+      });
    });
 
    app.get( '/simulation/:id', ( req, res ) => {
 
       var simulationFilter = { _simulationGroup: req.params.id };
 
-      Simulation.find( simulationFilter )
-         .select( '_id' )
-         .exec(( err, simulationIds ) => {
+      var promise = Simulation.find( simulationFilter ).select( '_id' ).exec();
 
-            if ( err ) {
-               res.sendStatus( 400 );
-               return;
-            }
+      promise.then( function ( simulationIds ) {
 
-            const simulationInstanceFilter = {
-               _simulation: { $in: simulationIds },
-               result: { $ne: null }
-            }
+         const simulationInstanceFilter = { _simulation: { $in: simulationIds }, result: { $ne: null } };
+         const simulationInstancePopulate = { path: '_simulation', select: 'name' };
 
-            // Get all results from all instances that are done
-            SimulationInstance
-               .find( simulationInstanceFilter )
-               .populate( {
-                  path: '_simulation',
-                  select: 'name'
-               })
-               .select( 'result _simulation -_id' )
-               .sort( 'load' )
-               .exec(( err, results ) => {
+         return SimulationInstance.find( simulationInstanceFilter )
+            .populate( simulationInstancePopulate )
+            .select( 'result _simulation -_id' )
+            .sort( 'load' )
+            .exec();
+      })
 
-                  if ( err ) {
-                     res.sendStatus( 400 );
-                     return;
-                  }
+      .then( function ( simulationInstances ) {
 
-                  res.send( results );
-               });
-         });
+         res.send( simulationInstances );
+
+      })
+
+      .catch( function ( err ) {
+
+         res.sendStatus( 400 );
+
+      });
    });
 
    app.post( '/simulation_group/:id', ( req, res ) => {
 
       res.redirect( '/simulation_group/' + req.params.id );
+
    });
 
-   app.post( '/cancel', ( req, res ) => {
+   app.post( '/cancel', function ( req, res ) {
 
-      const simulationFilter = {
-         _simulationGroup: req.body._simulationGroup,
-         state: Simulation.State.Executing
-      };
+      const simulationFilter = { _simulationGroup: req.body._simulationGroup, state: Simulation.State.Executing };
 
-      // Find all simulations from this group
-      Simulation.find( simulationFilter )
-         .select( 'id' )
-         .exec(( err, simulationIds ) => {
+      var promise = Simulation.find( simulationFilter ).select( '_id' ).exec();
 
-            if ( err ) {
-               return console.log( err );
-            }
+      promise.then( function ( simulationIds ) {
 
-            const simulationInstanceFilter = { _simulation: { $in: simulationIds } }
+         const simulationInstanceFilter = { _simulation: { $in: simulationIds } }
+         const simulationInstanceUpdate = { state: SimulationInstance.State.Canceled };
 
-            SimulationInstance.update( simulationInstanceFilter,
-               { state: SimulationInstance.State.Canceled }, { multi: true })
-               .exec(( err ) => {
+         return SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
+      })
 
-                  if ( err ) {
-                     return console.log( err );
-                  }
+      .then( function () {
 
-               });
-         });
+         const id = req.body._simulationGroup;
+         const simulationGroupUpdate = { state: SimulationGroup.State.Finished, endTime: Date.now() };
 
-      Simulation.update( simulationFilter,
-         { state: Simulation.State.Canceled }, { multi: true })
-         .exec(( err ) => {
+         return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate )
+      })
 
-            if ( err ) {
-               return console.log( err );
-            }
-
-         });
-
-      SimulationGroup.findByIdAndUpdate( req.body._simulationGroup, {
-         state: SimulationGroup.State.Finished,
-         endTime: Date.now()
-      }, ( err ) => {
-
-         if ( err ) {
-            console.log( err );
-            return res.sendStatus( 400 );
-         }
+      .then( function () {
 
          res.sendStatus( 200 );
+      })
 
+      .catch( function ( err ) {
+
+         logger.error( err );
+
+         res.sendStatus( 400 );
       });
    });
 
    app.post( '/remove', ( req, res ) => {
 
       // TODO: Remove binaries and documents
+      const simulationFilter = { _simulationGroup: req.body._simulationGroup };
 
-      const simulationFilter = {
-         _simulationGroup: req.body._simulationGroup
-      };
+      var promise = Simulation.find( simulationFilter ).select( 'id' ).exec();
 
-      // Find all simulations from this group
-      Simulation.find( simulationFilter )
-         .select( 'id' )
-         .exec(( err, simulationIds ) => {
+      promise.then( function ( simulationIds ) {
 
-            if ( err ) {
-               return console.log( err );
-            }
+         const simulationInstanceFilter = { _simulation: { $in: simulationIds } };
 
-            const simulationInstanceFilter = { _simulation: { $in: simulationIds } };
+         return SimulationInstance.remove( simulationInstanceFilter );
+      })
 
-            SimulationInstance.remove( simulationInstanceFilter, ( err ) => {
+      .then( function () {
 
-               if ( err ) {
-                  return console.log( err );
-               }
+         return SimulationGroup.findByIdAndRemove( req.body._simulationGroup );
+      })
 
-               Simulation.remove( simulationFilter, ( err ) => {
-
-                  if ( err ) {
-                     return console.log( err );
-                  }
-
-               });
-
-            });
-         });
-
-      SimulationGroup.findByIdAndRemove( req.body._simulationGroup, ( err ) => {
-
-         if ( err ) {
-            console.log( err );
-            return res.sendStatus( 400 );
-         }
-
+      .then( function () {
          res.sendStatus( 200 );
+      })
 
+      .catch( function ( err ) {
+
+         logger.error( err );
+
+         res.sendStatus( 400 );
       });
    });
 
    // New Simulation
    app.get( '/new_simulation', router.authenticationMiddleware(), ( req, res ) => {
-      res.render( 'new_simulation', {
-         title: 'New Simulation',
-         active: 'new_simulation'
-      })
+
+      const options = { title: 'New Simulation', active: 'new_simulation' };
+
+      res.render( 'new_simulation', options );
    });
 
    app.post( '/new_simulation', ( req, res ) => {
-
-      if ( req.body['sameSimulator'] === 'on' ) {
-         console.log( 'hi' );
-      }
 
       if ( req.files === null ) {
          req.flash( 'error_msg', 'Files were not submitted!' );
@@ -333,8 +284,6 @@ module.exports = function ( app ) {
             content: binaryFiles[idx].data
          });
 
-         console.log( binary.name );
-
          binaries.push( binary );
       }
 
@@ -362,69 +311,61 @@ module.exports = function ( app ) {
          }
       });
 
-      simulationGroup.save(( err ) => {
+      var promise = simulationGroup.save();
 
-         if ( err ) {
-            req.flash( 'error_msg', JSON.stringify( err ) );
-            res.redirect( '/new_simulation' );
-            return;
-         }
+      promise.then( function () {
 
-         Binary.insertMany( binaries, ( err, binaries ) => {
+         var promises = [];
 
-            if ( err ) {
-               req.flash( 'error_msg', JSON.stringify( err ) );
-               res.redirect( '/new_simulation' );
-               return;
+         promises.push( Binary.insertMany( binaries ) );
+         promises.push( Document.insertMany( documents ) );
+
+         return Promise.all( promises );
+      })
+
+      .then( function ( results ) {
+
+         const binaries = results[0];
+         const documents = results[1];
+
+         var simulations = [];
+
+         for ( var idx = 0; idx < documents.length; ++idx ) {
+
+            var binary = {};
+            var simulationName = {};
+
+            if ( req.body['sameSimulator'] === 'on' ) {
+               binary = binaries[0];
+               simulationName = documents[idx].name;
+            } else {
+               binary = binaries[idx];
+               simulationName = simulationNames[idx];
             }
 
-            Document.insertMany( documents, ( err, documents ) => {
-
-               if ( err ) {
-                  req.flash( 'error_msg', JSON.stringify( err ) );
-                  res.redirect( '/new_simulation' );
-                  return;
-               }
-
-               var simulations = [];
-
-               for ( var idx = 0; idx < documents.length; ++idx ) {
-
-                  var binary = {};
-                  var simulationName = {};
-
-                  if ( req.body['sameSimulator'] === 'on' ) {
-                     binary = binaries[0];
-                     simulationName = documents[idx];
-                  } else {
-                     binary = binaries[idx];
-                     simulationName = simulationNames[idx];
-                  }
-
-                  const simulation = new Simulation( {
-                     _simulationGroup: simulationGroup.id,
-                     _binary: binary.id,
-                     _document: documents[idx].id,
-                     name: simulationName
-                  });
-
-                  simulations.push( simulation );
-               }
-
-               Simulation.insertMany( simulations, ( err ) => {
-
-                  if ( err ) {
-                     req.flash( 'error_msg', JSON.stringify( err ) );
-                     res.redirect( '/new_simulation' );
-                     return;
-                  }
-
-                  simulationHandler.event.emit( 'new_simulation', simulationGroup.id );
-
-                  res.redirect( '/simulation_group' );
-               });
+            const simulation = new Simulation( {
+               _simulationGroup: simulationGroup.id,
+               _binary: binary.id,
+               _document: documents[idx].id,
+               name: simulationName
             });
-         });
+
+            simulations.push( simulation );
+         }
+
+         return Simulation.insertMany( simulations );
+      })
+
+      .then( function () {
+
+         simulationHandler.event.emit( 'new_simulation', simulationGroup.id );
+
+         res.redirect( '/simulation_group' );
+      })
+
+      .catch( function ( err ) {
+         req.flash( 'error_msg', JSON.stringify( err ) );
+         res.redirect( '/new_simulation' );
       });
    });
 

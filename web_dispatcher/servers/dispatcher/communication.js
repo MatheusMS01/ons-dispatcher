@@ -6,15 +6,14 @@
 
 const ip = require( 'ip' );
 const net = require( 'net' );
-const log4js = require( 'log4js' );
 const factory = require( '../../../protocol/dwp/factory' )
 const worker_discovery = require( './worker_discovery' )
 const EventEmitter = require( 'events' );
 const config = require( './configuration' ).getConfiguration();
 
 // Schemas
-const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
+const Simulation = require( '../../database/models/simulation' );
 const SimulationGroup = require( '../../database/models/simulation_group' );
 const Worker = require( '../../database/models/worker' );
 
@@ -24,15 +23,19 @@ const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request
 const simulationResponse = require( '../../../protocol/dwp/pdu/simulation_response' );
 const simulationTerminateRequest = require( '../../../protocol/dwp/pdu/simulation_terminate_request' );
 
+const log4js = require( 'log4js' );
+
 log4js.configure( {
-   appenders: [
-      { type: 'console' },
-      { type: 'file', filename: 'logs/communication.log', category: 'communication' }
-   ]
+   appenders: {
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/communication.log' }
+   },
+   categories: {
+      default: { appenders: ['out', 'app'], level: 'debug' }
+   }
 });
 
-// Responsible for logging into console and log file
-const logger = log4js.getLogger( 'communication' );
+const logger = log4js.getLogger();
 
 // TCP socket in which all the dispatcher-workers communication will be accomplished
 const server = net.createServer();
@@ -60,26 +63,23 @@ module.exports.execute = function () {
       // Emit to UDP discovery
       event.emit( 'new_worker', socket.remoteAddress );
 
-      logger.debug( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
+      logger.info( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
 
       socket.once( 'close', () => {
 
          removeWorker( socket );
 
          const simulationInstanceFilter = { worker: socket.remoteAddress };
+         const simulationInstanceUpdate = { state: SimulationInstance.State.Pending, $unset: { worker: 1 } };
 
          // Update all SimulationInstances that were executing by this worker that left to pending again
-         SimulationInstance.update( simulationInstanceFilter,
-            { state: SimulationInstance.State.Pending, $unset: { worker: 1 } }, { multi: true })
-            .exec(( err ) => {
+         var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
 
-               if ( err ) {
-                  return logger.error( err );
-               }
+         promise.catch( function ( err ) {
+            logger.error( err );
+         });
 
-            });
-
-         logger.debug( 'Worker ' + socket.remoteAddress + ' left the pool' );
+         logger.info( 'Worker ' + socket.remoteAddress + ' left the pool' );
 
          if ( workerPool.length === 0 ) {
             logger.warn( 'There are no workers left' );
@@ -111,53 +111,46 @@ module.exports.execute = function () {
 
    // Open Socket
    server.listen( 16180, ip.address(), () => {
-      logger.debug( 'TCP server listening ' + server.address().address + ':' + server.address().port );
+      logger.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
    });
 }
 
 event.on( 'run_simulation', ( worker ) => {
 
-   SimulationInstance.findOne( { 'state': SimulationInstance.State.Pending })
-      .populate( {
-         path: '_simulation',
-         select: '_binary _document _simulationGroup',
-         populate: {
-            path: '_binary _document _simulationGroup',
-         },
-         options: {
-            sort: {
-               '_simulationgroup.priority': -1 // Not sure if this is working
-            }
-         }
-      })
-      .sort( { seed: -1, load: 1 }) // Do not change the order!
-      .exec(( err, simulationInstance ) => {
+   const simulationInstanceFilter = { 'state': SimulationInstance.State.Pending };
+   const simulationInstanceUpdate = { 'state': SimulationInstance.State.Executing, 'worker': worker.remoteAddress };
+   const simulationInstancePopulate = {
+      path: '_simulation',
+      select: '_binary _document _simulationGroup',
+      populate: { path: '_binary _document _simulationGroup' },
+      options: { sort: { '_simulationgroup.priority': -1 } }
+   };
 
-         if ( err ) {
-            return logger.error( err );
-         }
+   var promise = SimulationInstance.findOneAndUpdate( simulationInstanceFilter, simulationInstanceUpdate )
+      .populate( simulationInstancePopulate )
+      .sort( { seed: -1, load: 1 })
+      .exec();
 
-         if ( simulationInstance === null ) {
-            return;
-         }
+   promise.then( function ( simulationInstance ) {
 
-         // @TODO: update instead of save
-         simulationInstance.state = SimulationInstance.State.Executing;
-         simulationInstance.worker = worker.remoteAddress;
+      if ( simulationInstance === null ) {
+         // No simulations are pending
+         return;
+      }
 
-         simulationInstance.save(( err ) => {
+      const pdu = simulationRequest.format( { Data: simulationInstance });
 
-            if ( err ) {
-               return logger.error( err );
-            }
+      worker.write( pdu );
 
-            const pdu = simulationRequest.format( { Data: simulationInstance });
+      logger.info( 'Dispatched simulation to ' + worker.remoteAddress );
 
-            worker.write( pdu );
+      updateWorkerRunningInstances( worker.remoteAddress );
+   })
 
-            updateWorkerRunningInstances( worker.remoteAddress );
-         });
-      });
+   .catch( function ( err ) {
+      logger.error( err );
+   });
+
 });
 
 function requestResource() {
@@ -186,19 +179,23 @@ function addWorker( worker ) {
 
    const newWorker = new Worker( { address: worker.remoteAddress });
 
-   newWorker.save();
+   var promise = newWorker.save();
+
+   promise.catch( function ( err ) {
+      logger.error( err );
+   });
 
    workerPool.push( worker );
 }
 
 function removeWorker( worker ) {
 
-   Worker.remove( { address: worker.remoteAddress }, ( err ) => {
+   const workerFilter = { address: worker.remoteAddress };
 
-      if ( err ) {
-         return logger.error( err );
-      }
+   var promise = Worker.remove( workerFilter ).exec();
 
+   promise.catch( function ( err ) {
+      logger.error( err );
    });
 
    const idx = workerPool.indexOf( worker );
@@ -222,14 +219,14 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
-         Worker.update( { address: socket.remoteAddress },
-            { lastResource: { cpu: object.cpu, memory: object.memory } },
-            ( err ) => {
+         const workerFilter = { address: socket.remoteAddress };
+         const workerUpdate = { lastResource: { cpu: object.cpu, memory: object.memory } };
 
-               if ( err ) {
-                  return logger.error( err )
-               }
-            });
+         var promise = Worker.update( workerFilter, workerUpdate ).exec();
+
+         promise.catch( function ( err ) {
+            logger.error( err );
+         });
 
          break;
 
@@ -238,107 +235,110 @@ function treat( data, socket ) {
          // treat_simulation_response
          if ( object.Result === simulationResponse.Result.Success ) {
 
+            const simulationId = object.SimulationId;
             var output = object.Output;
 
             try {
                output = JSON.parse( output );
                object.Output = JSON.stringify( output );
             } catch ( err ) {
-               // If an error occurred, update it to finished
+               // If an error occurred, update it to finished anyways
                // No need to keep trying executing this simulation
                logger.error( err );
             }
 
-            // TODO: Adjust this to avoid finding twice
-            SimulationInstance.findById( object.SimulationId, ( err, res ) => {
+            var promise_i = SimulationInstance.findById( object.SimulationId ).exec();
 
-               if ( err ) {
-                  return logger.error( err );
-               }
+            promise_i.then( function ( simulationInstance ) {
 
-               if ( res === null ) {
+               if ( simulationInstance === null ) {
                   return;
                }
 
-               updateWorkerRunningInstances( res.worker );
-            });
-            //
+               updateWorkerRunningInstances( simulationInstance.worker );
+            })
 
+            .catch( function ( err ) {
+               logger.error( err );
+            });
+
+            // Update simulationInstance to finished
             var simulationInstanceUpdate = {
                result: object.Output,
                state: SimulationInstance.State.Finished,
                $unset: { 'worker': 1 }
             }
 
-            SimulationInstance.findByIdAndUpdate( object.SimulationId,
-               simulationInstanceUpdate,
-               ( err, simulationInstance ) => {
+            var promise = SimulationInstance.findByIdAndUpdate( simulationId, simulationInstanceUpdate ).exec();
 
-                  if ( err ) {
-                     return logger.error( err );
+            promise.then( function ( simulationInstance ) {
+
+               // Count how many simulationInstances are pending or executing
+               const condition = {
+                  _simulation: simulationInstance._simulation,
+                  $or: [{ state: SimulationInstance.State.Pending },
+                  { state: SimulationInstance.State.Executing }]
+               }
+
+               var promise = SimulationInstance.count( condition ).exec();
+
+               return promise.then( function ( count ) {
+
+                  // If they are all finished, update simulation to finished too
+                  if ( count > 0 ) {
+                     return;
                   }
 
-                  // Count if there are simulationInstances that are not finished yet
-                  SimulationInstance.count( {
-                     _simulation: simulationInstance._simulation,
-                     $or: [{ state: SimulationInstance.State.Pending },
-                     { state: SimulationInstance.State.Executing }]
-                  }, ( err, count ) => {
+                  const id = simulationInstance._simulation;
+                  const simulationUpdate = { state: Simulation.State.Finished };
 
-                     if ( err ) {
-                        return logger.error( err );
-                     }
+                  return Simulation.findByIdAndUpdate( id, simulationUpdate )
+               })
+            })
 
-                     if ( count === 0 ) {
-                        // Update simulation to finished
-                        Simulation.findByIdAndUpdate( simulationInstance._simulation, {
-                           state: Simulation.State.Finished
-                        }, ( err, simulation ) => {
+            .then( function ( simulation ) {
 
-                           if ( err ) {
-                              return logger.error( err );
-                           }
+               // Count how many simulations are executing
+               const condition = {
+                  _simulationGroup: simulation._simulationGroup,
+                  state: Simulation.State.Executing
+               };
 
-                           // Count simulations from this group that are still executing
-                           Simulation.count( {
-                              _simulationGroup: simulation._simulationGroup,
-                              state: Simulation.State.Executing
-                           }, ( err, count ) => {
+               var promise = Simulation.count( condition ).exec();
 
-                              if ( err ) {
-                                 return logger.error( err );
-                              }
+               return promise.then( function ( count ) {
 
-                              if ( count === 0 ) {
+                  // If they are all finished, update simulationGroup to finished too
+                  if ( count > 0 ) {
+                     return;
+                  }
 
-                                 SimulationGroup.findByIdAndUpdate( simulation._simulationGroup, {
-                                    state: SimulationGroup.State.Finished,
-                                    endTime: Date.now()
-                                 }, ( err, simulation ) => {
+                  const id = simulation._simulationGroup;
+                  const simulationGroupUpdate = {
+                     state: SimulationGroup.State.Finished,
+                     endTime: Date.now()
+                  };
 
-                                    if ( err ) {
-                                       return logger.error( err );
-                                    }
-
-                                 });
-                              }
-                           });
-                        });
-                     }
-
-                  });
+                  return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
                });
+            })
 
+            // Treat all errors
+            .catch( function ( err ) {
+                logger.error( err );
+            })
+            
          } else {
+
             logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
 
-            SimulationInstance.findByIdAndUpdate( object.SimulationId, {
-               'state': SimulationInstance.State.Pending,
-               $unset: { 'worker': 1 }
-            }, ( err ) => {
-               if ( err ) {
-                  return logger.error( err );
-               }
+            const simulationInstanceUpdate = { 'state': SimulationInstance.State.Pending, $unset: { 'worker': 1 } };
+
+            var promise = SimulationInstance.findByIdAndUpdate( object.SimulationId, simulationInstanceUpdate ).exec();
+
+            // Treat all errors
+            promise.catch( function ( err ) {
+               logger.error( err );
             });
          }
 
@@ -351,71 +351,69 @@ function treat( data, socket ) {
 
 function computeMostIdleWorker() {
 
-   Worker.findOne( {})
-      .sort( { 'lastResource.cpu': -1, 'lastResource.memory': -1 })
-      .exec(( err, mostIdleWorker ) => {
+   const workerSort = { 'lastResource.cpu': -1, 'lastResource.memory': -1 };
 
-         if ( err ) {
-            return logger.error( err );
-         }
+   var promise = Worker.findOne( {}).sort( workerSort ).exec();
 
-         if ( mostIdleWorker === null ) {
+   promise.then( function ( mostIdleWorker ) {
+
+      if ( mostIdleWorker === null ) {
+         return;
+      }
+
+      if ( ( mostIdleWorker.lastResource.cpu < config.CPUThreshold ) &&
+         ( mostIdleWorker.lastResource.memory < config.MemoryThreshold ) ) {
+         return;
+      }
+
+      for ( var idx in workerPool ) {
+
+         if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
+            event.emit( 'run_simulation', workerPool[idx] );
             return;
          }
+      }
+   })
 
-         if ( mostIdleWorker.lastResource === undefined ) {
-            return;
-         }
+   // Treat all errors
+   .catch( function ( err ) {
+      logger.error( err );
+   });
 
-         if ( ( mostIdleWorker.lastResource.cpu >= config.CPUThreshold ) &&
-            ( mostIdleWorker.lastResource.memory >= config.MemoryThreshold ) ) {
-
-            for ( var idx in workerPool ) {
-               if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
-                  event.emit( 'run_simulation', workerPool[idx] );
-                  return;
-               }
-            }
-         }
-      });
 }
 
 function updateWorkerRunningInstances( workerId ) {
 
-   SimulationInstance.count( { worker: workerId }, ( err, count ) => {
+   var promise = SimulationInstance.count( { worker: workerId }).exec();
 
-      if ( err ) {
-         return logger.error( err );
-      }
+   promise.then( function ( count ) {
 
-      Worker.update( { address: workerId }, { runningInstances: count }, ( err ) => {
+      return Worker.update( { address: workerId }, { runningInstances: count }).exec();
+   })
 
-         if ( err ) {
-            logger.error( err );
-         }
-
-      });
-
+   // Treat all errors
+   .catch( function ( err ) {
+      logger.error( err );
    });
 }
 
 function cleanUp() {
 
    // Clean all workers
-   Worker.remove( {}, ( err ) => {
-      if ( err ) {
-         logger.error( err )
-      }
+   var promise_i = Worker.remove( {}).exec();
+
+   promise_i.catch( function ( err ) {
+      logger.error( err );
    });
 
    // Clean all simulations that were executing when dispatcher died
-   SimulationInstance.update( { state: SimulationInstance.State.Executing },
-      { state: SimulationInstance.State.Pending, $unset: { worker: 1 } }, { multi: true })
-      .exec(( err ) => {
+   const simulationInstanceFilter = { state: SimulationInstance.State.Executing };
+   const simulationInstanceUpdate = { state: SimulationInstance.State.Pending, $unset: { worker: 1 } };
 
-         if ( err ) {
-            return logger.error( err );
-         }
+   var promise_ii = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
 
-      });
+   // Treat all errors
+   promise_ii.catch( function ( err ) {
+      logger.error( err );
+   });
 }

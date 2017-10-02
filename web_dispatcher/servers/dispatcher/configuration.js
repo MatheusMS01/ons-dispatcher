@@ -12,7 +12,7 @@ load();
 
 module.exports.getConfiguration = function () {
 
-   if ( Object.keys( configuration ).length === 0 && configuration.constructor === Object ) {
+   if ( Object.keys( configuration ).length === 0 ) {
       load();
    }
 

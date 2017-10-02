@@ -8,11 +8,11 @@ const User = require('../../../database/models/user');
 
 module.exports = function (app) {
 
-   app.get('/sign_up', (req, res) => {
-      res.render('sign_up', {
-         'title': 'Sign Up',
-         'active': 'sign_up'
-      });
+   app.get( '/sign_up', ( req, res ) => {
+
+      const options = { 'title': 'Sign Up', 'active': 'sign_up' };
+
+      res.render( 'sign_up', options );
    });
 
    app.post('/sign_up', (req, res) => {
@@ -29,12 +29,11 @@ module.exports = function (app) {
       // @TODO: update to newer version
       const errors = req.validationErrors();
 
-      if (errors) {
-         res.render('sign_up', {
-            'title': 'Sign Up',
-            'errors': errors,
-            'active': 'sign_up'
-         });
+      if ( errors ) {
+
+         const options = { 'title': 'Sign Up', 'errors': errors, 'active': 'sign_up' };
+
+         res.render( 'sign_up', options );
 
          return;
       }

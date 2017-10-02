@@ -27,7 +27,7 @@
     "formidable": "~1.1.1",
     "ip": "~1.1.5",
     "lodash": "~4.17.4",
-    "log4js": "^1.1.1",
+    "log4js": "^2.3.4",
     "mongoose": "^4.11.1",
     "nodemailer": "^4.0.1",
     "passport": "^0.3.2",

@@ -8,6 +8,19 @@ const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
 const EventEmitter = require( 'events' );
 const communication = require( './communication' );
+const log4js = require( 'log4js' );
+
+log4js.configure( {
+   appenders: {
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/simulation_handler.log' }
+   },
+   categories: {
+      default: { appenders: ['out', 'app'], level: 'debug' }
+   }
+});
+
+const logger = log4js.getLogger();
 
 const event = new EventEmitter();
 
@@ -15,46 +28,45 @@ module.exports.event = event;
 
 event.on( 'new_simulation', ( id ) => {
 
-   Simulation.find( { _simulationGroup: id })
-      .populate( {
-         path: '_simulationGroup',
-         select: 'seedAmount load'
-      })
-      .exec(( err, simulations ) => {
+   const simulationPopulate = { path: '_simulationGroup', select: 'seedAmount load' };
 
-         if ( err ) {
-            return console.log( err );
-         }
+   var promise = Simulation.find( { _simulationGroup: id }).populate( simulationPopulate ).exec();
 
-         for ( var idx = 0; idx < simulations.length; ++idx ) {
+   promise.then( function ( simulations ) {
 
-            for ( var seed = 1; seed <= simulations[idx]._simulationGroup.seedAmount; ++seed ) {
+      var promises = [];
 
-               var simulationInstances = [];
+      for ( var idx = 0; idx < simulations.length; ++idx ) {
 
-               for ( var load = simulations[idx]._simulationGroup.load.minimum;
+         const seedAmount = simulations[idx]._simulationGroup.seedAmount
 
-                  load <= simulations[idx]._simulationGroup.load.maximum;
-                  load += simulations[idx]._simulationGroup.load.step ) {
+         for ( var seed = 1; seed <= seedAmount; ++seed ) {
 
-                  const simulationInstance = new SimulationInstance( {
-                     _simulation: simulations[idx]._id,
-                     seed: seed,
-                     load: load
-                  });
+            var simulationInstances = [];
 
-                  simulationInstances.push( simulationInstance );
-               }
+            const minimumLoad = simulations[idx]._simulationGroup.load.minimum;
+            const maximumLoad = simulations[idx]._simulationGroup.load.maximum;
+            const step = simulations[idx]._simulationGroup.load.step;
 
-               SimulationInstance.insertMany( simulationInstances, ( err, simulationInstances ) => {
+            for ( var load = minimumLoad; load <= maximumLoad; load += step ) {
 
-                  if ( err ) {
-                     return console.log( err );
-                  }
-
-                  communication.event.emit( 'request_resources' );
+               const simulationInstance = new SimulationInstance( {
+                  _simulation: simulations[idx]._id,
+                  seed: seed,
+                  load: load
                });
+
+               simulationInstances.push( simulationInstance );
             }
+
+            promises.push( SimulationInstance.insertMany( simulationInstances ) );
          }
-      });
+      }
+
+      return Promise.all( promises );
+   })
+
+   .catch( function ( err ) {
+      logger.error( err );
+   });
 });

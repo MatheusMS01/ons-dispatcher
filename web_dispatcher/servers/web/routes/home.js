@@ -4,12 +4,12 @@
 //
 ////////////////////////////////////////////////
 
-module.exports = function (app) {
-   app.get('/', (req, res) => {
+module.exports = function ( app ) {
 
-      res.render('home', {
-         'title': 'Home',
-         'active': 'home'
-      });
+   app.get( '/', ( req, res ) => {
+
+      const options = { 'title': 'Home', 'active': 'home' };
+      res.render( 'home', options );
+
    });
 }

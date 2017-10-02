@@ -5,20 +5,22 @@
 ////////////////////////////////////////////////
 
 const dgram = require( 'dgram' );
-const log4js = require( 'log4js' );
 const EventEmitter = require( 'events' );
 const communication = require( './communication' );
 const ip = require( 'ip' );
+const log4js = require( 'log4js' );
 
 log4js.configure( {
-   appenders: [
-      { type: 'console' },
-      { type: 'file', filename: 'logs/worker_discovery.log', category: 'worker_discovery' }
-   ]
+   appenders: {
+      out: { type: 'stdout' },
+      app: { type: 'file', filename: 'log/worker_discovery.log' }
+   },
+   categories: {
+      default: { appenders: ['out', 'app'], level: 'debug' }
+   }
 });
 
-// Responsible for logging into console and log file
-const logger = log4js.getLogger( 'worker_discovery' );
+const logger = log4js.getLogger();
 
 // UDP socket which will receive workers requests
 const socket = dgram.createSocket( 'udp4' );
@@ -30,7 +32,7 @@ const event = new EventEmitter();
 
 event.on( 'event', ( workerInfo ) => {
 
-   logger.debug( 'Sending response to ' + workerInfo.address + ':' + workerInfo.port )
+   logger.info( 'Sending response to ' + workerInfo.address + ':' + workerInfo.port )
 
    // Send response to worker
    socket.send( socket.address().address, workerInfo.port, workerInfo.address );
@@ -70,7 +72,7 @@ module.exports.execute = function () {
    });
 
    socket.on( 'listening', () => {
-      logger.debug( 'UDP socket listening ' + socket.address().address + ':' + socket.address().port );
+      logger.info( 'UDP socket listening ' + socket.address().address + ':' + socket.address().port );
    });
 
    socket.bind( 16180 );

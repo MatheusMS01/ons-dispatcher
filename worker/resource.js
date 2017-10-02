@@ -11,6 +11,6 @@ module.exports.getMemoryAvailable = function () {
    return os.freemem() / os.totalmem();
 }
 
-module.exports.getCPUAvailable = function (callback) {
+module.exports.getCpuUsage = function (callback) {
    os_utils.cpuUsage(callback);
 }
