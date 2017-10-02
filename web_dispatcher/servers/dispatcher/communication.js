@@ -298,35 +298,39 @@ function treat( data, socket ) {
 
             .then( function ( simulation ) {
 
-               // Count how many simulations are executing
-               const condition = {
-                  _simulationGroup: simulation._simulationGroup,
-                  state: Simulation.State.Executing
+               if ( simulation === undefined ) {
+                  return;
+               }
+
+            // Count how many simulations are executing
+            const condition = {
+               _simulationGroup: simulation._simulationGroup,
+               state: Simulation.State.Executing
+            };
+
+            var promise = Simulation.count( condition ).exec();
+
+            return promise.then( function ( count ) {
+
+               // If they are all finished, update simulationGroup to finished too
+               if ( count > 0 ) {
+                  return;
+               }
+
+               const id = simulation._simulationGroup;
+               const simulationGroupUpdate = {
+                  state: SimulationGroup.State.Finished,
+                  endTime: Date.now()
                };
 
-               var promise = Simulation.count( condition ).exec();
+               return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
+            });
+         })
 
-               return promise.then( function ( count ) {
-
-                  // If they are all finished, update simulationGroup to finished too
-                  if ( count > 0 ) {
-                     return;
-                  }
-
-                  const id = simulation._simulationGroup;
-                  const simulationGroupUpdate = {
-                     state: SimulationGroup.State.Finished,
-                     endTime: Date.now()
-                  };
-
-                  return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
-               });
-            })
-
-            // Treat all errors
-            .catch( function ( err ) {
-                logger.error( err );
-            })
+         // Treat all errors
+         .catch( function ( err ) {
+               logger.error( err );
+         })
             
          } else {
 
