@@ -1,6 +1,0 @@
-﻿{
-   "CPUThreshold": 0.5,
-   "MemoryThreshold": 0.5,
-   "RequestResourceTimeout": 1,
-   "DispatchTimeout": 5
-}

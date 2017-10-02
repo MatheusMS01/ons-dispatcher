@@ -6,16 +6,17 @@
 
 const ip = require( 'ip' );
 const net = require( 'net' );
-const factory = require( '../../../protocol/dwp/factory' )
-const worker_discovery = require( './worker_discovery' )
+const factory = require( '../../../protocol/dwp/factory' );
+const worker_discovery = require( './worker_discovery' );
 const EventEmitter = require( 'events' );
-const config = require( './configuration' ).getConfiguration();
+
+const config = require( '../shared/configuration' ).getConfiguration();
+const workerManager = require('../shared/worker_manager');
 
 // Schemas
 const SimulationInstance = require( '../../database/models/simulation_instance' );
 const Simulation = require( '../../database/models/simulation' );
 const SimulationGroup = require( '../../database/models/simulation_group' );
-const Worker = require( '../../database/models/worker' );
 
 // Pdus
 const resourceRequest = require( '../../../protocol/dwp/pdu/resource_request' );
@@ -161,7 +162,7 @@ function requestResource() {
          workerPool[idx].write( resourceRequest.format() );
       }
 
-   }, config.RequestResourceTimeout * 1000 )
+   }, config.requestResourceInterval * 1000 )
 }
 
 function dispatch() {
@@ -169,34 +170,22 @@ function dispatch() {
    // From time to time, request resources in order to fill possible idle machines
    setInterval( function () {
 
-      computeMostIdleWorker();
+      dispatchToMostIdleWorker();
 
-   }, config.DispatchTimeout * 1000 );
+   }, config.dispatchInterval * 1000 );
 
 }
 
 function addWorker( worker ) {
 
-   const newWorker = new Worker( { address: worker.remoteAddress });
-
-   var promise = newWorker.save();
-
-   promise.catch( function ( err ) {
-      logger.error( err );
-   });
+   workerManager.add( worker.remoteAddress );
 
    workerPool.push( worker );
 }
 
 function removeWorker( worker ) {
 
-   const workerFilter = { address: worker.remoteAddress };
-
-   var promise = Worker.remove( workerFilter ).exec();
-
-   promise.catch( function ( err ) {
-      logger.error( err );
-   });
+   workerManager.remove( worker.remoteAddress );
 
    const idx = workerPool.indexOf( worker );
 
@@ -219,20 +208,14 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
-         const workerFilter = { address: socket.remoteAddress };
-         const workerUpdate = { lastResource: { cpu: object.cpu, memory: object.memory } };
+         const update = { lastResource: { cpu: object.cpu, memory: object.memory }};
 
-         var promise = Worker.update( workerFilter, workerUpdate ).exec();
-
-         promise.catch( function ( err ) {
-            logger.error( err );
-         });
+         workerManager.update(socket.remoteAddress, update );
 
          break;
 
       case factory.Id.SimulationResponse:
 
-         // treat_simulation_response
          if ( object.Result === simulationResponse.Result.Success ) {
 
             const simulationId = object.SimulationId;
@@ -302,35 +285,35 @@ function treat( data, socket ) {
                   return;
                }
 
-            // Count how many simulations are executing
-            const condition = {
-               _simulationGroup: simulation._simulationGroup,
-               state: Simulation.State.Executing
-            };
-
-            var promise = Simulation.count( condition ).exec();
-
-            return promise.then( function ( count ) {
-
-               // If they are all finished, update simulationGroup to finished too
-               if ( count > 0 ) {
-                  return;
-               }
-
-               const id = simulation._simulationGroup;
-               const simulationGroupUpdate = {
-                  state: SimulationGroup.State.Finished,
-                  endTime: Date.now()
+               // Count how many simulations are executing
+               const condition = {
+                  _simulationGroup: simulation._simulationGroup,
+                  state: Simulation.State.Executing
                };
 
-               return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
-            });
-         })
+               var promise = Simulation.count( condition ).exec();
 
-         // Treat all errors
-         .catch( function ( err ) {
+               return promise.then( function ( count ) {
+
+                  // If they are all finished, update simulationGroup to finished too
+                  if ( count > 0 ) {
+                     return;
+                  }
+
+                  const id = simulation._simulationGroup;
+                  const simulationGroupUpdate = {
+                     state: SimulationGroup.State.Finished,
+                     endTime: Date.now()
+                  };
+
+                  return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
+               });
+            })
+
+            // Treat all errors
+            .catch( function ( err ) {
                logger.error( err );
-         })
+            });
             
          } else {
 
@@ -353,46 +336,71 @@ function treat( data, socket ) {
    }
 }
 
-function computeMostIdleWorker() {
+function dispatchToMostIdleWorker() {
 
-   const workerSort = { 'lastResource.cpu': -1, 'lastResource.memory': -1 };
+   const mostIdleWorker = workerManager.getMostIdle();
 
-   var promise = Worker.findOne( {}).sort( workerSort ).exec();
+   if( mostIdleWorker.address === '' ) {
+      return;
+   }
 
-   promise.then( function ( mostIdleWorker ) {
+   if ( ( mostIdleWorker.cpu < config.cpu.threshold ) ||
+      ( mostIdleWorker.memory < config.memory.threshold ) ) {
+      return;
+   }
 
-      if ( mostIdleWorker === null ) {
+   for ( var idx in workerPool ) {
+
+      if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
+         dispatchSimulation( workerPool[idx] );
+         return;
+      }
+   }
+}
+
+function dispatchSimulation( worker ) {
+
+   const simulationInstanceFilter = { 'state': SimulationInstance.State.Pending };
+   const simulationInstanceUpdate = { 'state': SimulationInstance.State.Executing, 'worker': worker.remoteAddress };
+   const simulationInstancePopulate = {
+      path: '_simulation',
+      select: '_binary _document _simulationGroup',
+      populate: { path: '_binary _document _simulationGroup' },
+      options: { sort: { '_simulationgroup.priority': -1 } }
+   };
+
+   var promise = SimulationInstance.findOneAndUpdate( simulationInstanceFilter, simulationInstanceUpdate )
+      .populate( simulationInstancePopulate )
+      .sort( { seed: -1, load: 1 })
+      .exec();
+
+   promise.then( function ( simulationInstance ) {
+
+      if ( simulationInstance === null ) {
+         // No simulations are pending
          return;
       }
 
-      if ( ( mostIdleWorker.lastResource.cpu < config.CPUThreshold ) &&
-         ( mostIdleWorker.lastResource.memory < config.MemoryThreshold ) ) {
-         return;
-      }
+      const pdu = simulationRequest.format( { Data: simulationInstance });
 
-      for ( var idx in workerPool ) {
+      worker.write( pdu );
 
-         if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
-            event.emit( 'run_simulation', workerPool[idx] );
-            return;
-         }
-      }
+      logger.info( 'Dispatched simulation to ' + worker.remoteAddress );
+
+      updateWorkerRunningInstances( worker.remoteAddress );
    })
 
-   // Treat all errors
    .catch( function ( err ) {
       logger.error( err );
    });
-
 }
 
-function updateWorkerRunningInstances( workerId ) {
+function updateWorkerRunningInstances( workerAddress ) {
 
-   var promise = SimulationInstance.count( { worker: workerId }).exec();
+   var promise = SimulationInstance.count( { worker: workerAddress }).exec();
 
    promise.then( function ( count ) {
-
-      return Worker.update( { address: workerId }, { runningInstances: count }).exec();
+      workerManager.update(workerAddress, { runningInstances: count });
    })
 
    // Treat all errors
@@ -403,21 +411,14 @@ function updateWorkerRunningInstances( workerId ) {
 
 function cleanUp() {
 
-   // Clean all workers
-   var promise_i = Worker.remove( {}).exec();
-
-   promise_i.catch( function ( err ) {
-      logger.error( err );
-   });
-
    // Clean all simulations that were executing when dispatcher died
    const simulationInstanceFilter = { state: SimulationInstance.State.Executing };
    const simulationInstanceUpdate = { state: SimulationInstance.State.Pending, $unset: { worker: 1 } };
 
-   var promise_ii = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
+   var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
 
    // Treat all errors
-   promise_ii.catch( function ( err ) {
+   promise.catch( function ( err ) {
       logger.error( err );
    });
 }

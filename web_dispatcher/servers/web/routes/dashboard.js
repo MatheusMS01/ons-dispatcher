@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////
 
 const router = require( '../router' );
-const Worker = require( '../../../database/models/worker' );
+const workerManager = require( '../../shared/worker_manager' );
 
 const log4js = require( 'log4js' );
 
@@ -26,32 +26,16 @@ module.exports = function ( app ) {
    // dashboard
    app.get( '/dashboard', router.authenticationMiddleware(), function ( req, res ) {
 
-      var promise = Worker.find().exec();
+      const options = { title: 'Dashboard', active: 'dashboard' };
 
-      promise.then( function ( workers ) {
-
-         const options = { title: 'Dashboard', active: 'dashboard' };
-
-         res.render( 'dashboard', options );
-
-      })
-
-      .catch( function ( err ) {
-         logger.error( err );
-      });
+      res.render( 'dashboard', options );
    });
 
    app.get( '/workers', function ( req, res ) {
 
-      var promise = Worker.find( { lastResource: { $ne: null } }).exec();
+      const workers = workerManager.getAll();
 
-      promise.then( function ( workers ) {
-         res.send( workers );
-      })
-
-      .catch( function ( err ) {
-         logger.error( err );
-      });
+      res.send( workers );
    });
 
 }
