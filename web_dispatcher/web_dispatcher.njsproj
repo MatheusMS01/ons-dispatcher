@@ -37,16 +37,10 @@
     <Compile Include="database\models\user.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="database\models\worker.js">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="public\js\bootstrap-confirmation.min.js" />
     <Compile Include="public\js\bootstrap.js" />
     <Compile Include="public\js\bootstrap.min.js" />
     <Compile Include="public\js\jquery-3.2.1.js" />
-    <Compile Include="servers\dispatcher\configuration.js">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="servers\dispatcher\dispatcher.js" />
     <Compile Include="servers\dispatcher\communication.js">
       <SubType>Code</SubType>
@@ -57,6 +51,8 @@
     <Compile Include="servers\dispatcher\worker_discovery.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="servers\shared\configuration.js" />
+    <Compile Include="servers\shared\worker_manager.js" />
     <Compile Include="servers\web\router.js">
       <SubType>Code</SubType>
     </Compile>
@@ -78,9 +74,7 @@
     <Content Include="public\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="public\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="package.json" />
-    <Content Include="servers\dispatcher\config\config.json">
-      <SubType>Code</SubType>
-    </Content>
+    <Content Include="servers\config\config.json" />
     <Content Include="views\dashboard.ejs" />
     <Content Include="views\login.ejs">
       <SubType>Code</SubType>
@@ -106,8 +100,9 @@
     <Folder Include="public\fonts\" />
     <Folder Include="public\js\" />
     <Folder Include="servers\" />
+    <Folder Include="servers\config\" />
     <Folder Include="servers\dispatcher\" />
-    <Folder Include="servers\dispatcher\config\" />
+    <Folder Include="servers\shared\" />
     <Folder Include="servers\web\" />
     <Folder Include="servers\web\routes\" />
     <Folder Include="views" />

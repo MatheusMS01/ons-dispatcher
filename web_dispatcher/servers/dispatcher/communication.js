@@ -11,7 +11,7 @@ const worker_discovery = require( './worker_discovery' );
 const EventEmitter = require( 'events' );
 
 const config = require( '../shared/configuration' ).getConfiguration();
-const workerManager = require('../shared/worker_manager');
+const workerManager = require( '../shared/worker_manager' );
 
 // Schemas
 const SimulationInstance = require( '../../database/models/simulation_instance' );
@@ -148,9 +148,9 @@ event.on( 'run_simulation', ( worker ) => {
       updateWorkerRunningInstances( worker.remoteAddress );
    })
 
-   .catch( function ( err ) {
-      logger.error( err );
-   });
+      .catch( function ( err ) {
+         logger.error( err );
+      });
 
 });
 
@@ -208,9 +208,9 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
-         const update = { lastResource: { cpu: object.cpu, memory: object.memory }};
+         const update = { lastResource: { cpu: object.cpu, memory: object.memory } };
 
-         workerManager.update(socket.remoteAddress, update );
+         workerManager.update( socket.remoteAddress, update );
 
          break;
 
@@ -255,6 +255,8 @@ function treat( data, socket ) {
             var promise = SimulationInstance.findByIdAndUpdate( simulationId, simulationInstanceUpdate ).exec();
 
             promise.then( function ( simulationInstance ) {
+
+               logger.info( 'Worker ' + socket.remoteAddress + ' has finished one simulation instance' );
 
                // Count how many simulationInstances are pending or executing
                const condition = {
@@ -314,7 +316,7 @@ function treat( data, socket ) {
             .catch( function ( err ) {
                logger.error( err );
             });
-            
+
          } else {
 
             logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
@@ -340,7 +342,7 @@ function dispatchToMostIdleWorker() {
 
    const mostIdleWorker = workerManager.getMostIdle();
 
-   if( mostIdleWorker.address === '' ) {
+   if ( mostIdleWorker.address === '' ) {
       return;
    }
 
@@ -350,7 +352,6 @@ function dispatchToMostIdleWorker() {
    }
 
    for ( var idx in workerPool ) {
-
       if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
          dispatchSimulation( workerPool[idx] );
          return;
@@ -400,7 +401,7 @@ function updateWorkerRunningInstances( workerAddress ) {
    var promise = SimulationInstance.count( { worker: workerAddress }).exec();
 
    promise.then( function ( count ) {
-      workerManager.update(workerAddress, { runningInstances: count });
+      workerManager.update( workerAddress, { runningInstances: count });
    })
 
    // Treat all errors
