@@ -67,6 +67,6 @@ event.on( 'new_simulation', ( id ) => {
    })
 
    .catch( function ( err ) {
-      logger.error( err );
+      console.log( err );
    });
 });

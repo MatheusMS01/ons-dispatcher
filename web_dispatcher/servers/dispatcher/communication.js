@@ -64,7 +64,7 @@ module.exports.execute = function () {
       // Emit to UDP discovery
       event.emit( 'new_worker', socket.remoteAddress );
 
-      logger.info( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
+      console.log( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
 
       socket.once( 'close', () => {
 
@@ -77,10 +77,10 @@ module.exports.execute = function () {
          var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
 
          promise.catch( function ( err ) {
-            logger.error( err );
+            console.log( err );
          });
 
-         logger.info( 'Worker ' + socket.remoteAddress + ' left the pool' );
+         console.log( 'Worker ' + socket.remoteAddress + ' left the pool' );
 
          if ( workerPool.length === 0 ) {
             logger.warn( 'There are no workers left' );
@@ -112,7 +112,7 @@ module.exports.execute = function () {
 
    // Open Socket
    server.listen( 16180, ip.address(), () => {
-      logger.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
+      console.log( 'TCP server listening ' + server.address().address + ':' + server.address().port );
    });
 }
 
@@ -143,13 +143,13 @@ event.on( 'run_simulation', ( worker ) => {
 
       worker.write( pdu );
 
-      logger.info( 'Dispatched simulation to ' + worker.remoteAddress );
+      console.log( 'Dispatched simulation to ' + worker.remoteAddress );
 
       updateWorkerRunningInstances( worker.remoteAddress );
    })
 
    .catch( function ( err ) {
-      logger.error( err );
+      console.log( err );
    });
 
 });
@@ -201,7 +201,7 @@ function treat( data, socket ) {
    try {
       factory.validate( object );
    } catch ( err ) {
-      return logger.error( err );
+      return console.log( err );
    }
 
    switch ( object.Id ) {
@@ -227,7 +227,7 @@ function treat( data, socket ) {
             } catch ( err ) {
                // If an error occurred, update it to finished anyways
                // No need to keep trying executing this simulation
-               logger.error( err );
+               console.log( err );
             }
 
             var promise_i = SimulationInstance.findById( object.SimulationId ).exec();
@@ -242,7 +242,7 @@ function treat( data, socket ) {
             })
 
             .catch( function ( err ) {
-               logger.error( err );
+               console.log( err );
             });
 
             // Update simulationInstance to finished
@@ -312,12 +312,12 @@ function treat( data, socket ) {
 
             // Treat all errors
             .catch( function ( err ) {
-               logger.error( err );
+               console.log( err );
             });
             
          } else {
 
-            logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
+            console.log( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
 
             const simulationInstanceUpdate = { 'state': SimulationInstance.State.Pending, $unset: { 'worker': 1 } };
 
@@ -325,14 +325,14 @@ function treat( data, socket ) {
 
             // Treat all errors
             promise.catch( function ( err ) {
-               logger.error( err );
+               console.log( err );
             });
          }
 
          break;
 
       default:
-         return logger.error( 'Invalid message received from ' + socket.remoteAddress );
+         return console.log( 'Invalid message received from ' + socket.remoteAddress );
    }
 }
 
@@ -385,13 +385,13 @@ function dispatchSimulation( worker ) {
 
       worker.write( pdu );
 
-      logger.info( 'Dispatched simulation to ' + worker.remoteAddress );
+      console.log( 'Dispatched simulation to ' + worker.remoteAddress );
 
       updateWorkerRunningInstances( worker.remoteAddress );
    })
 
    .catch( function ( err ) {
-      logger.error( err );
+      console.log( err );
    });
 }
 
@@ -405,7 +405,7 @@ function updateWorkerRunningInstances( workerAddress ) {
 
    // Treat all errors
    .catch( function ( err ) {
-      logger.error( err );
+      console.log( err );
    });
 }
 
@@ -419,6 +419,6 @@ function cleanUp() {
 
    // Treat all errors
    promise.catch( function ( err ) {
-      logger.error( err );
+      console.log( err );
    });
 }

@@ -27,7 +27,7 @@ module.exports = function () {
       communication.execute();
       worker_discovery.execute();
    } catch (err) {
-      logger.error(err);
+      console.log(err);
    }
 
 }

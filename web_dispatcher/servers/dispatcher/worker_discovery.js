@@ -32,7 +32,7 @@ const event = new EventEmitter();
 
 event.on( 'event', ( workerInfo ) => {
 
-   logger.info( 'Sending response to ' + workerInfo.address + ':' + workerInfo.port )
+   console.log( 'Sending response to ' + workerInfo.address + ':' + workerInfo.port )
 
    // Send response to worker
    socket.send( socket.address().address, workerInfo.port, workerInfo.address );
@@ -53,7 +53,7 @@ module.exports.execute = function () {
    });
 
    socket.on( 'error', ( err ) => {
-      logger.error( err.stack );
+      console.log( err.stack );
       socket.close();
    });
 
@@ -61,7 +61,7 @@ module.exports.execute = function () {
 
       if ( message.indexOf( 'NewWorker' ) <= -1 ) {
          // Discard this message
-         logger.error( 'Invalid message! ' + message + ' from ' + rinfo.address );
+         console.log( 'Invalid message! ' + message + ' from ' + rinfo.address );
          return;
       }
 
@@ -72,7 +72,7 @@ module.exports.execute = function () {
    });
 
    socket.on( 'listening', () => {
-      logger.info( 'UDP socket listening ' + socket.address().address + ':' + socket.address().port );
+      console.log( 'UDP socket listening ' + socket.address().address + ':' + socket.address().port );
    });
 
    socket.bind( 16180 );

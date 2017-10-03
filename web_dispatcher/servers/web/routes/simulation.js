@@ -129,7 +129,7 @@ module.exports = function ( app ) {
 
       .catch( function ( err ) {
 
-         logger.error( err );
+         console.log( err );
 
          res.sendStatus( 400 );
       });
@@ -160,7 +160,7 @@ module.exports = function ( app ) {
 
       .catch( function ( err ) {
 
-         logger.error( err );
+         console.log( err );
 
          res.sendStatus( 400 );
       });
