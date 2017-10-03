@@ -7,6 +7,12 @@
 const communication = require('./communication');
 const worker_discovery = require( './worker_discovery' )
 
+const memwatch = require('memwatch-next');
+
+memwatch.on('leak', (info) => {
+   console.error('Memory leak detected:\n', info);
+ });
+
 const log4js = require( 'log4js' );
 
 log4js.configure( {

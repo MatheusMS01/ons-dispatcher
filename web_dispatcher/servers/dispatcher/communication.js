@@ -8,6 +8,7 @@ const ip = require( 'ip' );
 const net = require( 'net' );
 const factory = require( '../../../protocol/dwp/factory' );
 const worker_discovery = require( './worker_discovery' );
+const mailer = require('../shared/mailer');
 const EventEmitter = require( 'events' );
 
 const config = require( '../shared/configuration' ).getConfiguration();
@@ -310,6 +311,19 @@ function treat( data, socket ) {
 
                   return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
                });
+            })
+
+            .then(function(simulationGroup) {
+
+               if(simulationGroup === undefined) {
+                  return;
+               }
+
+               const to = 'matheus.m.sarmento@gmail.com';
+               const subject = 'Simulation ' + simulationGroup.name + ' has finished';
+               const text = 'Your simulation has finished at ' + simulationGroup.endTime;
+
+               mailer.sendMail(to, subject, text);
             })
 
             // Treat all errors
