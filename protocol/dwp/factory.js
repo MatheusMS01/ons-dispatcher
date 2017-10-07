@@ -60,17 +60,17 @@ const endTag = '/END/';
 module.exports.encapsulate = function ( packet ) {
 
    return beginTag + packet + endTag;
-
 }
 
 module.exports.expose = function ( packet ) {
 
    var beginIndex = packet.search( beginTag );
-   var endIndex = packet.search( endTag );
 
    if ( beginIndex === -1 ) {
       throw 'Begin tag not found';
    }
+
+   var endIndex = packet.search( endTag, beginIndex );
 
    if ( endIndex === -1 ) {
       throw 'End tag not found';
@@ -85,11 +85,12 @@ module.exports.expose = function ( packet ) {
 module.exports.remove = function ( packet ) {
 
    var beginIndex = packet.search( beginTag );
-   var endIndex = packet.search( endTag );
 
    if ( beginIndex === -1 ) {
       throw 'Begin tag not found';
    }
+
+   var endIndex = packet.search( endTag, beginIndex );
 
    if ( endIndex === -1 ) {
       throw 'End tag not found';

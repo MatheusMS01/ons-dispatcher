@@ -1,14 +1,14 @@
 ﻿{
    "cpu": {
-      "threshold": 0.4,
+      "threshold": 0.2,
       "weight": 1
    },
    "memory": {
-      "threshold": 0.4,
+      "threshold": 0.2,
       "weight": 3
    },
    "requestResourceInterval": 1,
-   "dispatchInterval": 1,
+   "dispatchInterval": 5,
    "transporter": {
       "service": "gmail",
       "auth": {

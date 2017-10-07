@@ -41,9 +41,8 @@ const logger = log4js.getLogger();
 // TCP socket in which all the dispatcher-workers communication will be accomplished
 const server = net.createServer();
 
+// Store workers socket information in this array
 var workerPool = [];
-
-var buffer = '';
 
 var event = new EventEmitter();
 module.exports.event = event;
@@ -57,6 +56,9 @@ module.exports.execute = function () {
    dispatch();
 
    server.on( 'connection', ( socket ) => {
+
+      // Creates a buffer for each worker
+      var buffer = '';
 
       // Insert new worker to the pool
       addWorker( socket );
@@ -80,7 +82,7 @@ module.exports.execute = function () {
             logger.error( err );
          });
 
-         logger.info( 'Worker ' + socket.remoteAddress + ' left the pool' );
+         logger.warn( 'Worker ' + socket.remoteAddress + ' left the pool' );
 
          if ( workerPool.length === 0 ) {
             logger.warn( 'There are no workers left' );
@@ -93,9 +95,7 @@ module.exports.execute = function () {
          buffer += data;
 
          var packet;
-
          try {
-
             do {
                packet = factory.expose( buffer );
                buffer = factory.remove( buffer );

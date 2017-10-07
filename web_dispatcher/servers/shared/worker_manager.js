@@ -93,6 +93,8 @@ module.exports.getMostIdle = function getMostIdle() {
       const cpu = worker.lastResource.cpu;
       const memory = worker.lastResource.memory;
 
+      worker.lastResource = undefined;
+
       const cpuWeight = config.cpu.weight;
       const memoryWeight = config.memory.weight;
 
