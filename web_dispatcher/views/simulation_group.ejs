@@ -49,38 +49,38 @@
       function monitor() {
 
          listSimulationGroups();
-         setInterval(listSimulationGroups, 5000);
+         setInterval( listSimulationGroups, 5000 );
       }
 
       function listSimulationGroups() {
 
          var xhttp = new XMLHttpRequest();
          xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
+            if ( this.readyState == 4 && this.status == 200 ) {
 
-               const simulationGroups = JSON.parse(xhttp.response);
+               const simulationGroups = JSON.parse( xhttp.response );
 
-               listExecutingSimulationGroups(simulationGroups);
-               var executingInput = document.getElementById('search-executing');
-               searchTable(executingInput);
+               listExecutingSimulationGroups( simulationGroups );
+               var executingInput = document.getElementById( 'search-executing' );
+               searchTable( executingInput );
 
-               listFinishedSimulationGroups(simulationGroups);
-               var finishedInput = document.getElementById('search-finished');
-               searchTable(finishedInput);
+               listFinishedSimulationGroups( simulationGroups );
+               var finishedInput = document.getElementById( 'search-finished' );
+               searchTable( finishedInput );
 
-               updateRemainingInstances(simulationGroups);
+               updateRemainingInstances( simulationGroups );
 
-               $('[data-toggle=confirmation]').confirmation({ rootSelector: '[data-toggle=confirmation]' });
+               $( '[data-toggle=confirmation]' ).confirmation( { rootSelector: '[data-toggle=confirmation]' });
 
-               $('[name=Cancel]').on('confirmed.bs.confirmation', function () {
-                  $.post('/cancel', { _simulationGroup: $(this).closest('tr').attr('id') },
+               $( '[name=Cancel]' ).on( 'confirmed.bs.confirmation', function () {
+                  $.post( '/cancel', { _simulationGroup: $( this ).closest( 'tr' ).attr( 'id' ) },
                      () => {
                         location.reload();
                      });
                });
 
-               $('[name=Remove]').on('confirmed.bs.confirmation', function () {
-                  $.post('/remove', { _simulationGroup: $(this).closest('tr').attr('id') },
+               $( '[name=Remove]' ).on( 'confirmed.bs.confirmation', function () {
+                  $.post( '/remove', { _simulationGroup: $( this ).closest( 'tr' ).attr( 'id' ) },
                      () => {
                         location.reload();
                      });
@@ -89,151 +89,151 @@
 
          };
 
-         xhttp.open("GET", "/api_get_simulation_groups", true);
+         xhttp.open( "GET", "/api_get_simulation_groups", true );
          xhttp.send();
       }
 
-      function listExecutingSimulationGroups(simulationGroups) {
+      function listExecutingSimulationGroups( simulationGroups ) {
 
-         const tb = document.getElementById('tb_executing');
+         const tb = document.getElementById( 'tb_executing' );
 
-         while (tb.firstChild) {
-            tb.removeChild(tb.firstChild);
+         while ( tb.firstChild ) {
+            tb.removeChild( tb.firstChild );
          }
 
-         for (var idx in simulationGroups) {
+         for ( var idx in simulationGroups ) {
 
-            if (simulationGroups[idx].state === 0) {
+            if ( simulationGroups[idx].state === 0 ) {
 
-               var tr = document.createElement('tr');
+               var tr = document.createElement( 'tr' );
                tr.id = simulationGroups[idx]._id;
 
-               var tdName = document.createElement('td');
+               var tdName = document.createElement( 'td' );
 
-               var form = document.createElement('form');
+               var form = document.createElement( 'form' );
                form.method = 'post';
                form.action = '/simulation_group/' + simulationGroups[idx]._id;
 
-               var input = document.createElement('input');
+               var input = document.createElement( 'input' );
                input.type = 'submit';
                input.className = 'btn btn-link p-0'
                input.value = simulationGroups[idx].name;
 
-               form.appendChild(input);
-               tdName.appendChild(form);
+               form.appendChild( input );
+               tdName.appendChild( form );
 
-               var tdRemainingInstances = document.createElement('td');
+               var tdRemainingInstances = document.createElement( 'td' );
                tdRemainingInstances.id = 'tdri_' + simulationGroups[idx]._id;
 
-               var tdSeedAmount = document.createElement('td');
+               var tdSeedAmount = document.createElement( 'td' );
                tdSeedAmount.innerHTML = simulationGroups[idx].seedAmount;
 
-               var tdPriority = document.createElement('td');
+               var tdPriority = document.createElement( 'td' );
                tdPriority.innerHTML = simulationGroups[idx].priority;
 
-               var tdStartTime = document.createElement('td');
-               tdStartTime.innerHTML = simulationGroups[idx].startTime;
+               var tdStartTime = document.createElement( 'td' );
+               tdStartTime.innerHTML = new Date( simulationGroups[idx].startTime );
 
-               var tdCancel = document.createElement('td');
+               var tdCancel = document.createElement( 'td' );
 
-               var btn = document.createElement('button');
+               var btn = document.createElement( 'button' );
                btn.className = 'btn btn-large btn-danger';
-               btn.setAttribute('data-toggle', 'confirmation');
-               btn.setAttribute('data-popout', 'true');
-               btn.setAttribute('data-singleton', 'true');
+               btn.setAttribute( 'data-toggle', 'confirmation' );
+               btn.setAttribute( 'data-popout', 'true' );
+               btn.setAttribute( 'data-singleton', 'true' );
                btn.name = 'Cancel';
 
                btn.innerHTML = '<span class=\'glyphicon glyphicon-remove\'></span> Cancel'
 
-               tdCancel.appendChild(btn);
+               tdCancel.appendChild( btn );
 
-               tr.appendChild(tdName);
-               tr.appendChild(tdRemainingInstances);
-               tr.appendChild(tdSeedAmount);
-               tr.appendChild(tdPriority);
-               tr.appendChild(tdStartTime);
-               tr.appendChild(tdCancel);
+               tr.appendChild( tdName );
+               tr.appendChild( tdRemainingInstances );
+               tr.appendChild( tdSeedAmount );
+               tr.appendChild( tdPriority );
+               tr.appendChild( tdStartTime );
+               tr.appendChild( tdCancel );
 
-               tb.appendChild(tr);
+               tb.appendChild( tr );
             }
          }
       }
 
-      function listFinishedSimulationGroups(simulationGroups) {
+      function listFinishedSimulationGroups( simulationGroups ) {
 
-         const tb = document.getElementById('tb_finished');
+         const tb = document.getElementById( 'tb_finished' );
 
-         while (tb.firstChild) {
-            tb.removeChild(tb.firstChild);
+         while ( tb.firstChild ) {
+            tb.removeChild( tb.firstChild );
          }
 
-         for (var idx in simulationGroups) {
+         for ( var idx in simulationGroups ) {
 
-            if (simulationGroups[idx].state === 1) {
+            if ( simulationGroups[idx].state === 1 ) {
 
-               var tr = document.createElement('tr');
+               var tr = document.createElement( 'tr' );
                tr.id = simulationGroups[idx]._id;
 
-               var tdName = document.createElement('td');
+               var tdName = document.createElement( 'td' );
 
-               var form = document.createElement('form');
+               var form = document.createElement( 'form' );
                form.method = 'post';
                form.action = '/simulation_group/' + simulationGroups[idx]._id;
 
-               var input = document.createElement('input');
+               var input = document.createElement( 'input' );
                input.type = 'submit';
                input.className = 'btn btn-link p-0'
                input.value = simulationGroups[idx].name;
 
-               form.appendChild(input);
-               tdName.appendChild(form);
+               form.appendChild( input );
+               tdName.appendChild( form );
 
-               var tdSeedAmount = document.createElement('td');
+               var tdSeedAmount = document.createElement( 'td' );
                tdSeedAmount.innerHTML = simulationGroups[idx].seedAmount;
 
-               var tdStartTime = document.createElement('td');
-               tdStartTime.innerHTML = simulationGroups[idx].startTime;
+               var tdStartTime = document.createElement( 'td' );
+               tdStartTime.innerHTML = new Date( simulationGroups[idx].startTime );
 
-               var tdEndTime = document.createElement('td');
-               tdEndTime.innerHTML = simulationGroups[idx].endTime;
+               var tdEndTime = document.createElement( 'td' );
+               tdEndTime.innerHTML = new Date( simulationGroups[idx].endTime );
 
-               var tdRemove = document.createElement('td');
+               var tdRemove = document.createElement( 'td' );
 
-               var btn = document.createElement('button');
+               var btn = document.createElement( 'button' );
                btn.className = 'btn btn-large btn-danger';
-               btn.setAttribute('data-toggle', 'confirmation');
-               btn.setAttribute('data-popout', 'true');
-               btn.setAttribute('data-singleton', 'true');
+               btn.setAttribute( 'data-toggle', 'confirmation' );
+               btn.setAttribute( 'data-popout', 'true' );
+               btn.setAttribute( 'data-singleton', 'true' );
                btn.name = 'Remove';
 
                btn.innerHTML = '<span class=\'glyphicon glyphicon-remove\'></span> Remove'
 
-               tdRemove.appendChild(btn);
+               tdRemove.appendChild( btn );
 
-               tr.appendChild(tdName);
-               tr.appendChild(tdSeedAmount);
-               tr.appendChild(tdStartTime);
-               tr.appendChild(tdEndTime);
-               tr.appendChild(tdRemove);
+               tr.appendChild( tdName );
+               tr.appendChild( tdSeedAmount );
+               tr.appendChild( tdStartTime );
+               tr.appendChild( tdEndTime );
+               tr.appendChild( tdRemove );
 
-               tb.appendChild(tr);
+               tb.appendChild( tr );
             }
          }
       }
 
-      function updateRemainingInstances(simulationGroups) {
+      function updateRemainingInstances( simulationGroups ) {
 
-         for (var idx in simulationGroups) {
+         for ( var idx in simulationGroups ) {
 
-            if (simulationGroups[idx].state === 0) {
+            if ( simulationGroups[idx].state === 0 ) {
 
                var xhttp = new XMLHttpRequest();
                xhttp.onreadystatechange = function () {
-                  if (this.readyState == 4 && this.status == 200) {
-                     document.getElementById('tdri_' + simulationGroups[idx]._id).innerHTML = JSON.parse(xhttp.responseText).result;
+                  if ( this.readyState == 4 && this.status == 200 ) {
+                     document.getElementById( 'tdri_' + simulationGroups[idx]._id ).innerHTML = JSON.parse( xhttp.responseText ).result;
                   }
                };
-               xhttp.open('GET', '/api_get_remaining_instances_from_group/' + simulationGroups[idx]._id, true);
+               xhttp.open( 'GET', '/api_get_remaining_instances_from_group/' + simulationGroups[idx]._id, true );
                xhttp.send();
             }
          }
@@ -241,18 +241,18 @@
 
       window.onload = monitor;
 
-      function searchTable(input) {
+      function searchTable( input ) {
 
          var table = input.nextElementSibling;
-         var tr = table.getElementsByTagName("tr");
+         var tr = table.getElementsByTagName( "tr" );
          var filter = input.value.toUpperCase();
 
          // Loop through all table rows, and hide those who don't match the search query
-         for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
+         for ( i = 0; i < tr.length; i++ ) {
+            td = tr[i].getElementsByTagName( "td" )[0];
+            if ( td ) {
                var text = td.firstChild.firstChild.value;
-               if (text.toUpperCase().indexOf(filter) > -1) {
+               if ( text.toUpperCase().indexOf( filter ) > -1 ) {
                   tr[i].style.display = "";
                } else {
                   tr[i].style.display = "none";

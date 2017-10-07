@@ -1,12 +1,19 @@
 ﻿{
    "cpu": {
-      "threshold": 0.2,
+      "threshold": 0.4,
       "weight": 1
    },
    "memory": {
-      "threshold": 0.2,
+      "threshold": 0.4,
       "weight": 3
    },
-   "requestResourceInterval": 5,
-   "dispatchInterval": 15
+   "requestResourceInterval": 1,
+   "dispatchInterval": 1,
+   "transporter": {
+      "service": "gmail",
+      "auth": {
+         "user": "dontreply.dispatcher@gmail.com",
+         "pass": "Kh2NhMmUBX"
+      }
+   }
 }

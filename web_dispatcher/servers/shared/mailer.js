@@ -4,7 +4,8 @@
 //
 ////////////////////////////////////////////////
 
-const nodemailer = require('nodemailer');
+const nodemailer = require( 'nodemailer' );
+const config = require( './configuration' ).getConfiguration();
 const log4js = require( 'log4js' );
 
 log4js.configure( {
@@ -19,21 +20,18 @@ log4js.configure( {
 
 const logger = log4js.getLogger();
 
-var transporter = nodemailer.createTransport({
-   service: 'gmail',
+var transporter = nodemailer.createTransport( {
+   service: config.transporter.service,
    auth: {
-     user: 'dontreply.dispatcher@gmail.com',
-     pass: 'Kh2NhMmUBX'
-   },
-   tls:{
-      secureProtocol: "TLSv1_method"
+      user: config.transporter.auth.user,
+      pass: config.transporter.auth.pass
    }
  });
 
  module.exports.sendMail = function (to, subject, text) {
 
    var mailOptions = {
-      from: 'dontreply.dispatcher@gmail.com',
+      from: config.transporter.auth.user,
       to: to,
       subject: subject,
       text: text

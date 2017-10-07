@@ -32,24 +32,28 @@ function load() {
 
 function treatDefaultValues() {
 
-   if( configuration.cpu === undefined ) {
+   if ( configuration.cpu === undefined ) {
       configuration.cpu = {};
    }
 
-   if( configuration.memory === undefined ) {
+   if ( configuration.memory === undefined ) {
       configuration.memory = {};
+   }
+
+   if ( configuration.transporter === undefined ) {
+      configuration.transporter = {};
+      configuration.transporter.auth = {};
    }
 
    // Prevent user's stupidity
    if ( configuration.cpu.threshold === undefined || typeof configuration.cpu.threshold === 'string' ) {
       configuration.cpu.threshold = 0.5;
-   } else {
-      if ( configuration.cpu.threshold > 1 ) {
-         configuration.cpu.threshold = 1;
-      } else if ( configuration.cpu.threshold < 0 ) {
-         configuration.cpu.threshold = 0;
-      }
+   } else if ( configuration.cpu.threshold > 1 ) {
+      configuration.cpu.threshold = 1;
+   } else if ( configuration.cpu.threshold < 0 ) {
+      configuration.cpu.threshold = 0;
    }
+
 
    if ( configuration.cpu.weight === undefined || typeof configuration.cpu.weight === 'string' ) {
       configuration.cpu.weight = 1;
@@ -59,12 +63,10 @@ function treatDefaultValues() {
 
    if ( configuration.memory.threshold === undefined || typeof configuration.memory.threshold === 'string' ) {
       configuration.memory.threshold = 0.5;
-   } else {
-      if ( configuration.memory.threshold > 1 ) {
-         configuration.memory.threshold = 1;
-      } else if ( configuration.memory.threshold < 0 ) {
-         configuration.memory.threshold = 0;
-      }
+   } else if ( configuration.memory.threshold > 1 ) {
+      configuration.memory.threshold = 1;
+   } else if ( configuration.memory.threshold < 0 ) {
+      configuration.memory.threshold = 0;
    }
 
    if ( configuration.memory.weight === undefined || typeof configuration.memory.weight === 'string' ) {

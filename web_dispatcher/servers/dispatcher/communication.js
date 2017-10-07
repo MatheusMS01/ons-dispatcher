@@ -7,8 +7,7 @@
 const ip = require( 'ip' );
 const net = require( 'net' );
 const factory = require( '../../../protocol/dwp/factory' );
-const worker_discovery = require( './worker_discovery' );
-const mailer = require('../shared/mailer');
+const mailer = require( '../shared/mailer' );
 const EventEmitter = require( 'events' );
 
 const config = require( '../shared/configuration' ).getConfiguration();
@@ -116,44 +115,6 @@ module.exports.execute = function () {
       logger.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
    });
 }
-
-event.on( 'run_simulation', ( worker ) => {
-
-   const simulationInstanceFilter = { 'state': SimulationInstance.State.Pending };
-   const simulationInstanceUpdate = { 'state': SimulationInstance.State.Executing, 'worker': worker.remoteAddress };
-   const simulationInstancePopulate = {
-      path: '_simulation',
-      select: '_binary _document _simulationGroup',
-      populate: { path: '_binary _document _simulationGroup' },
-      options: { sort: { '_simulationgroup.priority': -1 } }
-   };
-
-   var promise = SimulationInstance.findOneAndUpdate( simulationInstanceFilter, simulationInstanceUpdate )
-      .populate( simulationInstancePopulate )
-      .sort( { seed: -1, load: 1 })
-      .exec();
-
-   promise.then( function ( simulationInstance ) {
-
-      if ( simulationInstance === null ) {
-         // No simulations are pending
-         return;
-      }
-
-      const pdu = simulationRequest.format( { Data: simulationInstance });
-
-      worker.write( pdu );
-
-      logger.info( 'Dispatched simulation to ' + worker.remoteAddress );
-
-      updateWorkerRunningInstances( worker.remoteAddress );
-   })
-
-      .catch( function ( err ) {
-         logger.error( err );
-      });
-
-});
 
 function requestResource() {
 
@@ -304,26 +265,40 @@ function treat( data, socket ) {
                   }
 
                   const id = simulation._simulationGroup;
-                  const simulationGroupUpdate = {
-                     state: SimulationGroup.State.Finished,
-                     endTime: Date.now()
-                  };
+                  const simulationGroupUpdate = { state: SimulationGroup.State.Finished, endTime: Date.now() };
 
-                  return SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).exec()
+                  var promise = SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).populate( '_user' ).exec();
+
+                  return promise.then( function ( simulationGroup ) {
+
+                     const endTime = new Date( simulationGroupUpdate.endTime );
+                     const totalTime = ( endTime - simulationGroup.startTime ) / 1000; // seconds
+
+                     var elapsedTime = new Date( totalTime * 1000 );
+                     var hh = elapsedTime.getUTCHours();
+                     var mm = elapsedTime.getUTCMinutes();
+                     var ss = elapsedTime.getSeconds();
+
+                     if ( hh < 10 ) { hh = "0" + hh; }
+                     if ( mm < 10 ) { mm = "0" + mm; }
+                     if ( ss < 10 ) { ss = "0" + ss; }
+                     // This formats your string to HH:MM:SS
+                     var t = hh + ":" + mm + ":" + ss;
+
+                     const to = simulationGroup._user.email;
+                     const subject = 'Simulation Group ' + simulationGroup.name + ' has finished';
+                     const text = 'Start time: ' + simulationGroup.startTime +
+                        '\nEnd time: ' + endTime +
+                        '\nElapsed time: ' + t +
+                        '\nPriority: ' + simulationGroup.priority +
+                        '\nSeed amount: ' + simulationGroup.seedAmount +
+                        '\nMinimum load: ' + simulationGroup.load.minimum +
+                        '\nMaximum load: ' + simulationGroup.load.maximum +
+                        '\nStep: ' + simulationGroup.load.step;
+
+                     mailer.sendMail( to, subject, text );
+                  });
                });
-            })
-
-            .then(function(simulationGroup) {
-
-               if(simulationGroup === undefined) {
-                  return;
-               }
-
-               const to = 'matheus.m.sarmento@gmail.com';
-               const subject = 'Simulation ' + simulationGroup.name + ' has finished';
-               const text = 'Your simulation has finished at ' + simulationGroup.endTime;
-
-               mailer.sendMail(to, subject, text);
             })
 
             // Treat all errors
