@@ -41,9 +41,6 @@
     <Compile Include="resource.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="simulator.js">
-      <SubType>Code</SubType>
-    </Compile>
     <Content Include="config\config.json">
       <SubType>Code</SubType>
     </Content>

@@ -25,59 +25,56 @@ log4js.configure( {
    categories: {
       default: { appenders: ['out', 'app'], level: 'debug' }
    }
-});
+} );
 
 // Responsible for loggin into console and log file
 const logger = log4js.getLogger();
-
-var buffer = '';
 
 var simulationPID = [];
 
 module.exports = function () {
 
    // Remove from local cache
-   ddp.event.on( 'dispatcher_response', ( dispatcherAddress ) => {
+   ddp.event.on( 'dispatcher_response', function ( dispatcherAddress ) {
 
       logger.debug( 'Trying to connect to ' + dispatcherAddress + ':16180' );
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
-      socket.connect( 16180, dispatcherAddress, () => {
+      socket.connect( 16180, dispatcherAddress, function () {
          logger.debug( 'Connection established' );
-      });
 
-      socket.on( 'data', ( data ) => {
-         // Treat chunk data
-         buffer += data;
+         var buffer = '';
 
-         var packet;
-         try {
-            do {
-               packet = factory.expose( buffer );
-               buffer = factory.remove( buffer );
-               treat( packet, socket );
-            } while ( buffer.length !== 0 )
-         } catch ( err ) {
-            return;
-         }
-      });
+         socket.on( 'data', function ( data ) {
+            // Treat chunk data
+            buffer += data;
 
-      socket.on( 'error', ( err ) => {
+            var packet;
+            try {
+               do {
+                  packet = factory.expose( buffer );
+                  buffer = factory.remove( buffer );
+                  treat( packet, socket );
+               } while ( buffer.length !== 0 )
+            } catch ( err ) {
+               return;
+            }
+         } );
 
-         if ( err.code ) {
-            logger.warn( err.code );
-         }
-         //socket.destroy();
-         //process.exit();
-      });
+         socket.on( 'error', function ( err ) {
 
+            if ( err.code ) {
+               logger.warn( err.code );
+            }
+         } );
 
-      socket.on( 'close', () => {
-         logger.warn( 'Dispatcher connection closed!' );
-         ddp.resume();
-      });
-   });
+         socket.on( 'close', function () {
+            logger.warn( 'Dispatcher connection closed!' );
+            ddp.resume();
+         } );
+      } );
+   } );
 }
 
 function treat( data, socket ) {
@@ -98,14 +95,11 @@ function treat( data, socket ) {
       case factory.Id.ResourceRequest:
 
          resource.getCpuUsage(( cpuUsage ) => {
-            var data = {
-               cpu: ( 1 - cpuUsage ),
-               memory: resource.getMemoryAvailable()
-            };
+            var data = { cpu: ( 1 - cpuUsage ), memory: resource.getMemoryAvailable() };
 
             // Respond dispatcher
             socket.write( resource_response.format( data ) );
-         });
+         } );
 
          break;
 
@@ -152,16 +146,22 @@ function treat( data, socket ) {
                   data.SimulationId = simulationId;
 
                   if ( err ) {
+                     logger.error( 'Simulation has finished with error.\n' + err );
+
                      data.Result = simulation_response.Result.Failure;
                      data.ErrorMessage = err;
                   }
 
                   if ( stderr ) {
+                     logger.error( 'Simulation has finished with error.\n' + stderr );
+
                      data.Result = simulation_response.Result.Failure;
                      data.ErrorMessage = stderr;
                   }
 
                   if ( stdout ) {
+                     logger.info( 'Simulation has finished with success' );
+
                      data.Result = simulation_response.Result.Success;
                      data.Output = stdout;
                      // Treat simulator output
@@ -174,15 +174,15 @@ function treat( data, socket ) {
                      if ( err ) {
                         return logger.error( err );
                      }
-                  });
-               });
+                  } );
+               } );
 
                simulationPID.push( {
                   'SimulationId': object.Data._id,
                   'PID': child.pid,
-               });
-            });
-         });
+               } );
+            } );
+         } );
 
          break;
 
@@ -214,5 +214,5 @@ function writeFile( path, contents, callback ) {
       }
 
       fs.writeFile( path, contents, callback );
-   });
+   } );
 }
