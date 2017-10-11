@@ -111,7 +111,7 @@ module.exports.execute = function () {
    });
 
    // Open Socket
-   server.listen( 16180, ip.address(), () => {
+   server.listen( 16180, '0.0.0.0', () => {
       logger.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
    });
 }
