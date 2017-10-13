@@ -7,11 +7,9 @@
     "name": "Matheus Medeiros"
   },
   "dependencies": {
-    "ip": "^1.1.5",
     "log4js": "^2.3.4",
     "os-utils": "0.0.14",
     "rimraf": "~2.6.1",
     "validate-ip-node": "^1.0.6",
-    "xml2js": "^0.4.17"
   }
 }

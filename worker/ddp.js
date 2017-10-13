@@ -19,7 +19,7 @@ log4js.configure( {
    categories: {
       default: { appenders: ['out', 'app'], level: 'debug' }
    }
-});
+} );
 
 var event = new EventEmitter();
 
@@ -38,11 +38,11 @@ function execute() {
 
       if ( configuration.DispatcherAddress !== undefined ) {
          logger.debug( 'Dispatcher address is configured: ' + configuration.DispatcherAddress );
-         return event.emit( 'dispatcher_response', configuration.DispatcherAddress );
+         return event.emit( 'dispatcher_address', configuration.DispatcherAddress );
       }
 
       resume();
-   });
+   } );
 
    socket.on( 'message', ( message, rinfo ) => {
 
@@ -51,10 +51,10 @@ function execute() {
       if ( !receivedResponse ) {
          // Avoid duplicates
          logger.debug( 'Received response from dispatcher' );
-         event.emit( 'dispatcher_response', rinfo.address );
+         event.emit( 'dispatcher_address', rinfo.address );
          receivedResponse = true;
       }
-   });
+   } );
 
    // Bind to any port
    socket.bind();
@@ -80,7 +80,7 @@ function resume() {
          logger.debug( tries + ' tries to connect to dispatcher via UDP broadcast. Trying again with address configured' );
          tries = 0;
          clearInterval( intervalId );
-         return event.emit( 'dispatcher_response', configuration.DispatcherAddress );
+         return event.emit( 'dispatcher_address', configuration.DispatcherAddress );
       }
 
       ++tries;

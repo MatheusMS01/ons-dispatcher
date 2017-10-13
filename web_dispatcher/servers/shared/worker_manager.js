@@ -21,7 +21,7 @@ module.exports.add = function add( workerAddress ) {
       return;
    }
 
-   workers.push( { address: workerAddress, runningInstances: 0 });
+   workers.push( { address: workerAddress, runningInstances: 0 } );
 }
 
 module.exports.update = function update( workerAddress, update ) {
@@ -93,8 +93,6 @@ module.exports.getMostIdle = function getMostIdle() {
       const cpu = worker.lastResource.cpu;
       const memory = worker.lastResource.memory;
 
-      worker.lastResource = undefined;
-
       const cpuWeight = config.cpu.weight;
       const memoryWeight = config.memory.weight;
 
@@ -105,6 +103,15 @@ module.exports.getMostIdle = function getMostIdle() {
          mostIdle.weightedMean = weightedMean;
          mostIdle.cpu = cpu;
          mostIdle.memory = memory;
+      }
+   }
+
+   if ( mostIdle.address ) {
+      for ( var idx = 0; idx < workers.length; ++idx ) {
+         if ( mostIdle.address === workers[idx].address ) {
+            workers[idx].lastResource = undefined;
+            break;
+         }
       }
    }
 

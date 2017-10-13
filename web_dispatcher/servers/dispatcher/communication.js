@@ -279,11 +279,13 @@ function treat( data, socket ) {
                      var mm = elapsedTime.getUTCMinutes();
                      var ss = elapsedTime.getSeconds();
 
+                     var days = elapsedTime.getUTCDay();
+
                      if ( hh < 10 ) { hh = "0" + hh; }
                      if ( mm < 10 ) { mm = "0" + mm; }
                      if ( ss < 10 ) { ss = "0" + ss; }
                      // This formats your string to HH:MM:SS
-                     var t = hh + ":" + mm + ":" + ss;
+                     var t = days + " " + hh + ":" + mm + ":" + ss;
 
                      const to = simulationGroup._user.email;
                      const subject = 'Simulation Group ' + simulationGroup.name + ' has finished';

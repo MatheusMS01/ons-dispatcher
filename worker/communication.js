@@ -35,45 +35,51 @@ var simulationPID = [];
 module.exports = function () {
 
    // Remove from local cache
-   ddp.event.on( 'dispatcher_response', function ( dispatcherAddress ) {
+   ddp.event.on( 'dispatcher_address', function ( dispatcherAddress ) {
 
       logger.debug( 'Trying to connect to ' + dispatcherAddress + ':16180' );
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
-      socket.connect( 16180, dispatcherAddress, function () {
-         logger.debug( 'Connection established' );
+      try {
+         socket.connect( 16180, dispatcherAddress, function () {
+            logger.debug( 'Connection established' );
 
-         var buffer = '';
+            var buffer = '';
 
-         socket.on( 'data', function ( data ) {
-            // Treat chunk data
-            buffer += data;
+            socket.on( 'data', function ( data ) {
+               // Treat chunk data
+               buffer += data;
 
-            var packet;
-            try {
-               do {
-                  packet = factory.expose( buffer );
-                  buffer = factory.remove( buffer );
-                  treat( packet, socket );
-               } while ( buffer.length !== 0 )
-            } catch ( err ) {
-               return;
-            }
+               var packet;
+               try {
+                  do {
+                     packet = factory.expose( buffer );
+                     buffer = factory.remove( buffer );
+                     treat( packet, socket );
+                  } while ( buffer.length !== 0 )
+               } catch ( err ) {
+                  return;
+               }
+            } );
+
+            socket.on( 'error', function ( err ) {
+
+               if ( err.code ) {
+                  logger.warn( err.code );
+               }
+            } );
+
+            socket.on( 'close', function () {
+               logger.warn( 'Dispatcher connection closed!' );
+               ddp.resume();
+            } );
          } );
 
-         socket.on( 'error', function ( err ) {
+      } catch ( err ) {
+         logger.error( err );
+      }
 
-            if ( err.code ) {
-               logger.warn( err.code );
-            }
-         } );
-
-         socket.on( 'close', function () {
-            logger.warn( 'Dispatcher connection closed!' );
-            ddp.resume();
-         } );
-      } );
    } );
 }
 
@@ -95,7 +101,7 @@ function treat( data, socket ) {
       case factory.Id.ResourceRequest:
 
          resource.getCpuUsage(( cpuUsage ) => {
-            var data = { cpu: ( 1 - cpuUsage ), memory: resource.getMemoryAvailable() };
+            var data = { cpu: ( 1 - cpuUsage ), memory: resource.getAvailableMemory() };
 
             // Respond dispatcher
             socket.write( resource_response.format( data ) );

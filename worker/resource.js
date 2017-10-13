@@ -4,13 +4,13 @@
 //
 ////////////////////////////////////////////////
 
-const os = require('os');
-const os_utils = require('os-utils')
+const os = require( 'os' );
+const os_utils = require( 'os-utils' )
 
-module.exports.getMemoryAvailable = function () {
+module.exports.getAvailableMemory = function () {
    return os.freemem() / os.totalmem();
 }
 
-module.exports.getCpuUsage = function (callback) {
-   os_utils.cpuUsage(callback);
+module.exports.getCpuUsage = function ( callback ) {
+   os_utils.cpuUsage( callback );
 }
