@@ -37,48 +37,42 @@ module.exports = function () {
    // Remove from local cache
    ddp.event.on( 'dispatcher_address', function ( dispatcherAddress ) {
 
+      var buffer = '';
+
       logger.debug( 'Trying to connect to ' + dispatcherAddress + ':16180' );
       // TCP socket in which all the communication dispatcher-workers will be accomplished
       var socket = new net.Socket();
 
-      try {
-         socket.connect( 16180, dispatcherAddress, function () {
-            logger.debug( 'Connection established' );
+      socket.connect( 16180, dispatcherAddress, function () {
+         logger.debug( 'Connection established' );
+      } );
 
-            var buffer = '';
+      socket.on( 'data', function ( data ) {
+         // Treat chunk data
+         buffer += data;
 
-            socket.on( 'data', function ( data ) {
-               // Treat chunk data
-               buffer += data;
+         var packet;
+         try {
+            do {
+               packet = factory.expose( buffer );
+               buffer = factory.remove( buffer );
+               treat( packet, socket );
+            } while ( buffer.length !== 0 )
+         } catch ( e ) {
+            return;
+         }
+      } );
 
-               var packet;
-               try {
-                  do {
-                     packet = factory.expose( buffer );
-                     buffer = factory.remove( buffer );
-                     treat( packet, socket );
-                  } while ( buffer.length !== 0 )
-               } catch ( err ) {
-                  return;
-               }
-            } );
+      socket.on( 'error', function ( err ) {
+         if ( err.code ) {
+            logger.warn( err.code );
+         }
+      } );
 
-            socket.on( 'error', function ( err ) {
-
-               if ( err.code ) {
-                  logger.warn( err.code );
-               }
-            } );
-
-            socket.on( 'close', function () {
-               logger.warn( 'Dispatcher connection closed!' );
-               ddp.resume();
-            } );
-         } );
-
-      } catch ( err ) {
-         logger.error( err );
-      }
+      socket.on( 'close', function () {
+         logger.warn( 'Dispatcher connection closed!' );
+         ddp.resume();
+      } );
 
    } );
 }
