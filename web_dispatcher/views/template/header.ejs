@@ -1,4 +1,5 @@
-﻿<nav class='navbar navbar-toggleable-md navbar-inverse <!--fixed-top--> bg-inverse'>
+﻿
+<nav class='navbar navbar-toggleable-md navbar-inverse <!--fixed-top--> bg-inverse'>
    <div class='navbar-header'>
       <button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar' aria-expanded='false' aria-controls='navbar'>
          <span class='sr-only'>Toggle navigation</span>
@@ -17,7 +18,22 @@
       <ul class='nav navbar-nav navbar-right'>
          <% if(!locals.isAuthenticated) { %>
          <li <% if(active === 'sign_up') { %> class='active' <% } %>><a href='/sign_up'><span class='glyphicon glyphicon-user'></span> Sign Up</a></li>
-         <li <% if(active === 'login') { %> class='active' <% } %>><a href='/login'><span class='glyphicon glyphicon-log-in'></span> Login</a></li>
+
+         <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="glyphicon glyphicon-log-in"></i> Sign In</a>
+            <div class="dropdown-menu form-login stop-propagation" style="padding: 1em;min-width: 280px;" role="menu">
+               <form method='post' action='/login'>
+               <div class="form-group">
+              <label for="email"><i class="glyphicon glyphicon-envelope"></i> Email address</label> 
+              <input type="email" class="form-control" name="username" placeholder="Enter email" /></div>
+              <div class="form-group">
+              <label for="password"><i class="glyphicon glyphicon-lock"></i> Password</label> 
+              <input type="password" class="form-control" name="password" placeholder="Password" /></div>
+                <button type="submit" class="btn btn-success btn-block"><i class="glyphicon glyphicon-ok"></i> Submit</button>
+              </form>
+            </div>
+          </li>
+         
          <% } else { %>
          <li class='dropdown'>
             <a class='dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
@@ -32,4 +48,10 @@
          <% } %>
       </ul>
    </div>
+
+   <script>
+   $('.stop-propagation').on('click', function (e) {
+      e.stopPropagation();
+   });
+   </script>
 </nav>
