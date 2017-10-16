@@ -34,7 +34,7 @@ log4js.configure( {
    categories: {
       default: { appenders: ['out', 'app'], level: 'debug' }
    }
-});
+} );
 
 const logger = log4js.getLogger();
 
@@ -76,11 +76,11 @@ module.exports.execute = function () {
          const simulationInstanceUpdate = { state: SimulationInstance.State.Pending, $unset: { worker: 1 } };
 
          // Update all SimulationInstances that were executing by this worker that left to pending again
-         var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
+         var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true } ).exec();
 
          promise.catch( function ( err ) {
             logger.error( err );
-         });
+         } );
 
          logger.warn( 'Worker ' + socket.remoteAddress + ' left the pool' );
 
@@ -88,7 +88,7 @@ module.exports.execute = function () {
             logger.warn( 'There are no workers left' );
             return;
          }
-      });
+      } );
 
       socket.on( 'data', ( data ) => {
          // Treat chunk data
@@ -105,15 +105,15 @@ module.exports.execute = function () {
          } catch ( e ) {
             return;
          }
-      });
+      } );
 
-      socket.on( 'error', () => { });
-   });
+      socket.on( 'error', () => { } );
+   } );
 
    // Open Socket
    server.listen( 16180, '0.0.0.0', () => {
       logger.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
-   });
+   } );
 }
 
 function requestResource() {
@@ -129,13 +129,90 @@ function requestResource() {
 
 function dispatch() {
 
-   // From time to time, request resources in order to fill possible idle machines
    setInterval( function () {
 
-      dispatchToMostIdleWorker();
+      batchDispatch();
 
    }, config.dispatchInterval * 1000 );
 
+}
+
+/**
+ * Retrieve number of workers that fit in cpu and memory threshold.
+ * With this number (n) in hands, make select a top 'n' select of pending simulation instances
+ * and dispatch it to all those workers
+ */
+
+function batchDispatch() {
+
+   const availableWorkers = workerManager.getAvailables( config.cpu.threshold, config.memory.threshold );
+
+   if ( !availableWorkers.length ) {
+      return;
+   }
+
+   const simulationInstanceFilter = { 'state': SimulationInstance.State.Pending };
+   const simulationInstancePopulate = {
+      path: '_simulation',
+      select: '_binary _document _simulationGroup',
+      populate: { path: '_binary _document _simulationGroup' },
+      options: { sort: { '_simulationgroup.priority': -1 } }
+   };
+
+   const promise = SimulationInstance.find( simulationInstanceFilter )
+      .populate( simulationInstancePopulate )
+      .sort( { seed: -1, load: 1 } )
+      .limit( availableWorkers.length )
+      .exec();
+
+   promise.then( function ( simulationInstances ) {
+
+      if ( simulationInstances === null ) {
+         // No simulations are pending
+         return;
+      }
+
+      var idx = 0;
+
+      return simulationInstances.forEach( function ( simulationInstance ) {
+
+         simulationInstance.set( { 'state': SimulationInstance.State.Executing, 'worker': availableWorkers[idx].address } );
+
+         ++idx;
+
+         var promise = simulationInstance.save();
+
+         promise.then( function ( updatedSimulationInstance ) {
+
+            const workerAddress = updatedSimulationInstance.worker;
+
+            var worker;
+
+            for ( var workerInstance in workerPool ) {
+               if ( workerPool[workerInstance].remoteAddress === workerAddress ) {
+                  worker = workerPool[workerInstance];
+                  break;
+               }
+            }
+
+            const pdu = simulationRequest.format( { Data: updatedSimulationInstance } );
+
+            worker.write( pdu );
+
+            logger.info( 'Dispatched simulation to ' + workerAddress );
+
+            updateWorkerRunningInstances( workerAddress );
+         } )
+
+            .catch( function ( err ) {
+               logger.error( err );
+            } );
+      } );
+   } )
+
+   .catch( function ( err ) {
+      logger.error( err );
+   } );
 }
 
 function addWorker( worker ) {
@@ -201,11 +278,11 @@ function treat( data, socket ) {
                }
 
                updateWorkerRunningInstances( simulationInstance.worker );
-            })
+            } )
 
-            .catch( function ( err ) {
-               logger.error( err );
-            });
+               .catch( function ( err ) {
+                  logger.error( err );
+               } );
 
             // Update simulationInstance to finished
             var simulationInstanceUpdate = {
@@ -240,73 +317,73 @@ function treat( data, socket ) {
                   const simulationUpdate = { state: Simulation.State.Finished };
 
                   return Simulation.findByIdAndUpdate( id, simulationUpdate )
-               })
-            })
+               } )
+            } )
 
-            .then( function ( simulation ) {
+               .then( function ( simulation ) {
 
-               if ( simulation === undefined ) {
-                  return;
-               }
-
-               // Count how many simulations are executing
-               const condition = {
-                  _simulationGroup: simulation._simulationGroup,
-                  state: Simulation.State.Executing
-               };
-
-               var promise = Simulation.count( condition ).exec();
-
-               return promise.then( function ( count ) {
-
-                  // If they are all finished, update simulationGroup to finished too
-                  if ( count > 0 ) {
+                  if ( simulation === undefined ) {
                      return;
                   }
 
-                  const id = simulation._simulationGroup;
-                  const simulationGroupUpdate = { state: SimulationGroup.State.Finished, endTime: Date.now() };
+                  // Count how many simulations are executing
+                  const condition = {
+                     _simulationGroup: simulation._simulationGroup,
+                     state: Simulation.State.Executing
+                  };
 
-                  var promise = SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).populate( '_user' ).exec();
+                  var promise = Simulation.count( condition ).exec();
 
-                  return promise.then( function ( simulationGroup ) {
+                  return promise.then( function ( count ) {
 
-                     const endTime = new Date( simulationGroupUpdate.endTime );
-                     const totalTime = ( endTime - simulationGroup.startTime ) / 1000; // seconds
+                     // If they are all finished, update simulationGroup to finished too
+                     if ( count > 0 ) {
+                        return;
+                     }
 
-                     var elapsedTime = new Date( totalTime * 1000 );
-                     var hh = elapsedTime.getUTCHours();
-                     var mm = elapsedTime.getUTCMinutes();
-                     var ss = elapsedTime.getSeconds();
+                     const id = simulation._simulationGroup;
+                     const simulationGroupUpdate = { state: SimulationGroup.State.Finished, endTime: Date.now() };
 
-                     var days = elapsedTime.getUTCDay();
+                     var promise = SimulationGroup.findByIdAndUpdate( id, simulationGroupUpdate ).populate( '_user' ).exec();
 
-                     if ( hh < 10 ) { hh = "0" + hh; }
-                     if ( mm < 10 ) { mm = "0" + mm; }
-                     if ( ss < 10 ) { ss = "0" + ss; }
-                     // This formats your string to HH:MM:SS
-                     var t = days + " " + hh + ":" + mm + ":" + ss;
+                     return promise.then( function ( simulationGroup ) {
 
-                     const to = simulationGroup._user.email;
-                     const subject = 'Simulation Group ' + simulationGroup.name + ' has finished';
-                     const text = 'Start time: ' + simulationGroup.startTime +
-                        '\nEnd time: ' + endTime +
-                        '\nElapsed time: ' + t +
-                        '\nPriority: ' + simulationGroup.priority +
-                        '\nSeed amount: ' + simulationGroup.seedAmount +
-                        '\nMinimum load: ' + simulationGroup.load.minimum +
-                        '\nMaximum load: ' + simulationGroup.load.maximum +
-                        '\nStep: ' + simulationGroup.load.step;
+                        const endTime = new Date( simulationGroupUpdate.endTime );
+                        const totalTime = ( endTime - simulationGroup.startTime ) / 1000; // seconds
 
-                     mailer.sendMail( to, subject, text );
-                  });
-               });
-            })
+                        var elapsedTime = new Date( totalTime * 1000 );
+                        var hh = elapsedTime.getUTCHours();
+                        var mm = elapsedTime.getUTCMinutes();
+                        var ss = elapsedTime.getSeconds();
 
-            // Treat all errors
-            .catch( function ( err ) {
-               logger.error( err );
-            });
+                        var days = elapsedTime.getUTCDay();
+
+                        if ( hh < 10 ) { hh = "0" + hh; }
+                        if ( mm < 10 ) { mm = "0" + mm; }
+                        if ( ss < 10 ) { ss = "0" + ss; }
+                        // This formats your string to HH:MM:SS
+                        var t = days + " " + hh + ":" + mm + ":" + ss;
+
+                        const to = simulationGroup._user.email;
+                        const subject = 'Simulation Group ' + simulationGroup.name + ' has finished';
+                        const text = 'Start time: ' + simulationGroup.startTime +
+                           '\nEnd time: ' + endTime +
+                           '\nElapsed time: ' + t +
+                           '\nPriority: ' + simulationGroup.priority +
+                           '\nSeed amount: ' + simulationGroup.seedAmount +
+                           '\nMinimum load: ' + simulationGroup.load.minimum +
+                           '\nMaximum load: ' + simulationGroup.load.maximum +
+                           '\nStep: ' + simulationGroup.load.step;
+
+                        mailer.sendMail( to, subject, text );
+                     } );
+                  } );
+               } )
+
+               // Treat all errors
+               .catch( function ( err ) {
+                  logger.error( err );
+               } );
 
          } else {
 
@@ -319,7 +396,7 @@ function treat( data, socket ) {
             // Treat all errors
             promise.catch( function ( err ) {
                logger.error( err );
-            });
+            } );
          }
 
          break;
@@ -329,76 +406,18 @@ function treat( data, socket ) {
    }
 }
 
-function dispatchToMostIdleWorker() {
-
-   const mostIdleWorker = workerManager.getMostIdle();
-
-   if ( mostIdleWorker.address === '' ) {
-      return;
-   }
-
-   if ( ( mostIdleWorker.cpu < config.cpu.threshold ) ||
-      ( mostIdleWorker.memory < config.memory.threshold ) ) {
-      return;
-   }
-
-   for ( var idx in workerPool ) {
-      if ( workerPool[idx].remoteAddress === mostIdleWorker.address ) {
-         dispatchSimulation( workerPool[idx] );
-         return;
-      }
-   }
-}
-
-function dispatchSimulation( worker ) {
-
-   const simulationInstanceFilter = { 'state': SimulationInstance.State.Pending };
-   const simulationInstanceUpdate = { 'state': SimulationInstance.State.Executing, 'worker': worker.remoteAddress };
-   const simulationInstancePopulate = {
-      path: '_simulation',
-      select: '_binary _document _simulationGroup',
-      populate: { path: '_binary _document _simulationGroup' },
-      options: { sort: { '_simulationgroup.priority': -1 } }
-   };
-
-   var promise = SimulationInstance.findOneAndUpdate( simulationInstanceFilter, simulationInstanceUpdate )
-      .populate( simulationInstancePopulate )
-      .sort( { seed: -1, load: 1 })
-      .exec();
-
-   promise.then( function ( simulationInstance ) {
-
-      if ( simulationInstance === null ) {
-         // No simulations are pending
-         return;
-      }
-
-      const pdu = simulationRequest.format( { Data: simulationInstance });
-
-      worker.write( pdu );
-
-      logger.info( 'Dispatched simulation to ' + worker.remoteAddress );
-
-      updateWorkerRunningInstances( worker.remoteAddress );
-   })
-
-   .catch( function ( err ) {
-      logger.error( err );
-   });
-}
-
 function updateWorkerRunningInstances( workerAddress ) {
 
-   var promise = SimulationInstance.count( { worker: workerAddress }).exec();
+   var promise = SimulationInstance.count( { worker: workerAddress } ).exec();
 
    promise.then( function ( count ) {
-      workerManager.update( workerAddress, { runningInstances: count });
-   })
+      workerManager.update( workerAddress, { runningInstances: count } );
+   } )
 
-   // Treat all errors
-   .catch( function ( err ) {
-      logger.error( err );
-   });
+      // Treat all errors
+      .catch( function ( err ) {
+         logger.error( err );
+      } );
 }
 
 function cleanUp() {
@@ -407,10 +426,10 @@ function cleanUp() {
    const simulationInstanceFilter = { state: SimulationInstance.State.Executing };
    const simulationInstanceUpdate = { state: SimulationInstance.State.Pending, $unset: { worker: 1 } };
 
-   var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true }).exec();
+   var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true } ).exec();
 
    // Treat all errors
    promise.catch( function ( err ) {
       logger.error( err );
-   });
+   } );
 }

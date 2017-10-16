@@ -21,7 +21,7 @@ module.exports.add = function add( workerAddress ) {
       return;
    }
 
-   workers.push( { address: workerAddress, runningInstances: 0 } );
+   workers.push( { address: workerAddress, runningInstances: 0, lastResource: undefined } );
 }
 
 module.exports.update = function update( workerAddress, update ) {
@@ -74,6 +74,26 @@ module.exports.getAll = function () {
    }
 
    return workersSubset;
+}
+
+module.exports.getAvailables = function ( cpuThreshold, memoryThreshold ) {
+
+   var availableWorkers = [];
+
+   for ( var idx = 0; idx < workers.length; ++idx ) {
+
+      const worker = workers[idx];
+
+      if ( worker.lastResource === undefined ) {
+         continue;
+      }
+
+      if ( ( worker.lastResource.cpu >= cpuThreshold ) && ( worker.lastResource.memory >= memoryThreshold ) ) {
+         availableWorkers.push( worker );
+      }
+   }
+
+   return availableWorkers;
 }
 
 module.exports.getMostIdle = function getMostIdle() {
