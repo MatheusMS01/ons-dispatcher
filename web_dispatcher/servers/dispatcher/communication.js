@@ -186,6 +186,8 @@ function batchDispatch() {
 
             const workerAddress = updatedSimulationInstance.worker;
 
+            workerManager.update(workerAddress, {lastResource: undefined});
+
             var worker;
 
             for ( var workerInstance in workerPool ) {

@@ -96,48 +96,6 @@ module.exports.getAvailables = function ( cpuThreshold, memoryThreshold ) {
    return availableWorkers;
 }
 
-module.exports.getMostIdle = function getMostIdle() {
-
-   var mostIdle = { address: '', weightedMean: 0 };
-
-   for ( var idx = 0; idx < workers.length; ++idx ) {
-
-      const worker = workers[idx];
-
-      if ( worker.lastResource === undefined ) {
-         continue;
-      }
-
-      const address = worker.address;
-
-      const cpu = worker.lastResource.cpu;
-      const memory = worker.lastResource.memory;
-
-      const cpuWeight = config.cpu.weight;
-      const memoryWeight = config.memory.weight;
-
-      const weightedMean = ( ( cpu * cpuWeight ) + ( memory * memoryWeight ) ) / ( cpuWeight + memoryWeight );
-
-      if ( weightedMean > mostIdle.weightedMean ) {
-         mostIdle.address = address;
-         mostIdle.weightedMean = weightedMean;
-         mostIdle.cpu = cpu;
-         mostIdle.memory = memory;
-      }
-   }
-
-   if ( mostIdle.address ) {
-      for ( var idx = 0; idx < workers.length; ++idx ) {
-         if ( mostIdle.address === workers[idx].address ) {
-            workers[idx].lastResource = undefined;
-            break;
-         }
-      }
-   }
-
-   return mostIdle;
-}
-
 module.exports.remove = function remove( workerAddress ) {
 
    for ( var idx = 0; idx < workers.length; ++idx ) {
