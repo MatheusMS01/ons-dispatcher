@@ -8,7 +8,11 @@ const passport = require( 'passport' );
 
 module.exports = function ( app ) {
 
-   app.post( '/login', passport.authenticate( 'local', { successRedirect: '/dashboard', failureRedirect: '/' }) );
+   app.post( '/login', passport.authenticate( 'local', {
+      successRedirect: '/dashboard',
+      failureRedirect: '/',
+      failureFlash: true
+   } ) );
 
    app.get( '/logout', ( req, res ) => {
 
@@ -16,5 +20,5 @@ module.exports = function ( app ) {
       req.session.destroy();
       res.redirect( '/' );
 
-   });
+   } );
 }
