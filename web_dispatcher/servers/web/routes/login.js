@@ -9,7 +9,7 @@ const passport = require( 'passport' );
 module.exports = function ( app ) {
 
    app.post( '/login', passport.authenticate( 'local', {
-      successRedirect: '/dashboard/simulation-groups',
+      successRedirect: '/dashboard/executing-simulation-groups',
       failureRedirect: '/',
       failureFlash: true
    } ) );

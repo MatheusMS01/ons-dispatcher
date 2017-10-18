@@ -55,7 +55,7 @@ module.exports = function ( app ) {
                         return;
                      }
 
-                     res.redirect( '/dashboard/simulation-groups' );
+                     res.redirect( '/dashboard/executing-simulation-groups' );
                   } );
                } )
 

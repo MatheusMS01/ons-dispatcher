@@ -79,8 +79,8 @@
     <Content Include="public\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="package.json" />
     <Content Include="servers\config\config.json" />
-    <Content Include="views\dashboard-simulation-groups.ejs" />
-    <Content Include="views\dashboard\simulation-groups.ejs" />
+    <Content Include="views\dashboard-executing-simulation-groups.ejs" />
+    <Content Include="views\dashboard\executing-simulation-groups.ejs" />
     <Content Include="views\dashboard\template\sidebar.ejs">
       <SubType>Code</SubType>
     </Content>
