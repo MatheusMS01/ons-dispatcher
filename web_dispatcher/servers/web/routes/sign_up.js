@@ -8,13 +8,6 @@ const User = require( '../../../database/models/user' );
 
 module.exports = function ( app ) {
 
-   app.get( '/sign_up', ( req, res ) => {
-
-      const options = { 'title': 'Sign Up', 'active': 'sign_up' };
-
-      res.render( 'sign_up', options );
-   } );
-
    app.post( '/sign_up', ( req, res ) => {
 
       // Validation
@@ -33,7 +26,7 @@ module.exports = function ( app ) {
                return elem.msg;
             } );
 
-            req.flash( 'error', errors.join( '\n' ) );
+            req.flash( 'error', errors[0] );
             res.redirect( '/' );
          } else {
 
@@ -43,28 +36,18 @@ module.exports = function ( app ) {
             const passwordMatch = req.body.passwordMatch;
 
             // Encrypt password
-            User.encryptPassword( password, ( err, hash ) => {
+            User.encryptPassword( password, function ( err, hash ) {
+
                if ( err ) {
-                  req.flash( 'error', 'An error occurred. Please try again' );
+                  req.flash( 'error', 'An internal error occurred. Please try again latter.' );
                   res.redirect( '/' );
                }
 
                const user = new User( { 'name': name, 'email': email, 'password': hash } );
 
-               user.save(( err, user ) => {
-                  if ( err ) {
-                     if ( err.code === 11000 ) {
-                        // Unique conflict
-                        req.flash( 'error', 'User already exists' );
-                        res.redirect( '/' );
-                     }
-                     else {
-                        req.flash( 'error', 'An error occurred. Please try again' );
-                        res.redirect( '/' );
-                     }
+               var promise = user.save();
 
-                     return;
-                  }
+               promise.then( function ( user ) {
 
                   req.login( user, ( err ) => {
                      if ( err ) {
@@ -72,8 +55,21 @@ module.exports = function ( app ) {
                         return;
                      }
 
-                     res.redirect( '/dashboard' );
+                     res.redirect( '/dashboard/simulation-groups' );
                   } );
+               } )
+
+               .catch( function ( err ) {
+
+                  if ( err.code === 11000 ) {
+                     // Unique conflict
+                     req.flash( 'error', 'User already exists' );
+                     res.redirect( '/' );
+                  }
+                  else {
+                     req.flash( 'error', 'An internal error occurred. Please try again latter.' );
+                     res.redirect( '/' );
+                  }
                } );
             } );
          }

@@ -27,7 +27,7 @@ const mongoUrl = 'mongodb://localhost/ons';
 const mongoOptions = { useMongoClient: true };
 
 app.use( express.static( __dirname + '/public' ) );
-app.use( bodyParser.urlencoded( { extended: false }) );
+app.use( bodyParser.urlencoded( { extended: false } ) );
 app.use( expressValidator() );
 app.use( flash() );
 app.use( upload() );
@@ -38,8 +38,8 @@ app.use( session( {
    store: new MongoStore( {
       url: mongoUrl,
       collection: 'session'
-   })
-}) );
+   } )
+} ) );
 
 app.use( passport.initialize() );
 app.use( passport.session() );
@@ -53,17 +53,17 @@ passport.use( new LocalStrategy(( email, password, done ) => {
       }
 
       if ( !user ) {
-         return done( null, false, { message: 'Incorrect username.' });
+         return done( null, false, { message: 'Incorrect username.' } );
       }
 
       if ( !user.validPassword( password ) ) {
-         return done( null, false, { message: 'Incorrect password.' });
+         return done( null, false, { message: 'Incorrect password.' } );
       }
 
       return done( null, user );
-   });
+   } );
 
-}) );
+} ) );
 
 app.use( function ( req, res, next ) {
    res.locals.success_msg = req.flash( 'success_msg' );
@@ -71,7 +71,7 @@ app.use( function ( req, res, next ) {
    res.locals.error = req.flash( 'error' );
    res.locals.isAuthenticated = req.isAuthenticated();
    next();
-});
+} );
 
 // Setup Engine
 app.set( 'view engine', 'ejs' );

@@ -41,6 +41,9 @@
     <Compile Include="public\js\bootstrap.js" />
     <Compile Include="public\js\bootstrap.min.js" />
     <Compile Include="public\js\jquery-3.2.1.js" />
+    <Compile Include="public\js\sb-admin-2.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="servers\dispatcher\dispatcher.js" />
     <Compile Include="servers\dispatcher\communication.js">
       <SubType>Code</SubType>
@@ -76,7 +79,8 @@
     <Content Include="public\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="package.json" />
     <Content Include="servers\config\config.json" />
-    <Content Include="views\dashboard.ejs" />
+    <Content Include="views\dashboard-simulation-groups.ejs" />
+    <Content Include="views\dashboard\simulation-groups.ejs" />
     <Content Include="views\login.ejs">
       <SubType>Code</SubType>
     </Content>
@@ -107,6 +111,7 @@
     <Folder Include="servers\web\" />
     <Folder Include="servers\web\routes\" />
     <Folder Include="views" />
+    <Folder Include="views\dashboard\" />
     <Folder Include="views\template\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

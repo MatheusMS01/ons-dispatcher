@@ -89,7 +89,7 @@
 
          };
 
-         xhttp.open( "GET", "/api_get_simulation_groups", true );
+         xhttp.open( "GET", "/api/get_simulation_groups", true );
          xhttp.send();
       }
 
@@ -233,7 +233,7 @@
                      document.getElementById( 'tdri_' + simulationGroups[idx]._id ).innerHTML = JSON.parse( xhttp.responseText ).result;
                   }
                };
-               xhttp.open( 'GET', '/api_get_remaining_instances_from_group/' + simulationGroups[idx]._id, true );
+               xhttp.open( 'GET', '/api/get_remaining_instances_from_group/' + simulationGroups[idx]._id, true );
                xhttp.send();
             }
          }

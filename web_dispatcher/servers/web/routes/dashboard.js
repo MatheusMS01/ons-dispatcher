@@ -24,11 +24,11 @@ const logger = log4js.getLogger();
 module.exports = function ( app ) {
 
    // dashboard
-   app.get( '/dashboard', router.authenticationMiddleware(), function ( req, res ) {
+   app.get( '/dashboard/simulation-groups', router.authenticationMiddleware(), function ( req, res ) {
 
       const options = { title: 'Dashboard', active: 'dashboard' };
 
-      res.render( 'dashboard', options );
+      res.render( 'dashboard/simulation-groups', options );
    });
 
    app.get( '/workers', function ( req, res ) {
