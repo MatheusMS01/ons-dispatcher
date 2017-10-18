@@ -81,6 +81,9 @@
     <Content Include="servers\config\config.json" />
     <Content Include="views\dashboard-simulation-groups.ejs" />
     <Content Include="views\dashboard\simulation-groups.ejs" />
+    <Content Include="views\dashboard\template\sidebar.ejs">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\login.ejs">
       <SubType>Code</SubType>
     </Content>
@@ -112,6 +115,7 @@
     <Folder Include="servers\web\routes\" />
     <Folder Include="views" />
     <Folder Include="views\dashboard\" />
+    <Folder Include="views\dashboard\template\" />
     <Folder Include="views\template\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
