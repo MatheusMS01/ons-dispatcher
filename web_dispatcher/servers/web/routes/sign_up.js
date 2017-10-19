@@ -4,94 +4,75 @@
 //
 ////////////////////////////////////////////////
 
-const User = require('../../../database/models/user');
+const User = require( '../../../database/models/user' );
 
-module.exports = function (app) {
+module.exports = function ( app ) {
 
-   app.get( '/sign_up', ( req, res ) => {
-
-      const options = { 'title': 'Sign Up', 'active': 'sign_up' };
-
-      res.render( 'sign_up', options );
-   });
-
-   app.post('/sign_up', (req, res) => {
+   app.post( '/sign_up', ( req, res ) => {
 
       // Validation
-      {
-         req.checkBody('name', 'Name must be between 4-50 characters long.').len(4, 50);
-         req.checkBody('email', 'The email you entered is invalid, please try again.').isEmail();
-         req.checkBody('password', 'Password must be between 8-100 characters long.').len(8, 100);
-         //req.checkBody('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.* )(?=.*[^a-zA-Z0-9]).{8,}$/, 'i');
-         req.checkBody('passwordMatch', 'Passwords do not match, please try again.').equals(req.body.password);
-      }
+      req.checkBody( 'name', 'Name must be between 4-50 characters long.' ).len( 4, 50 );
+      req.checkBody( 'email', 'The email you entered is invalid, please try again.' ).isEmail();
+      req.checkBody( 'password', 'Password must be between 8-100 characters long.' ).len( 8, 100 );
+      //req.checkBody('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.* )(?=.*[^a-zA-Z0-9]).{8,}$/, 'i');
+      req.checkBody( 'passwordMatch', 'Passwords do not match, please try again.' ).equals( req.body.password );
 
-      // @TODO: update to newer version
-      const errors = req.validationErrors();
+      var promise = req.getValidationResult();
 
-      if ( errors ) {
+      promise.then( function ( result ) {
 
-         const options = { 'title': 'Sign Up', 'errors': errors, 'active': 'sign_up' };
+         if ( !result.isEmpty() ) {
+            var errors = result.array().map( function ( elem ) {
+               return elem.msg;
+            } );
 
-         res.render( 'sign_up', options );
+            req.flash( 'error', errors[0] );
+            res.redirect( '/' );
+         } else {
 
-         return;
-      }
+            const name = req.body.name;
+            const email = req.body.email;
+            const password = req.body.password;
+            const passwordMatch = req.body.passwordMatch;
 
-      const name = req.body.name;
-      const email = req.body.email;
-      const password = req.body.password;
-      const passwordMatch = req.body.passwordMatch;
+            // Encrypt password
+            User.encryptPassword( password, function ( err, hash ) {
 
-      // Encrypt password
-      User.encryptPassword(password, (err, hash) => {
-         if (err) {
-            res.render('sign_up', {
-               'title': 'Sign Up',
-               errors: [{
-                  'msg': 'An error occurred. Please try again'
-               }]
-            });
+               if ( err ) {
+                  req.flash( 'error', 'An internal error occurred. Please try again latter.' );
+                  res.redirect( '/' );
+               }
+
+               const user = new User( { 'name': name, 'email': email, 'password': hash } );
+
+               var promise = user.save();
+
+               promise.then( function ( user ) {
+
+                  req.login( user, ( err ) => {
+                     if ( err ) {
+                        console.log( err );
+                        return;
+                     }
+
+                     res.redirect( '/dashboard/executing-simulation-groups' );
+                  } );
+               } )
+
+               .catch( function ( err ) {
+
+                  if ( err.code === 11000 ) {
+                     // Unique conflict
+                     req.flash( 'error', 'User already exists' );
+                     res.redirect( '/' );
+                  }
+                  else {
+                     req.flash( 'error', 'An internal error occurred. Please try again latter.' );
+                     res.redirect( '/' );
+                  }
+               } );
+            } );
          }
-
-         const user = new User({
-            'name': name,
-            'email': email,
-            'password': hash,
-         })
-
-         user.save((err, user) => {
-            if (err) {
-               if (err.code === 11000) {
-                  // Unique conflict
-                  res.render('sign_up', {
-                     'title': 'Sign Up',
-                     errors: [{
-                        'msg': 'User already exists'
-                     }]
-                  });
-               }
-               else {
-                  res.render('sign_up', {
-                     'title': 'Sign Up',
-                     errors: [{
-                        'msg': 'An error occurred. Please try again'
-                     }]
-                  });
-               }
-
-               return;
-            }
-
-            req.login(user, (err) => {
-               if (err) {
-                  console.log(err);
-                  return;
-               }
-
-               res.redirect('/dashboard');
-            });
-         });
-      });
-   });
+      } )
+   } );
 }

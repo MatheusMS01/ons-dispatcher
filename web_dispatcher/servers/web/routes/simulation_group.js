@@ -29,7 +29,7 @@ module.exports = function ( app ) {
 
 
    // APIs
-   app.get( '/api_get_simulation_groups', ( req, res ) => {
+   app.get( '/api/get_simulation_groups', ( req, res ) => {
 
       SimulationGroup.find( { _user: req.user.id },
          ( err, simulationGroups ) => {
@@ -43,7 +43,7 @@ module.exports = function ( app ) {
 
    });
 
-   app.get( '/api_get_remaining_instances_from_group/:id', ( req, res ) => {
+   app.get( '/api/get_remaining_instances_from_group/:id', ( req, res ) => {
 
       const id = req.params.id;
 

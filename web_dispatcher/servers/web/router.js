@@ -16,6 +16,9 @@ const sign_up = require( './routes/sign_up' );
 const simulation = require( './routes/simulation' );
 const simulation_group = require( './routes/simulation_group' );
 
+// APIs
+const api_simulation_group = require('./apis/simulation_group')
+
 module.exports.execute = function ( app ) {
 
    home( app );
@@ -25,6 +28,7 @@ module.exports.execute = function ( app ) {
    simulation( app );
    simulation_group( app );
 
+   api_simulation_group(app);
 }
 
 passport.serializeUser(( user, done ) => {

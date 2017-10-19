@@ -21,7 +21,16 @@ module.exports.add = function add( workerAddress ) {
       return;
    }
 
-   workers.push( { address: workerAddress, runningInstances: 0, lastResource: undefined } );
+   workers.push( {
+      address: workerAddress,
+      runningInstances: 0,
+      cpu: undefined,
+      memory: undefined,
+      lastResource: {
+         cpu: undefined,
+         memory: undefined
+      }
+   } );
 }
 
 module.exports.update = function update( workerAddress, update ) {
@@ -36,6 +45,14 @@ module.exports.update = function update( workerAddress, update ) {
 
       for ( var key in update ) {
          worker[key] = update[key];
+      }
+
+      if(worker.cpu !== undefined) {
+         worker.lastResource.cpu = worker.cpu;
+      }
+
+      if(worker.memory !== undefined) {
+         worker.lastResource.memory = worker.memory;
       }
 
       break;
@@ -66,7 +83,7 @@ module.exports.getAll = function () {
 
       const worker = workers[idx];
 
-      if ( worker.lastResource === undefined ) {
+      if ( worker.lastResource.cpu === undefined || worker.lastResource.memory === undefined ) {
          continue;
       }
 
@@ -84,11 +101,11 @@ module.exports.getAvailables = function ( cpuThreshold, memoryThreshold ) {
 
       const worker = workers[idx];
 
-      if ( worker.lastResource === undefined ) {
+      if ( worker.cpu === undefined || worker.memory === undefined ) {
          continue;
       }
 
-      if ( ( worker.lastResource.cpu >= cpuThreshold ) && ( worker.lastResource.memory >= memoryThreshold ) ) {
+      if ( ( worker.cpu >= cpuThreshold ) && ( worker.memory >= memoryThreshold ) ) {
          availableWorkers.push( worker );
       }
    }
