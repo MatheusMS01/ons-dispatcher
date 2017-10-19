@@ -57,7 +57,8 @@
           for ( var idx = 0; idx < workers.length; ++idx ) {
 
             var gauge;
-            if ( ( gauge = document.getElementById( workers[idx].address ) ) === null ) {
+            var panel;
+            if ( ( panel = document.getElementById( workers[idx].address ) ) === null ) {
 
               // Worker's element is not created yet
               workerAddresses.push( workers[idx].address );
@@ -65,35 +66,54 @@
 
               panel = document.createElement( 'div' );
               panel.className = 'panel panel-primary autocollapse';
-              panel.id = 'main_' + workers[idx].address;
+              panel.id = workers[idx].address;
 
-              panelHeading = document.createElement( 'div' );
+              var panelHeading = document.createElement( 'div' );
               panelHeading.className = 'panel-heading clickable';
 
-              panelTitle = document.createElement( 'h3' );
+              var runningInstances = document.createElement('a');
+              runningInstances.className = 'badge';
+              runningInstances.innerHTML = workers[idx].runningInstances;
+              runningInstances.setAttribute('data-toggle', 'popover');
+              runningInstances.setAttribute('data-trigger', 'hover');
+              runningInstances.setAttribute('data-content', 'Running Instances');
+
+              var panelTitle = document.createElement( 'h3' );
               panelTitle.className = 'panel-title';
-              panelTitle.innerHTML = workers[idx].address;
+              panelTitle.innerHTML = runningInstances.outerHTML + " " + workers[idx].address;
               panelHeading.appendChild( panelTitle );
 
               panel.appendChild( panelHeading );
 
               panelBody = document.createElement( 'div' );
               panelBody.className = 'panel-body';
+              panelBody.style = 'display: none';
 
               gauge = document.createElement( 'div' );
-              gauge.id = workers[idx].address;
-              gauge.style = 'width: 20%; margin: 0 auto;';
+              gauge.className = 'gauge';
 
               panelBody.appendChild( gauge );
 
               panel.appendChild( panelBody );
 
               container.appendChild( panel );
+
             } else {
               activeWorkers.push( workers[idx].address );
-              //runningInstance = document.getElementById( 'ri_' + workers[idx].address );
-              //runningInstance.innerHTML = 'Running instances: ' + workers[idx].runningInstances;
+
+              var child = panel.getElementsByTagName('*');
+
+              for (var i = -1, l = child.length; ++i < l;) {
+                 if (child[i].className == 'gauge') {
+                   gauge = child[i];
+                 }
+
+                 if (child[i].className == 'badge') {
+                  child[i].innerHTML = workers[idx].runningInstances;
+                 }
+              }
             }
+
             var data = google.visualization.arrayToDataTable( [
               ['Label', 'Value'],
               ['Memory', ( 1 - workers[idx].lastResource.memory ) * 100],
@@ -105,13 +125,16 @@
               yellowFrom: 75, yellowTo: 90,
               minorTicks: 5
             };
+
             var chart = new google.visualization.Gauge( gauge );
             chart.draw( data, options );
           }
+
+          // Cleaning
           for ( var idx = 0; idx < workerAddresses.length; ++idx ) {
             var found = activeWorkers.indexOf( workerAddresses[idx] );
             if ( found === -1 ) {
-              const div = document.getElementById( 'main_' + workerAddresses[idx] );
+              const div = document.getElementById( workerAddresses[idx] );
               div.remove();
               workerAddresses.splice( idx, 1 );
             }
@@ -142,6 +165,10 @@
       $found.find( '.panel-body' ).hide();
       $found.removeClass( $classy );
     } );
+
+    $(document).ready(function(){
+      $('[data-toggle="popover"]').popover();   
+    });
   </script>
 
   <script src='../js/sb-admin-2.js'></script>

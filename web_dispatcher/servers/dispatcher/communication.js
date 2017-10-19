@@ -186,7 +186,7 @@ function batchDispatch() {
 
             const workerAddress = updatedSimulationInstance.worker;
 
-            workerManager.update(workerAddress, {lastResource: undefined});
+            workerManager.update(workerAddress, {cpu: undefined, memory: undefined});
 
             var worker;
 
@@ -249,7 +249,7 @@ function treat( data, socket ) {
 
       case factory.Id.ResourceResponse:
 
-         const update = { lastResource: { cpu: object.cpu, memory: object.memory } };
+         const update = { cpu: object.cpu, memory: object.memory };
 
          workerManager.update( socket.remoteAddress, update );
 
@@ -395,8 +395,11 @@ function treat( data, socket ) {
 
             var promise = SimulationInstance.findByIdAndUpdate( object.SimulationId, simulationInstanceUpdate ).exec();
 
+            promise.then(function() {
+               updateWorkerRunningInstances( socket.remoteAddress );
+            })
             // Treat all errors
-            promise.catch( function ( err ) {
+            .catch( function ( err ) {
                logger.error( err );
             } );
          }
