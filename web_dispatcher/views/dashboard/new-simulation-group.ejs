@@ -84,7 +84,7 @@
             </div>
 
             <div class="checkbox">
-              <label><input id="cb-same-simulator" type='checkbox' name='sameSimulator' onclick="check(this)">Use same simulator</label>
+              <label data-toggle="popover" data-trigger="hover" data-content="This will lock your simulator and you will be able to select multiple configuration documents at once" data-placement="top"><input id="cb-same-simulator" type='checkbox' name='sameSimulator' onclick="check(this)">Use same simulator</label>
             </div>
 
             <div id='btn-group'>
@@ -267,6 +267,10 @@
           if ( log ) alert( log );
         }
       } );
+    } );
+
+    $( document ).ready( function () {
+      $( '[data-toggle="popover"]' ).popover();
     } );
   </script>
 

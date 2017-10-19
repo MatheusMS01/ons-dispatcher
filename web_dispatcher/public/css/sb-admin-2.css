@@ -527,3 +527,7 @@ table.dataTable thead .sorting_desc_disabled {
             border-left-width: 0;
         }
 }
+
+.popover-content {
+    color: #000000 !important; /*black color*/
+}

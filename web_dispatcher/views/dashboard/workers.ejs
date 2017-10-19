@@ -5,7 +5,6 @@
   <% include ../template/head.ejs %>
 </head>
 
-
 <body>
   <header>
     <% include ../template/header.ejs %>
@@ -71,12 +70,13 @@
               var panelHeading = document.createElement( 'div' );
               panelHeading.className = 'panel-heading clickable';
 
-              var runningInstances = document.createElement('a');
+              var runningInstances = document.createElement( 'span' );
               runningInstances.className = 'badge';
               runningInstances.innerHTML = workers[idx].runningInstances;
-              runningInstances.setAttribute('data-toggle', 'popover');
-              runningInstances.setAttribute('data-trigger', 'hover');
-              runningInstances.setAttribute('data-content', 'Running Instances');
+              runningInstances.setAttribute( 'data-toggle', 'popover' );
+              runningInstances.setAttribute( 'data-trigger', 'hover' );
+              runningInstances.setAttribute( 'data-placement', 'top' );
+              runningInstances.setAttribute( 'data-content', 'Running Instances' );
 
               var panelTitle = document.createElement( 'h3' );
               panelTitle.className = 'panel-title';
@@ -101,16 +101,16 @@
             } else {
               activeWorkers.push( workers[idx].address );
 
-              var child = panel.getElementsByTagName('*');
+              var child = panel.getElementsByTagName( '*' );
 
-              for (var i = -1, l = child.length; ++i < l;) {
-                 if (child[i].className == 'gauge') {
-                   gauge = child[i];
-                 }
+              for ( var i = -1, l = child.length; ++i < l; ) {
+                if ( child[i].className == 'gauge' ) {
+                  gauge = child[i];
+                }
 
-                 if (child[i].className == 'badge') {
+                if ( child[i].className == 'badge' ) {
                   child[i].innerHTML = workers[idx].runningInstances;
-                 }
+                }
               }
             }
 
@@ -139,6 +139,10 @@
               workerAddresses.splice( idx, 1 );
             }
           }
+
+          $( document ).ready( function () {
+            $( '[data-toggle="popover"]' ).popover();
+          } );
         }
       }
       xmlhttp.open( 'GET', '/workers', true );
@@ -166,9 +170,6 @@
       $found.removeClass( $classy );
     } );
 
-    $(document).ready(function(){
-      $('[data-toggle="popover"]').popover();   
-    });
   </script>
 
   <script src='../js/sb-admin-2.js'></script>

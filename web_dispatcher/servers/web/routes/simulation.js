@@ -352,7 +352,7 @@ module.exports = function ( app ) {
 
          simulationHandler.event.emit( 'new_simulation', simulationGroup.id );
 
-         res.redirect( '/simulation_group' );
+         res.redirect( 'dashboard/executing-simulation-groups' );
       })
 
       .catch( function ( err ) {
@@ -362,6 +362,6 @@ module.exports = function ( app ) {
    });
 
    app.post( '/cancel_new_simulation', ( req, res ) => {
-      res.redirect( '/simulation_group' );
+      res.redirect( 'dashboard/executing-simulation-groups' );
    });
 }
