@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <% include ../template/head.ejs %>
+</head>
+
+
+<body>
+  <header>
+    <% include ../template/header.ejs %>
+  </header>
+
+  <div id="wrapper">
+
+    <% include template/sidebar.ejs %>
+
+    <div id="page-wrapper" style="min-height: 898px;">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="page-header">Workers</h1>
+        </div>
+      </div>
+
+      <div id="worker-container">
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    google.charts.load( 'current', { 'packages': ['gauge'] } );
+    //google.charts.setOnLoadCallback( generateChart );
+
+    var prev_handler = window.onload;
+    window.onload = function () {
+      if ( prev_handler ) {
+        prev_handler();
+      }
+
+      generateChart();
+    };
+
+    var workerAddresses = [];
+    function generateChart() {
+      drawChart();
+      setInterval( drawChart, 1000 );
+    }
+    function drawChart() {
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+        if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ) {
+          const workers = JSON.parse( xmlhttp.response );
+          var activeWorkers = [];
+          const container = document.getElementById( 'worker-container' );
+
+          for ( var idx = 0; idx < workers.length; ++idx ) {
+
+            var gauge;
+            if ( ( gauge = document.getElementById( workers[idx].address ) ) === null ) {
+
+              // Worker's element is not created yet
+              workerAddresses.push( workers[idx].address );
+              activeWorkers.push( workers[idx].address );
+
+              panel = document.createElement( 'div' );
+              panel.className = 'panel panel-primary autocollapse';
+              panel.id = 'main_' + workers[idx].address;
+
+              panelHeading = document.createElement( 'div' );
+              panelHeading.className = 'panel-heading clickable';
+
+              panelTitle = document.createElement( 'h3' );
+              panelTitle.className = 'panel-title';
+              panelTitle.innerHTML = workers[idx].address;
+              panelHeading.appendChild( panelTitle );
+
+              panel.appendChild( panelHeading );
+
+              panelBody = document.createElement( 'div' );
+              panelBody.className = 'panel-body';
+
+              gauge = document.createElement( 'div' );
+              gauge.id = workers[idx].address;
+              gauge.style = 'width: 20%; margin: 0 auto;';
+
+              panelBody.appendChild( gauge );
+
+              panel.appendChild( panelBody );
+
+              container.appendChild( panel );
+            } else {
+              activeWorkers.push( workers[idx].address );
+              //runningInstance = document.getElementById( 'ri_' + workers[idx].address );
+              //runningInstance.innerHTML = 'Running instances: ' + workers[idx].runningInstances;
+            }
+            var data = google.visualization.arrayToDataTable( [
+              ['Label', 'Value'],
+              ['Memory', ( 1 - workers[idx].lastResource.memory ) * 100],
+              ['CPU', ( 1 - workers[idx].lastResource.cpu ) * 100]
+            ] );
+            var options = {
+              width: 400, height: 120,
+              redFrom: 90, redTo: 100,
+              yellowFrom: 75, yellowTo: 90,
+              minorTicks: 5
+            };
+            var chart = new google.visualization.Gauge( gauge );
+            chart.draw( data, options );
+          }
+          for ( var idx = 0; idx < workerAddresses.length; ++idx ) {
+            var found = activeWorkers.indexOf( workerAddresses[idx] );
+            if ( found === -1 ) {
+              const div = document.getElementById( 'main_' + workerAddresses[idx] );
+              div.remove();
+              workerAddresses.splice( idx, 1 );
+            }
+          }
+        }
+      }
+      xmlhttp.open( 'GET', '/workers', true );
+      xmlhttp.send();
+    }
+
+    $( document ).on( 'click', '.panel div.clickable', function ( e ) {
+      var $this = $( this ); //Heading
+      var $panel = $this.parent( '.panel' );
+      var $panel_body = $panel.children( '.panel-body' );
+      var $display = $panel_body.css( 'display' );
+
+      if ( $display == 'block' ) {
+        $panel_body.slideUp();
+      } else if ( $display == 'none' ) {
+        $panel_body.slideDown();
+      }
+    } );
+
+    $( document ).ready( function ( e ) {
+      var $classy = '.panel.autocollapse';
+
+      var $found = $( $classy );
+      $found.find( '.panel-body' ).hide();
+      $found.removeClass( $classy );
+    } );
+  </script>
+
+  <script src='../js/sb-admin-2.js'></script>
+
+</body>
+
+</html>
+<footer>
+  <% include ../template/footer.ejs %>
+</footer>

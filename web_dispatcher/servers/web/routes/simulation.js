@@ -166,19 +166,11 @@ module.exports = function ( app ) {
       });
    });
 
-   // New Simulation
-   app.get( '/new_simulation', router.authenticationMiddleware(), ( req, res ) => {
-
-      const options = { title: 'New Simulation', active: 'new_simulation' };
-
-      res.render( 'new_simulation', options );
-   });
-
    app.post( '/new_simulation', ( req, res ) => {
 
       if ( req.files === null ) {
          req.flash( 'error_msg', 'Files were not submitted!' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
@@ -187,20 +179,20 @@ module.exports = function ( app ) {
       var documentFiles = req.files['configuration'];
 
       if ( simulationNames === undefined ) {
-         req.flash( 'error_msg', 'simulation name not submitted' );
-         res.redirect( '/new_simulation' );
+         req.flash( 'error_msg', 'Simulation name not set' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( binaryFiles === undefined ) {
-         req.flash( 'error_msg', 'binary not submitted' );
-         res.redirect( '/new_simulation' );
+         req.flash( 'error_msg', 'Binary not submitted' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( documentFiles === undefined ) {
-         req.flash( 'error_msg', 'document not submitted' );
-         res.redirect( '/new_simulation' );
+         req.flash( 'error_msg', 'Document not submitted' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
@@ -220,39 +212,39 @@ module.exports = function ( app ) {
 
          if ( ( simulationNames.length !== binaryFiles.length ) ||
             ( binaryFiles.length !== documentFiles.length ) ) {
-            req.flash( 'error_msg', 'simulation name, binary and document must be filled!' );
-            res.redirect( '/new_simulation' );
+            req.flash( 'error_msg', 'Simulation name, binary and document must be filled!' );
+            res.redirect( 'dashboard/new-simulation-group' );
             return;
          }
       }
 
       if ( !req.body.simulationGroupName ) {
          req.flash( 'error_msg', 'Simulation group name not filled' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( !req.body.seedAmount ) {
          req.flash( 'error_msg', 'Seed amount not filled' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( !req.body.minLoad ) {
          req.flash( 'error_msg', 'Minimum load not filled' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( !req.body.maxLoad ) {
          req.flash( 'error_msg', 'Maximum load not filled' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( !req.body.step ) {
          req.flash( 'error_msg', 'Step not filled' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
@@ -264,13 +256,13 @@ module.exports = function ( app ) {
 
       if ( minLoad > maxLoad ) {
          req.flash( 'error_msg', 'Minimum load must be lesser or equal to Maximum load' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
       if ( seedAmount <= 0 ) {
          req.flash( 'error_msg', 'Seed amount must be greater than zero' );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
          return;
       }
 
@@ -365,7 +357,7 @@ module.exports = function ( app ) {
 
       .catch( function ( err ) {
          req.flash( 'error_msg', JSON.stringify( err ) );
-         res.redirect( '/new_simulation' );
+         res.redirect( 'dashboard/new-simulation-group' );
       });
    });
 

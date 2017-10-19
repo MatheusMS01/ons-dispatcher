@@ -57,6 +57,7 @@
     <Compile Include="servers\shared\configuration.js" />
     <Compile Include="servers\shared\mailer.js" />
     <Compile Include="servers\shared\worker_manager.js" />
+    <Compile Include="servers\web\apis\simulation_group.js" />
     <Compile Include="servers\web\router.js">
       <SubType>Code</SubType>
     </Compile>
@@ -66,6 +67,9 @@
     <Compile Include="servers\web\routes\sign_up.js" />
     <Compile Include="servers\web\routes\simulation.js" />
     <Compile Include="servers\web\routes\simulation_group.js" />
+    <Compile Include="views\dashboard\workers.ejs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="views\simulation.ejs">
       <SubType>Code</SubType>
     </Compile>
@@ -79,15 +83,13 @@
     <Content Include="public\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="package.json" />
     <Content Include="servers\config\config.json" />
-    <Content Include="views\dashboard-executing-simulation-groups.ejs" />
     <Content Include="views\dashboard\executing-simulation-groups.ejs" />
+    <Content Include="views\dashboard\finished-simulation-groups.ejs" />
+    <Content Include="views\dashboard\new-simulation-group.ejs" />
     <Content Include="views\dashboard\template\sidebar.ejs">
       <SubType>Code</SubType>
     </Content>
     <Content Include="views\login.ejs">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="views\new_simulation.ejs">
       <SubType>Code</SubType>
     </Content>
     <Content Include="views\sign_up.ejs" />
@@ -112,6 +114,7 @@
     <Folder Include="servers\dispatcher\" />
     <Folder Include="servers\shared\" />
     <Folder Include="servers\web\" />
+    <Folder Include="servers\web\apis\" />
     <Folder Include="servers\web\routes\" />
     <Folder Include="views" />
     <Folder Include="views\dashboard\" />
