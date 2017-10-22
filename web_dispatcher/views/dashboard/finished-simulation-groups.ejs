@@ -86,13 +86,13 @@
 
       const tb = document.getElementById( 'tb_finished' );
 
-      while ( tb.firstChild ) {
-        tb.removeChild( tb.firstChild );
-      }
-
       for ( var idx in simulationGroups ) {
 
         if ( simulationGroups[idx].state === 1 ) {
+
+          if ( document.getElementById( simulationGroups[idx]._id ) !== null ) {
+            continue;
+          }
 
           var tr = document.createElement( 'tr' );
           tr.id = simulationGroups[idx]._id;
@@ -151,6 +151,11 @@
           tr.appendChild( tdRemove );
 
           tb.appendChild( tr );
+        } else {
+          var td = document.getElementById( simulationGroups[idx] )._id;
+          if ( td !== null ) {
+            td.remove();
+          }
         }
       }
     }
