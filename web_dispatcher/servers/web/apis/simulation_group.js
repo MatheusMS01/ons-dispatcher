@@ -73,7 +73,7 @@ module.exports = function ( app ) {
          const simulationInstanceFilter = { _simulation: { $in: simulationIds }, result: { $ne: null } };
          const simulationInstancePopulate = { path: '_simulation', select: 'name' };
 
-         return SimulationInstance.find( simulationInstanceFilter ).populate( simulationInstancePopulate ).sort( 'load' ).exec();
+         return SimulationInstance.find( simulationInstanceFilter ).populate( simulationInstancePopulate ).exec();
       } )
 
          .then( function ( simulationInstances ) {

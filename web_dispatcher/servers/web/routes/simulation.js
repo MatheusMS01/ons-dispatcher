@@ -44,7 +44,7 @@ module.exports = function ( app ) {
          const simulationInstanceFilter = { _simulation: { $in: simulationIds }, result: { $ne: null } };
          const simulationInstancePopulate = { path: '_simulation', select: 'name' };
 
-         return SimulationInstance.find( simulationInstanceFilter ).populate( simulationInstancePopulate ).select( 'result _simulation -_id' ).sort( 'load' ).exec();
+         return SimulationInstance.find( simulationInstanceFilter ).populate( simulationInstancePopulate ).select( 'result _simulation -_id' ).exec();
       })
 
       .then( function ( simulationInstances ) {
@@ -77,7 +77,6 @@ module.exports = function ( app ) {
          return SimulationInstance.find( simulationInstanceFilter )
             .populate( simulationInstancePopulate )
             .select( 'result _simulation -_id' )
-            .sort( 'load' )
             .exec();
       })
 
