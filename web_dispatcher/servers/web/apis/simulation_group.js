@@ -22,15 +22,11 @@ module.exports = function ( app ) {
 
       const simulationGroupId = req.params.id;
 
-      console.log( simulationGroupId )
-
       const simulationFilter = { _simulationGroup: simulationGroupId };
 
       var promise = Simulation.find( simulationFilter ).select( 'id' ).exec();
 
       promise.then( function ( simulationIds ) {
-
-         console.log( simulationIds )
 
          const simulationInstanceFilter = {
             _simulation: { $in: simulationIds },
@@ -42,8 +38,6 @@ module.exports = function ( app ) {
       } )
 
          .then( function ( count ) {
-            console.log( count )
-
             res.send( { 'result': count } );
          } )
 
