@@ -30,8 +30,8 @@
                 <th style='width:10%'>Seed Amount</th>
                 <th style='width:10%'>Priority</th>
                 <th>Start Time</th>
-                <th style='width:10%'></th>
-                <th style='width:10%'></th>
+                <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="tb_executing"></tbody>
@@ -132,7 +132,7 @@
           exportBtn.href = '/api/simulation_group/export/' + simulationGroups[idx]._id;
           exportBtn.className = 'btn btn-info';
           exportBtn.setAttribute( 'role', 'button' );
-          exportBtn.innerHTML = 'Export';
+          exportBtn.innerHTML = '<span class=\'glyphicon glyphicon-download-alt\'></span> Export';
 
           tdExport.appendChild( exportBtn );
 
