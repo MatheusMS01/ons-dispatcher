@@ -159,7 +159,7 @@
 
           tb.appendChild( tr );
         } else {
-          var td = document.getElementById( simulationGroups[idx] )._id;
+          var td = document.getElementById( simulationGroups[idx]._id );
           if ( td !== null ) {
             td.remove();
           }
@@ -196,15 +196,15 @@
       xhttp.send();
     }
 
-   //  window.onload = monitor;
+    //  window.onload = monitor;
 
     var prev_handler = window.onload;
     window.onload = function () {
-        if (prev_handler) {
-           prev_handler();
-        }
+      if ( prev_handler ) {
+        prev_handler();
+      }
 
-        monitor();
+      monitor();
     };
 
     function searchTable( input ) {
