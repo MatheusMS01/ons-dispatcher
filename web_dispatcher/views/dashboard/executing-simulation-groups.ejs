@@ -164,20 +164,31 @@
 
     function updateRemainingInstances( simulationGroups ) {
 
+
       for ( var idx in simulationGroups ) {
+        var xhttp = [];
 
         if ( simulationGroups[idx].state === 0 ) {
 
-          var xhttp = new XMLHttpRequest();
-          xhttp.onreadystatechange = function () {
-            if ( this.readyState == 4 && this.status == 200 ) {
-              document.getElementById( 'tdri_' + simulationGroups[idx]._id ).innerHTML = JSON.parse( xhttp.responseText ).result;
-            }
-          };
-          xhttp.open( 'GET', '/api/get_remaining_instances_from_group/' + simulationGroups[idx]._id, true );
-          xhttp.send();
+          update( simulationGroups[idx]._id );
         }
       }
+    }
+
+    function update( simulationGroupId ) {
+      const xhttp = new XMLHttpRequest();
+
+      xhttp.onreadystatechange = function () {
+
+        if ( xhttp.readyState == 4 && xhttp.status == 200 ) {
+
+          document.getElementById( 'tdri_' + simulationGroupId ).innerHTML = JSON.parse( xhttp.response ).result;
+        }
+
+      };
+
+      xhttp.open( 'GET', '/api/simulation_group/get_remaining_instances/' + simulationGroupId, true );
+      xhttp.send();
     }
 
    //  window.onload = monitor;
