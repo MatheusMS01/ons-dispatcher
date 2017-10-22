@@ -52,7 +52,7 @@
           const workers = JSON.parse( xmlhttp.response );
 
           var pageHeader = document.getElementsByClassName( 'page-header' )[0];
-          pageHeader.innerHTML = 'Online Workers - ' + workers.length;
+          pageHeader.innerHTML = 'Online Workers [ ' + workers.length + ' ]';
 
           var activeWorkers = [];
           const container = document.getElementById( 'worker-container' );
