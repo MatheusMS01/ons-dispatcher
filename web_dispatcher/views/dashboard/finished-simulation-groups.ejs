@@ -30,6 +30,7 @@
                 <th>Start Time</th>
                 <th>End Time</th>
                 <th style='width:10%'></th>
+                <th style='width:10%'></th>
               </tr>
             </thead>
             <tbody id="tb_finished"></tbody>
@@ -77,7 +78,7 @@
 
       };
 
-      xhttp.open( "GET", "/api/get_simulation_groups", true );
+      xhttp.open( "GET", "/api/get_simulation_group", true );
       xhttp.send();
     }
 
@@ -119,6 +120,16 @@
           var tdEndTime = document.createElement( 'td' );
           tdEndTime.innerHTML = new Date( simulationGroups[idx].endTime );
 
+          var tdExport = document.createElement( 'td' );
+
+          var exportBtn = document.createElement( 'a' );
+          exportBtn.href = '/api/simulation_group/export/' + simulationGroups[idx]._id;
+          exportBtn.className = 'btn btn-info';
+          exportBtn.setAttribute( 'role', 'button' );
+          exportBtn.innerHTML = 'Export';
+
+          tdExport.appendChild( exportBtn );
+
           var tdRemove = document.createElement( 'td' );
 
           var btn = document.createElement( 'button' );
@@ -136,6 +147,7 @@
           tr.appendChild( tdSeedAmount );
           tr.appendChild( tdStartTime );
           tr.appendChild( tdEndTime );
+          tr.appendChild( tdExport );
           tr.appendChild( tdRemove );
 
           tb.appendChild( tr );

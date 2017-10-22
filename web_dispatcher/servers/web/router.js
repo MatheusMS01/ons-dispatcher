@@ -51,6 +51,6 @@ module.exports.authenticationMiddleware = function authenticationMiddleware() {
          return next();
       }
 
-      res.redirect( '/login' )
+      res.redirect( '/' )
    }
 }

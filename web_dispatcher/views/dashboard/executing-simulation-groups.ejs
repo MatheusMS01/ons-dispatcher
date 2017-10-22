@@ -31,6 +31,7 @@
                 <th style='width:10%'>Priority</th>
                 <th>Start Time</th>
                 <th style='width:10%'></th>
+                <th style='width:10%'></th>
               </tr>
             </thead>
             <tbody id="tb_executing"></tbody>
@@ -80,7 +81,7 @@
 
       };
 
-      xhttp.open( "GET", "/api/get_simulation_groups", true );
+      xhttp.open( "GET", "/api/get_simulation_group", true );
       xhttp.send();
     }
 
@@ -125,6 +126,16 @@
           var tdStartTime = document.createElement( 'td' );
           tdStartTime.innerHTML = new Date( simulationGroups[idx].startTime );
 
+          var tdExport = document.createElement( 'td' );
+
+          var exportBtn = document.createElement( 'a' );
+          exportBtn.href = '/api/simulation_group/export/' + simulationGroups[idx]._id;
+          exportBtn.className = 'btn btn-info';
+          exportBtn.setAttribute( 'role', 'button' );
+          exportBtn.innerHTML = 'Export';
+
+          tdExport.appendChild( exportBtn );
+
           var tdCancel = document.createElement( 'td' );
 
           var btn = document.createElement( 'button' );
@@ -143,6 +154,7 @@
           tr.appendChild( tdSeedAmount );
           tr.appendChild( tdPriority );
           tr.appendChild( tdStartTime );
+          tr.appendChild( tdExport );
           tr.appendChild( tdCancel );
 
           tb.appendChild( tr );

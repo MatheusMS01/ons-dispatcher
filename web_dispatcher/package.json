@@ -12,6 +12,7 @@
   "author": "Matheus Medeiros Sarmento",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "archiver": "^2.1.0",
     "bcryptjs": "^2.4.3",
     "bluebird": "~3.5.0",
     "body-parser": "^1.17.1",
@@ -26,12 +27,16 @@
     "express-validator": "^3.2.1",
     "formidable": "~1.1.1",
     "ip": "~1.1.5",
+    "json-2-csv": "^2.1.2",
     "lodash": "~4.17.4",
     "log4js": "^2.3.4",
+    "mkdirp": "^0.5.1",
     "mongoose": "^4.11.1",
+    "node-zip": "^1.1.1",
     "nodemailer": "^4.1.2",
     "passport": "^0.3.2",
     "passport-local": "~1.0.0",
+    "rimraf": "^2.6.2",
     "validator": "~8.0.0"
   }
 }

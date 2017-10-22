@@ -29,7 +29,7 @@ module.exports = function ( app ) {
 
 
    // APIs
-   app.get( '/api/get_simulation_groups', ( req, res ) => {
+   app.get( '/api/get_simulation_group', ( req, res ) => {
 
       SimulationGroup.find( { _user: req.user.id },
          ( err, simulationGroups ) => {
