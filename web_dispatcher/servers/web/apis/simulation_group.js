@@ -18,6 +18,42 @@ const rimraf = require( 'rimraf' );
 
 module.exports = function ( app ) {
 
+   app.get( '/api/simulation_group/get_remaining_instances/:id', ( req, res ) => {
+
+      const simulationGroupId = req.params.id;
+
+      console.log( simulationGroupId )
+
+      const simulationFilter = { _simulationGroup: simulationGroupId };
+
+      var promise = Simulation.find( simulationFilter ).select( 'id' ).exec();
+
+      promise.then( function ( simulationIds ) {
+
+         console.log( simulationIds )
+
+         const simulationInstanceFilter = {
+            _simulation: { $in: simulationIds },
+            $or: [{ state: SimulationInstance.State.Pending },
+            { state: SimulationInstance.State.Executing }]
+         };
+
+         return SimulationInstance.count( simulationInstanceFilter ).exec();
+      } )
+
+         .then( function ( count ) {
+            console.log( count )
+
+            res.send( { 'result': count } );
+         } )
+
+         .catch( function ( e ) {
+            console.log( e );
+            res.sendStatus( 500 );
+         } );
+
+   } );
+
    app.get( '/api/simulation_group/count_executing', ( req, res ) => {
 
       const simulationGroupFilter = {

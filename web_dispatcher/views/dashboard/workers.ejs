@@ -17,7 +17,7 @@
     <div id="page-wrapper" style="min-height: 898px;">
       <div class="row">
         <div class="col-lg-12">
-          <h1 class="page-header">Workers</h1>
+          <h1 class="page-header">Online Workers</h1>
         </div>
       </div>
 
@@ -29,7 +29,6 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script>
     google.charts.load( 'current', { 'packages': ['gauge'] } );
-    //google.charts.setOnLoadCallback( generateChart );
 
     var prev_handler = window.onload;
     window.onload = function () {
@@ -49,7 +48,12 @@
       const xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function () {
         if ( xmlhttp.readyState == 4 && xmlhttp.status == 200 ) {
+
           const workers = JSON.parse( xmlhttp.response );
+
+          var pageHeader = document.getElementsByClassName( 'page-header' )[0];
+          pageHeader.innerHTML = 'Online Workers - ' + workers.length;
+
           var activeWorkers = [];
           const container = document.getElementById( 'worker-container' );
 

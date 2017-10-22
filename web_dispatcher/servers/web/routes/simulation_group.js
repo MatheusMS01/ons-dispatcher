@@ -22,10 +22,10 @@ module.exports = function ( app ) {
             title: 'Simulations',
             active: 'simulations',
             simulationGroups: simulationGroups
-         });
-      });
+         } );
+      } );
 
-   });
+   } );
 
 
    // APIs
@@ -39,44 +39,8 @@ module.exports = function ( app ) {
             }
 
             res.send( simulationGroups );
-         });
+         } );
 
-   });
-
-   app.get( '/api/get_remaining_instances_from_group/:id', ( req, res ) => {
-
-      const id = req.params.id;
-
-      SimulationGroup.findById( id, ( err, simulationGroup ) => {
-
-         if ( err ) {
-            return console.log( err );
-         }
-
-         Simulation.find( { _simulationGroup: simulationGroup.id })
-            .select( 'id' )
-            .exec(( err, simulationIds ) => {
-
-               if ( err ) {
-                  return console.log( err );
-               }
-
-               const simulationInstanceFilter = {
-                  _simulation: { $in: simulationIds },
-                  $or: [{ state: SimulationInstance.State.Pending },
-                  { state: SimulationInstance.State.Executing }]
-               };
-
-               SimulationInstance.count( simulationInstanceFilter, ( err, count ) => {
-
-                  if ( err ) {
-                     return console.log( err );
-                  }
-
-                  res.send( { 'result': count });
-               });
-            });
-      });
-   });
+   } );
 
 }
