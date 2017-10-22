@@ -186,7 +186,7 @@ function batchDispatch() {
 
             const workerAddress = updatedSimulationInstance.worker;
 
-            workerManager.update(workerAddress, {cpu: undefined, memory: undefined});
+            workerManager.update( workerAddress, { cpu: undefined, memory: undefined } );
 
             var worker;
 
@@ -212,9 +212,9 @@ function batchDispatch() {
       } );
    } )
 
-   .catch( function ( err ) {
-      logger.error( err );
-   } );
+      .catch( function ( err ) {
+         logger.error( err );
+      } );
 }
 
 function addWorker( worker ) {
@@ -395,13 +395,13 @@ function treat( data, socket ) {
 
             var promise = SimulationInstance.findByIdAndUpdate( object.SimulationId, simulationInstanceUpdate ).exec();
 
-            promise.then(function() {
+            promise.then( function () {
                updateWorkerRunningInstances( socket.remoteAddress );
-            })
-            // Treat all errors
-            .catch( function ( err ) {
-               logger.error( err );
-            } );
+            } )
+               // Treat all errors
+               .catch( function ( err ) {
+                  logger.error( err );
+               } );
          }
 
          break;

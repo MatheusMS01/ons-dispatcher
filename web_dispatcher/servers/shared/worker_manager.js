@@ -47,11 +47,11 @@ module.exports.update = function update( workerAddress, update ) {
          worker[key] = update[key];
       }
 
-      if(worker.cpu !== undefined) {
+      if ( worker.cpu !== undefined ) {
          worker.lastResource.cpu = worker.cpu;
       }
 
-      if(worker.memory !== undefined) {
+      if ( worker.memory !== undefined ) {
          worker.lastResource.memory = worker.memory;
       }
 

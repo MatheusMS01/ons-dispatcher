@@ -37,7 +37,7 @@
             document.getElementById( 'executing-badge' ).innerHTML = JSON.parse( xhttp.responseText ).result;
          }
       };
-      xhttp.open( 'GET', '/api/count_executing_simulation_groups/', true );
+      xhttp.open( 'GET', '/api/simulation_group/count_executing/', true );
       xhttp.send();
    }
 
@@ -48,7 +48,7 @@
             document.getElementById( 'finished-badge' ).innerHTML = JSON.parse( xhttp.responseText ).result;
          }
       };
-      xhttp.open( 'GET', '/api/count_finished_simulation_groups/', true );
+      xhttp.open( 'GET', '/api/simulation_group/count_finished/', true );
       xhttp.send();
    }
 
