@@ -7,20 +7,6 @@
 const router = require( '../router' );
 const workerManager = require( '../../shared/worker_manager' );
 
-const log4js = require( 'log4js' );
-
-log4js.configure( {
-   appenders: {
-      out: { type: 'stdout' },
-      app: { type: 'file', filename: 'log/dashboard.log' }
-   },
-   categories: {
-      default: { appenders: ['out', 'app'], level: 'debug' }
-   }
-} );
-
-const logger = log4js.getLogger();
-
 module.exports = function ( app ) {
 
    // dashboard
@@ -50,6 +36,13 @@ module.exports = function ( app ) {
       const options = { title: 'Dashboard' };
 
       res.render( 'dashboard/workers', options );
+   } );
+
+   app.get( '/dashboard/logs', function ( req, res ) {
+
+      const options = { title: 'Dashboard' };
+
+      res.render( 'dashboard/logs', options );
    } );
 
    app.get( '/workers', function ( req, res ) {

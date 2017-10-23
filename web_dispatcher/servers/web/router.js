@@ -17,7 +17,8 @@ const simulation = require( './routes/simulation' );
 const simulation_group = require( './routes/simulation_group' );
 
 // APIs
-const api_simulation_group = require('./apis/simulation_group')
+const api_simulation_group = require( './apis/simulation_group' );
+const api_log = require( './apis/log' )
 
 module.exports.execute = function ( app ) {
 
@@ -28,20 +29,21 @@ module.exports.execute = function ( app ) {
    simulation( app );
    simulation_group( app );
 
-   api_simulation_group(app);
+   api_simulation_group( app );
+   api_log( app );
 }
 
 passport.serializeUser(( user, done ) => {
 
    done( null, user.id );
-});
+} );
 
 passport.deserializeUser(( id, done ) => {
 
    User.findById( id, ( err, user ) => {
       done( err, user );
-   });
-});
+   } );
+} );
 
 module.exports.authenticationMiddleware = function authenticationMiddleware() {
 

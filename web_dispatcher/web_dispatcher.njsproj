@@ -25,6 +25,9 @@
     <Compile Include="database\models\document.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="database\models\log.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="database\models\simulation_instance.js">
       <SubType>Code</SubType>
     </Compile>
@@ -57,6 +60,9 @@
     <Compile Include="servers\shared\configuration.js" />
     <Compile Include="servers\shared\mailer.js" />
     <Compile Include="servers\shared\worker_manager.js" />
+    <Compile Include="servers\web\apis\log.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="servers\web\apis\simulation_group.js" />
     <Compile Include="servers\web\router.js">
       <SubType>Code</SubType>
@@ -67,6 +73,9 @@
     <Compile Include="servers\web\routes\sign_up.js" />
     <Compile Include="servers\web\routes\simulation.js" />
     <Compile Include="servers\web\routes\simulation_group.js" />
+    <Compile Include="views\dashboard\logs.ejs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="views\dashboard\workers.ejs">
       <SubType>Code</SubType>
     </Compile>
