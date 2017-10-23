@@ -16,19 +16,7 @@ const SimulationGroup = require( '../../../database/models/simulation_group' )
 const Simulation = require( '../../../database/models/simulation' );
 const SimulationInstance = require( '../../../database/models/simulation_instance' );
 
-const log4js = require( 'log4js' );
-
-log4js.configure( {
-   appenders: {
-      out: { type: 'stdout' },
-      app: { type: 'file', filename: 'log/simulation.log' }
-   },
-   categories: {
-      default: { appenders: ['out', 'app'], level: 'debug' }
-   }
-});
-
-const logger = log4js.getLogger();
+const log = require( '../../../database/models/log' );
 
 module.exports = function ( app ) {
 
@@ -128,7 +116,7 @@ module.exports = function ( app ) {
 
       .catch( function ( err ) {
 
-         logger.error( err );
+         log.error( err );
 
          res.sendStatus( 400 );
       });
@@ -159,7 +147,7 @@ module.exports = function ( app ) {
 
       .catch( function ( err ) {
 
-         logger.error( err );
+         log.error( err );
 
          res.sendStatus( 400 );
       });

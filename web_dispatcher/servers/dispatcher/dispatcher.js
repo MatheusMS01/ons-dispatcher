@@ -5,21 +5,9 @@
 ////////////////////////////////////////////////
 
 const communication = require('./communication');
-const worker_discovery = require( './worker_discovery' )
+const worker_discovery = require( './worker_discovery' );
 
-const log4js = require( 'log4js' );
-
-log4js.configure( {
-   appenders: {
-      out: { type: 'stdout' },
-      app: { type: 'file', filename: 'log/dispatcher.log' }
-   },
-   categories: {
-      default: { appenders: ['out', 'app'], level: 'debug' }
-   }
-});
-
-const logger = log4js.getLogger();
+const log = require( '../../database/models/log' );
 
 module.exports = function () {
 
@@ -27,7 +15,7 @@ module.exports = function () {
       communication.execute();
       worker_discovery.execute();
    } catch (err) {
-      logger.error(err);
+      log.error(err);
    }
 
 }

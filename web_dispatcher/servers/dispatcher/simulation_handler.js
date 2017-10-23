@@ -8,19 +8,9 @@ const Simulation = require( '../../database/models/simulation' );
 const SimulationInstance = require( '../../database/models/simulation_instance' );
 const EventEmitter = require( 'events' );
 const communication = require( './communication' );
-const log4js = require( 'log4js' );
 
-log4js.configure( {
-   appenders: {
-      out: { type: 'stdout' },
-      app: { type: 'file', filename: 'log/simulation_handler.log' }
-   },
-   categories: {
-      default: { appenders: ['out', 'app'], level: 'debug' }
-   }
-});
+const log = require( '../../database/models/log' );
 
-const logger = log4js.getLogger();
 
 const event = new EventEmitter();
 
@@ -67,6 +57,6 @@ event.on( 'new_simulation', ( id ) => {
    })
 
    .catch( function ( err ) {
-      logger.error( err );
+      log.error( err );
    });
 });

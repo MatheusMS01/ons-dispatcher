@@ -24,19 +24,7 @@ const simulationRequest = require( '../../../protocol/dwp/pdu/simulation_request
 const simulationResponse = require( '../../../protocol/dwp/pdu/simulation_response' );
 const simulationTerminateRequest = require( '../../../protocol/dwp/pdu/simulation_terminate_request' );
 
-const log4js = require( 'log4js' );
-
-log4js.configure( {
-   appenders: {
-      out: { type: 'stdout' },
-      app: { type: 'file', filename: 'log/communication.log' }
-   },
-   categories: {
-      default: { appenders: ['out', 'app'], level: 'debug' }
-   }
-} );
-
-const logger = log4js.getLogger();
+const log = require( '../../database/models/log' );
 
 // TCP socket in which all the dispatcher-workers communication will be accomplished
 const server = net.createServer();
@@ -66,7 +54,7 @@ module.exports.execute = function () {
       // Emit to UDP discovery
       event.emit( 'new_worker', socket.remoteAddress );
 
-      logger.info( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
+      log.info( socket.remoteAddress + ':' + socket.remotePort + ' connected' );
 
       socket.once( 'close', () => {
 
@@ -79,13 +67,13 @@ module.exports.execute = function () {
          var promise = SimulationInstance.update( simulationInstanceFilter, simulationInstanceUpdate, { multi: true } ).exec();
 
          promise.catch( function ( err ) {
-            logger.error( err );
+            log.error( err );
          } );
 
-         logger.warn( 'Worker ' + socket.remoteAddress + ' left the pool' );
+         log.warn( 'Worker ' + socket.remoteAddress + ' left the pool' );
 
          if ( workerPool.length === 0 ) {
-            logger.warn( 'There are no workers left' );
+            log.warn( 'There are no workers left' );
             return;
          }
       } );
@@ -112,7 +100,8 @@ module.exports.execute = function () {
 
    // Open Socket
    server.listen( 16180, '0.0.0.0', () => {
-      logger.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
+      log.info( 'TCP server listening ' + server.address().address + ':' + server.address().port );
+
    } );
 }
 
@@ -201,19 +190,20 @@ function batchDispatch() {
 
             worker.write( pdu );
 
-            logger.info( 'Dispatched simulation to ' + workerAddress );
+            log.info( 'Dispatched simulation to ' + workerAddress );
+
 
             updateWorkerRunningInstances( workerAddress );
          } )
 
             .catch( function ( err ) {
-               logger.error( err );
+               log.error( err );
             } );
       } );
    } )
 
       .catch( function ( err ) {
-         logger.error( err );
+         log.error( err );
       } );
 }
 
@@ -242,7 +232,7 @@ function treat( data, socket ) {
    try {
       factory.validate( object );
    } catch ( err ) {
-      return logger.error( err );
+      return log.error( err );
    }
 
    switch ( object.Id ) {
@@ -268,7 +258,7 @@ function treat( data, socket ) {
             } catch ( err ) {
                // If an error occurred, update it to finished anyways
                // No need to keep trying executing this simulation
-               logger.error( err );
+               log.error( err );
             }
 
             var promise_i = SimulationInstance.findById( object.SimulationId ).exec();
@@ -283,7 +273,7 @@ function treat( data, socket ) {
             } )
 
                .catch( function ( err ) {
-                  logger.error( err );
+                  log.error( err );
                } );
 
             // Update simulationInstance to finished
@@ -297,7 +287,7 @@ function treat( data, socket ) {
 
             promise.then( function ( simulationInstance ) {
 
-               logger.info( 'Worker ' + socket.remoteAddress + ' has finished one simulation instance' );
+               log.info( 'Worker ' + socket.remoteAddress + ' has finished one simulation instance' );
 
                // Count how many simulationInstances are pending or executing
                const condition = {
@@ -384,12 +374,12 @@ function treat( data, socket ) {
 
                // Treat all errors
                .catch( function ( err ) {
-                  logger.error( err );
+                  log.error( err );
                } );
 
          } else {
 
-            logger.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
+            log.error( object.SimulationId + ' executed with Failure ' + object.ErrorMessage );
 
             const simulationInstanceUpdate = { 'state': SimulationInstance.State.Pending, $unset: { 'worker': 1 } };
 
@@ -400,14 +390,14 @@ function treat( data, socket ) {
             } )
                // Treat all errors
                .catch( function ( err ) {
-                  logger.error( err );
+                  log.error( err );
                } );
          }
 
          break;
 
       default:
-         return logger.error( 'Invalid message received from ' + socket.remoteAddress );
+         return log.error( 'Invalid message received from ' + socket.remoteAddress );
    }
 }
 
@@ -421,7 +411,7 @@ function updateWorkerRunningInstances( workerAddress ) {
 
       // Treat all errors
       .catch( function ( err ) {
-         logger.error( err );
+         log.error( err );
       } );
 }
 
@@ -435,6 +425,6 @@ function cleanUp() {
 
    // Treat all errors
    promise.catch( function ( err ) {
-      logger.error( err );
+      log.error( err );
    } );
 }
