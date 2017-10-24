@@ -43,13 +43,11 @@ const logSchema = Schema( {
 
 const Log = mongoose.model( 'Log', logSchema );
 
-module.exports.getLastNLogs = function ( n ) {
+module.exports.getAllLogs = function () {
 
    const logFilter = { 'session': sessionId };
 
-   return Log.find( logFilter )
-      .limit( n )
-      .exec();
+   return Log.find( logFilter ).exec();
 }
 
 module.exports.trace = function ( message ) {

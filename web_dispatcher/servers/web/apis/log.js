@@ -12,7 +12,7 @@ module.exports = function ( app ) {
 
    app.get( '/api/log/get_all', router.authenticationMiddleware(), function ( req, res ) {
 
-      const promise = log.getLastNLogs( 50 );
+      const promise = log.getAllLogs();
 
       promise.then( function ( logs ) {
 
