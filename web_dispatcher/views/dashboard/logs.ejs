@@ -47,6 +47,8 @@
 
   <script>
 
+    var logRows = [];
+
     function monitor() {
 
       retrieveLogs();
@@ -115,8 +117,15 @@
             logRow.appendChild( logCellDate );
             logRow.appendChild( logCellTxt );
 
+            logRows.push( logRow );
+
             logTable.appendChild( logRow );
           }
+        }
+
+        while ( logRows.length > 500 ) {
+          logRows[0].remove();
+          logRows.splice( 0, 1 );
         }
       };
 
