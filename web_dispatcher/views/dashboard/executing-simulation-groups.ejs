@@ -121,7 +121,36 @@
           tdSeedAmount.innerHTML = simulationGroups[idx].seedAmount;
 
           var tdPriority = document.createElement( 'td' );
-          tdPriority.innerHTML = simulationGroups[idx].priority;
+          var labelPriority = document.createElement( 'span' );
+
+          switch ( simulationGroups[idx].priority ) {
+            case 0: // Minimum
+              labelPriority.className = 'label label-default';
+              labelPriority.innerHTML = 'Minimum';
+              break;
+            case 1: // Low
+              labelPriority.className = 'label label-primary';
+              labelPriority.innerHTML = 'Low';
+              break;
+            case 2: // Normal
+              labelPriority.className = 'label label-success';
+              labelPriority.innerHTML = 'Normal';
+              break;
+            case 3: // High
+              labelPriority.className = 'label label-warning';
+              labelPriority.innerHTML = 'High';
+              break;
+            case 4: // Urgent
+              labelPriority.className = 'label label-danger';
+              labelPriority.innerHTML = 'Urgent';
+              break;
+            default:
+              labelPriority.className = 'label label-default';
+              labelPriority.innerHTML = 'Undefined';
+              break;
+          }
+
+          tdPriority.appendChild( labelPriority );
 
           var tdStartTime = document.createElement( 'td' );
           tdStartTime.innerHTML = new Date( simulationGroups[idx].startTime );
