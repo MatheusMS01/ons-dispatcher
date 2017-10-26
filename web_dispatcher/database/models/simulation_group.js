@@ -12,6 +12,14 @@ const State = {
    Finished: 1,
 }
 
+const Priority = {
+   Minimum: 0,
+   Low: 1,
+   Normal: 2,
+   High: 3,
+   Urgent: 4
+}
+
 const simulationGroupSchema = Schema( {
 
    _user: {
@@ -35,7 +43,7 @@ const simulationGroupSchema = Schema( {
    },
    priority: {
       type: Number,
-      default: 0,
+      default: Priority.Minimum,
    },
    state: {
       type: Number,
