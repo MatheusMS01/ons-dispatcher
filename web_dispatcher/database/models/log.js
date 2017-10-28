@@ -47,7 +47,7 @@ module.exports.getAllLogs = function () {
 
    const logFilter = { 'session': sessionId };
 
-   return Log.find( logFilter ).limit( 500 ).sort( { date: 1 } ).exec();
+   return Log.find( logFilter ).limit( 500 ).sort( { date: -1 } ).exec();
 }
 
 module.exports.trace = function ( message ) {

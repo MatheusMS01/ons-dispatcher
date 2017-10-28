@@ -8,7 +8,7 @@ module.exports = function ( app ) {
 
    app.get( '/', ( req, res ) => {
 
-      const options = { 'title': 'Home', 'active': 'home' };
+      const options = { 'title': 'Home' };
       res.render( 'home', options );
 
    });

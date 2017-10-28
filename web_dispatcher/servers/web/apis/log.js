@@ -20,7 +20,7 @@ module.exports = function ( app ) {
             throw 'Failed to get logs';
          }
 
-         res.send( logs );
+         res.send( logs.reverse() );
       } )
          .catch( function ( e ) {
 

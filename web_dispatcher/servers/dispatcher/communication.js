@@ -128,7 +128,7 @@ function dispatch() {
 
 /**
  * Retrieve number of workers that fit in cpu and memory threshold.
- * With this number (n) in hands, make select a top 'n' select of pending simulation instances
+ * With this number (n) in hands, make a top 'n' select of pending simulation instances
  * and dispatch it to all those workers
  */
 
